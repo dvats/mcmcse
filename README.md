@@ -8,9 +8,12 @@ Monte Carlo estimates versus sample size.
 
 
 # Installation
-mcmcse can be downloaded directly into R through the the `devtools` package:
+This R package is on CRAN, and its preferred URL being https://CRAN.R-project.org/package=mcmcse.
+
+To download this development repo,  through the the `devtools` package:
+
 ```{r}
-install.packages("devtools")
+# install.packages("devtools")
 library(devtools)
 devtools::install_github("statvats/mcmcse")
 ```
