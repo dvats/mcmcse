@@ -1,0 +1,18 @@
+#desc = packageDescription("mcmcse")
+year = sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers = paste("R package version", meta$Version)
+citHeader("'mcmcse' is a package that provides tools for computing Monte Carlo standard errors.\n\nThis version of 'mcmcse' is currently licensed under the GNU Public License, v2 or later.\n\nIf you are using 'mcmcse' for research that will be published, we request that you acknowledge this with the following citation:\n\n")
+citEntry(entry = "Manual",
+         title = "mcmcse: Monte Carlo Standard Errors for MCMC",
+         author = personList(as.person("James M. Flegal"),
+                             as.person("John Hughes"),
+                             as.person("Dootika Vats"),
+                             as.person("Ning Dai")),
+         year = year,
+         address = "Riverside, CA, Denver, CO, Coventry, UK, and Minneapolis, MN",
+         note = vers,
+         textVersion =
+         paste("James M. Flegal, John Hughes, Dootika Vats, and Ning Dai. (",
+               year,
+               "). mcmcse: Monte Carlo Standard Errors for MCMC. ",
+               vers, ". Riverside, CA, Denver, CO, Coventry, UK, and Minneapolis, MN.", sep = ""))

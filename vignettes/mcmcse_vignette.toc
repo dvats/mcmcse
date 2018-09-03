@@ -1,0 +1,6 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}An MCMC Example}{2}
+\contentsline {section}{\numberline {3}Estimating Monte Carlo Standard Error}{4}
+\contentsline {section}{\numberline {4}Confidence Regions}{9}
+\contentsline {section}{\numberline {5}Effective Sample Size}{10}
+\contentsline {section}{\numberline {6}Graphical Diagnostics}{13}

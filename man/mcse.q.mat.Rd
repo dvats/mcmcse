@@ -1,0 +1,49 @@
+\name{mcse.q.mat}
+\alias{mcse.q.mat}
+\title{Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples.}
+\usage{
+  mcse.q.mat(x, q, size = "sqroot", g = NULL,
+    method = c("bm", "obm", "sub"))
+}
+\arguments{
+\item{x}{a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample size.}
+
+  \item{q}{the quantile of interest.}
+
+  \item{size}{the batch size. The default value is
+  \dQuote{\code{sqroot}}, which uses the square root of the
+  sample size. \dQuote{\code{cuberoot}} will cause the
+  function to use the cube root of the sample size. A
+  numeric value may be provided if \dQuote{\code{sqroot}}
+  is not satisfactory.}
+
+  \item{g}{a function such that the \eqn{q}th quantile of
+  the univariate distribution function of \eqn{g(x)} is the
+  quantity of interest. The default is \code{NULL}, which
+  causes the identity function to be used.}
+
+  \item{method}{the method used to compute the standard
+  error. This is one of \dQuote{\code{bm}} (batch means,
+  the default), \dQuote{\code{obm}} (overlapping batch
+  means), or \dQuote{\code{sub}} (subsampling bootstrap).}
+}
+\value{
+  \code{mcse.q.mat} returns a matrix with \code{ncol(x)}
+  rows and two columns. The row names of the matrix are the
+  same as the column names of \code{x}. The column names of
+  the matrix are \dQuote{\code{est}} and
+  \dQuote{\code{se}}. The \eqn{j}th row of the matrix
+  contains the result of applying \code{mcse.q} to the
+  \eqn{j}th column of \code{x}.
+}
+\description{
+  Apply \code{mcse.q} to each column of a matrix or data
+  frame of MCMC samples.
+}
+\seealso{
+  \code{\link{mcse.q}}, which acts on a vector.
+
+  \code{\link{mcse}} and \code{\link{mcse.mat}}, which
+  compute standard errors for expectations.
+}
+

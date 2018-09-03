@@ -1,0 +1,24 @@
+useDynLib(mcmcse, .registration = TRUE)
+##useDynLib(mcmcse)
+## exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+importFrom(graphics, plot, lines)
+importFrom(stats, qchisq, qf, cov, qqplot, qqline, acf, quantile, density, qqnorm, var)
+
+import(ellipse)
+import(utils)
+
+export(mcse.multi)
+export(mcse.initseq)
+export(qqTest)
+export(multiESS)
+export(minESS)
+export(confRegion)
+export(ess)
+export(estvssamp)
+export(mcse.mat)
+export(mcse.q.mat)
+export(mcse.q)
+export(mcse)
+
+
