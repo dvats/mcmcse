@@ -17,6 +17,7 @@ devtools::install_github("statvats/mcmcse")
 # Citation
 Please copy the following into a  `.bib` file.
 
+`
 @Manual{fleg:hugh:2017,
 title = {mcmcse: Monte Carlo Standard Errors for MCMC},
 author = {Flegal, James M and Hughes, John and Vats, Dootika and  Dai, Ning},
@@ -24,4 +25,5 @@ year = {2017},
 address = {Riverside, CA and Minneapolis, MN},
 note = {R package version 1.3-2},
 }
+`
 
