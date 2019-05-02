@@ -1,5 +1,17 @@
 # sourceCpp("mbmC.cpp")
 # sourceCpp("msveC.cpp")
+adjust_matrix <- function(mat, N, epsilon = sqrt(log(N)/dim(mat)[2]), b = 1/2)
+{
+  mat.adj <- mat
+  adj <- epsilon*N^(-b)
+  vars <- diag(mat)
+  corr <- cov2cor(mat)
+  eig <- eigen(corr)
+  adj.eigs <- pmax(eig$values, adj)
+  mat.adj <- diag(vars^(1/2))%*% eig$vectors %*% diag(adj.eigs) %*% t(eig$vectors) %*% diag(vars^(1/2))
+  return(mat.adj)
+}
+
 
 mcse.multi <- function(x, method = "bm", size = "sqroot", g = NULL, level = 0.95, large = FALSE)
 { 
@@ -58,16 +70,19 @@ if (is.function(g))
   if(method == "bm")
   {
     sig.mat <- mbmC(chain, b)
+    sig.mat <- adjust_matrix(sig.mat, N = n)
     m <- a - 1
   }
   if(method == "wbm")
   {
     sig.mat <- 2*mbmC(chain, b) - mbmC(chain, floor(b/2))
+    sig.mat <- adjust_matrix(sig.mat, N = n)
     m <- a - 1
   }
   if(method == "lug")
   {
     sig.mat <- 2*mbmC(chain, b) - mbmC(chain, floor(b/3))
+    sig.mat <- adjust_matrix(sig.mat, N = n)
     m <- a - 1
   }
   ## Modified Bartlett Window
@@ -76,6 +91,7 @@ if (is.function(g))
   {
    chain <- scale(chain, center = mu.hat, scale = FALSE)
    sig.mat <- msveC(chain, b, "bartlett")
+   sig.mat <- adjust_matrix(sig.mat, N = n)
    m <- n - b
   }
 
