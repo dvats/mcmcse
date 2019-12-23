@@ -4,11 +4,13 @@ useDynLib(mcmcse, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 importFrom(graphics, plot, lines)
 importFrom(stats, qchisq, qf, cov, qqplot, qqline, acf, quantile, density, qqnorm, var)
+importFrom("stats", "ar", "cov2cor")
 
 import(ellipse)
 import(utils)
 
 export(mcse.multi)
+export(batchSize)
 export(mcse.initseq)
 export(qqTest)
 export(multiESS)

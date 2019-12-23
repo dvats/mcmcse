@@ -35,7 +35,7 @@ foo <- foo \%*\% t(foo)
 phi <- foo / (max(eigen(foo)$values) + 1)
   
 out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
-mcerror <- mcse.multi(out)
+mcerror <- mcse.multi(out, blather = TRUE)
 
 ## Plotting the ellipse
 plot(confRegion(mcerror), type = 'l')

@@ -9,6 +9,10 @@ mbmC <- function(chain, b) {
     .Call(`_mcmcse_mbmC`, chain, b)
 }
 
+mobmC <- function(chain, b) {
+    .Call(`_mcmcse_mobmC`, chain, b)
+}
+
 msveC <- function(chain, b, method = "bartlett") {
     .Call(`_mcmcse_msveC`, chain, b, method)
 }

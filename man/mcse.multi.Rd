@@ -8,20 +8,23 @@ Multivariate Monte Carlo standard errors for expectations.
 Function returns the estimate of the covariance matrix in the Markov Chain CLT using batch means or spectral variance methods (with different lag windows). The function also returns the volume of the resulting ellipsoidal confidence regions. 
 }
 \usage{
-mcse.multi(x, method = "bm", size = "sqroot", g = NULL, level = 0.95, large = FALSE)	
+mcse.multi(x, method = "bm", r = 1, size = NULL, 
+	g = NULL, adjust = TRUE, blather = FALSE)	
 }
 \arguments{
 \item{x}{a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample size.}
 
 \item{method}{any of \code{``bm'', ``wbm'', ``lug'', ``bartlett'', ``tukey''}. \code{``bm''} represents batch means estimator, \code{``wbm''} represents weighted batch means estimator with flat-top lag window, \code{``lug''} represents the lugsail lag window with $r = 3$, \code{``bartlett''} and \code{``tukey''} represents the modified-Bartlett window and the Tukey-Hanning windows for the spectral variance estimators. }
 
+\item{r}{the lugsail parameter that converts a lag window into its lugsail equivalent. Larger values of \code{``r''} will typically mean less underestimation of \code{``cov''},  but higher variability of the estimator. Default is \code{``r = 1''} and \code{``r = 2,3''} are good choices. \code{``r > 5''} is not allowed. Non-integer values are ok.}
+
 \item{size}{can take character values of \code{``sqroot''} and \code{``cuberoot''} or any numeric value between 1 and n. Size represents the batch size in bm and the truncation point in bartlett and tukey. \code{sqroot} means size is floor(n^(1/2) and cuberoot means size is floor(n^(1/3)).}
 
 \item{g}{a function that represents features of interest. g is applied to each row of \code{x} and thus g should take a vector input only. If g is \code{NULL}, g is set to be identity, which is estimation of the mean of the target density.}
 
-\item{level}{confidence level of the confidence ellipsoid.}
+\item{adjust}{logical for whether the matrix should automatically be adjusted if unstable}
 
-\item{large}{if TRUE, returns the volume of the large sample confidence region using a chi square critical value.}
+\item{blather}{if TRUE, returns under the hood functions of the package}
 }
 \seealso{
   \code{\link{mcse.initseq}}, which computes an initial sequence estimator.

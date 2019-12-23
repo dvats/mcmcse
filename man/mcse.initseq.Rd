@@ -8,7 +8,7 @@ Multivariate Monte Carlo standard errors for expectations with the initial seque
 Function returns the estimate of the covariance matrix in the Markov Chain CLT using initial sequence method. The function also returns the volume of the resulting ellipsoidal confidence regions. This method is designed to give an asymptotically conservative estimate of the Monte Carlo standard error.
 }
 \usage{
-mcse.initseq(x, adjust = FALSE, g = NULL, level = 0.95)
+mcse.initseq(x, g = NULL,adjust = FALSE, blather = FALSE)
 }
 
 \arguments{
@@ -18,7 +18,7 @@ mcse.initseq(x, adjust = FALSE, g = NULL, level = 0.95)
 
 \item{g}{a function that represents features of interest. g is applied to each row of \code{x} and thus g should take a vector input only. If g is \code{NULL}, g is set to be identity, which is estimation of the mean of the target density.}
 
-\item{level}{confidence level of the confidence region.}
+\item{blather}{if TRUE, outputs under  the hood information about the function.}
 }
 
 \value{
@@ -27,13 +27,9 @@ A list is returned with the following components,
 
 \item{cov.adj}{a covariance matrix estimate using adjusted initial sequence method if the input \code{adjust}=TRUE.}
 
-\item{vol}{volume of the confidence region to the pth root using intial sequence method, where p is the dimension of the confidence region.}
-
-\item{vol.adj}{volume of the confidence region to the pth root using adjusted initial sequence method if the input \code{adjust}=TRUE, where p is the dimension of the confidence region.}
-
 \item{est}{estimate of g(x).}
-\item{nsim}{number of rows of the input \code{x}.}
-\item{adjust}{logical of whether an adjustment was made to the initial sequence estimator.}
+\item{nsim}{number of rows of the input \code{x}. Only if blather = TRUE}
+\item{adjust}{logical of whether an adjustment was made to the initial sequence estimator. Only if blather = TRUE}
 }
 
 \seealso{

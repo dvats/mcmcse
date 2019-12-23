@@ -26,10 +26,10 @@ License: \tab GPL (>= 2)\cr
 \author{
 James M. Flegal <jflegal@ucr.edu>,\\
 John Hughes <j.hughes@ucdenver.edu> \\
-Dootika Vats <D.Vats@warwick.ac.uk> and\\
+Dootika Vats <dootika@iitk.ac.in> and\\
 Ning Dai <daixx224@umn.edu>
 
-Maintainer: Dootika Vats <D.Vats@warwick.ac.uk>
+Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
 \references{
 
@@ -56,16 +56,16 @@ Maintainer: Dootika Vats <D.Vats@warwick.ac.uk>
   \emph{University of California, Riverside, Technical
   Report}.
 
-  Gong, L., and Flegal, J. M. A practical sequential stopping rule for high-dimensional Markov chain Monte Carlo. Journal of Computational and Graphical Statistics (to appear).
+  Gong, L., and Flegal, J. M. A practical sequential stopping rule for high-dimensional Markov chain Monte Carlo. \emph{Journal of Computational and Graphical Statistics}, \bold{25},  684–-700.
   
   Jones, G. L., Haran, M., Caffo, B. S. and Neath, R.
   (2006) Fixed-width output analysis for Markov chain Monte
   Carlo. \emph{Journal of the American Statistical
   Association}, \bold{101}, 1537--1547.
 
-  Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{arXiv preprint arXiv:1512.07713 (2015)}.
+  Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
 
-  Vats, D., Flegal, J. M., and, Jones, G. L. (2017+) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}.
+  Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
 
 }
 

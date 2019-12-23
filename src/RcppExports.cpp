@@ -31,6 +31,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mobmC
+mat mobmC(const arma::mat& chain, double b);
+RcppExport SEXP _mcmcse_mobmC(SEXP chainSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type chain(chainSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(mobmC(chain, b));
+    return rcpp_result_gen;
+END_RCPP
+}
 // msveC
 mat msveC(const arma::mat& chain, double b, String method);
 RcppExport SEXP _mcmcse_msveC(SEXP chainSEXP, SEXP bSEXP, SEXP methodSEXP) {
