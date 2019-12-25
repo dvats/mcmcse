@@ -103,6 +103,15 @@ batchSize <- function(x, method = "bm", g = NULL)
 #####################################################################
 mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
+  
+  # at some point the method used may be different
+  # from the method asked. Blather will output this
+  method.used <- method
+  if(method == "lug")   # not releaved to the public. Inside option for developers
+  {
+    method = "bm"
+    r <- 3
+  }
 
   if(!is.numeric(r)) stop("r should be numeric")
   if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
@@ -128,15 +137,6 @@ mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = 
     {
       chain <- t(chain)
     }
-  }
-
-  # at some point the method used may be different
-  # from the method asked. Blather will output this
-  method.used <- method
-  if(method == "lug")   # not releaved to the public. Inside option for developers
-  {
-    method = "bm"
-    r <- 3
   }
   
   ## Setting dimensions on the mcmc output. 
