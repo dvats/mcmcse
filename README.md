@@ -15,7 +15,7 @@ To download this development repo,  through the the `devtools` package:
 ```{r}
 # install.packages("devtools")
 library(devtools)
-devtools::install_github("statvats/mcmcse")
+devtools::install_github("dvats/mcmcse")
 ```
 # Citation
 Please run `citation("mcmcse")` after loading the package for citation details.
