@@ -2,7 +2,7 @@
 \alias{mcse.mat}
 \title{Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.}
 \usage{
-  mcse.mat(x, size = "sqroot", g = NULL,
+  mcse.mat(x, size = NULL, g = NULL,
     method = "bm")
 }
 \arguments{

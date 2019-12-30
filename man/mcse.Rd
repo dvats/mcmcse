@@ -2,7 +2,7 @@
 \alias{mcse}
 \title{Compute Monte Carlo standard errors for expectations.}
 \usage{
-  mcse(x, size = "sqroot", g = NULL,
+  mcse(x, size = NULL, g = NULL,
     method = "bm",
     warn = FALSE)
 }
