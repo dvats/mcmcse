@@ -52,7 +52,7 @@
 #'
 #' @export
 
-mcse = function(x, size = "sqroot", g = NULL, method = "bm", warn = FALSE)
+mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
 {
     if (! is.function(g))
         g = function(x) return(x)
@@ -64,23 +64,25 @@ mcse = function(x, size = "sqroot", g = NULL, method = "bm", warn = FALSE)
         if (n < 10)
             return(NA)
     }
-    if (size == "sqroot") 
-    {
-        b = floor(sqrt(n))
-        a = floor(n / b)
-    }
-    else if (size == "cuberoot") 
-    {
-        b = floor(n^(1 / 3))
-        a = floor(n / b)
-    }
-    else
-    {
-        if (! is.numeric(size) || size <= 1 || size == Inf)
-            stop("'size' must be a finite numeric quantity larger than 1.")
-        b = floor(size)
-        a = floor(n / b)
-    }
+      if(is.null(size))
+      {
+        b <- batchSize(x = x, method = method, g = g)  # optimal
+      }
+      else if(size == "sqroot")
+      {
+        b <- floor(sqrt(n))
+      } 
+      else if(size == "cuberoot") {
+        b <- floor(n^(1/3))
+      }
+      else {
+        if (!is.numeric(size) || size <= 1 || size >= n || floor(n/size) <=1) 
+            stop("size is either too large, too small, or not a number")
+
+        b <- floor(size)
+      }
+      a <- floor(n/b)
+
     method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
     if (method == "bm")
     {
@@ -155,7 +157,7 @@ mcse = function(x, size = "sqroot", g = NULL, method = "bm", warn = FALSE)
 #' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
 #' @export
 
-mcse.mat = function(x, size = "sqroot", g = NULL, method = "bm")
+mcse.mat = function(x, size = NULL, g = NULL, method = "bm")
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")
