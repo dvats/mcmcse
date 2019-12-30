@@ -115,7 +115,7 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
         se = sqrt(var.hat / n)
     }
-    else if (method == "obm")
+    if (method == "obm")
     {
         a = n - b + 1
         y = sapply(1:a, function(k) return(mean(g(x[k:(k + b - 1)]))))
@@ -123,7 +123,7 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         var.hat = n * b * sum((y - mu.hat)^2) / (a - 1) / a
         se = sqrt(var.hat / n)
     } 
-    else if (method == "tukey")
+    if (method == "tukey")
     {
         alpha = 1:b
         alpha = (1 + cos(pi * alpha / b)) / 2 * (1 - alpha / n)
@@ -132,7 +132,7 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         var.hat = R[1] + 2 * sum(alpha * R[-1])
         se = sqrt(var.hat / n)
     }
-    else # method == "bartlett"
+    if(method == "bartlett")
     {
         alpha = 1:b
         alpha = (1 - abs(alpha) / b) * (1 - alpha / n)
