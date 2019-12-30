@@ -69,12 +69,12 @@ batchSize <- function(x, method = "bm", g = NULL)
 {
 
   chain <- as.matrix(x)
-  if(!is.matrix(x) && !is.data.frame(x))
+  if(!is.matrix(chain) && !is.data.frame(chain))
     stop("'x' must be a matrix or data frame.")
 
   if (is.function(g)) 
   {
-    chain <- apply(x, 1, g)
+    chain <- apply(chain, 1, g)
 
     if(is.vector(chain))
     {
@@ -123,12 +123,12 @@ mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = 
   if(r < 0) stop("r cannot be negative")
   # making matrix compatible and applying g
   chain <- as.matrix(x)
-  if(!is.matrix(x) && !is.data.frame(x))
+  if(!is.matrix(chain) && !is.data.frame(chain))
     stop("'x' must be a matrix or data frame.")
 
   if (is.function(g)) 
   {
-    chain <- apply(x, 1, g)
+    chain <- apply(chain, 1, g)
 
     if(is.vector(chain))
     {
@@ -138,6 +138,7 @@ mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = 
       chain <- t(chain)
     }
   }
+
   
   ## Setting dimensions on the mcmc output. 
   n = dim(chain)[1]
