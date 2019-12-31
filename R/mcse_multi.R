@@ -163,6 +163,11 @@ mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = 
     b <- floor(size)
   }
   a <- floor(n/b)
+  if(b == 1 && r != 1)
+  {
+    r = 1
+    message <- "r was set to 1 since b = 1. "
+  }
  ########################## 
 
 

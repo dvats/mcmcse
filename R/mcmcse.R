@@ -82,6 +82,11 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         b <- floor(size)
       }
       a <- floor(n/b)
+     if(b == 1 && r != 1)
+      {
+        method = "bm"
+        warning("Method = bm was used since b = 1")
+      }
 
     method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
     if (method == "bm")
