@@ -89,7 +89,7 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
       }
       a <- floor(n/b)
 
-      print(a)
+      print(method)
     if (method == "bm")
     {
         y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
