@@ -64,6 +64,7 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         if (n < 10)
             return(NA)
     }
+    method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
       if(is.null(size))
       {
         b <- batchSize(x = x, method = method, g = g)  # optimal
@@ -88,8 +89,6 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
       }
       a <- floor(n/b)
 
-
-    method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
     if (method == "bm")
     {
         y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
