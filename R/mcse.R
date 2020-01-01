@@ -25,7 +25,7 @@ mcseR <- function(x, method = "bm", size = "sqroot", g = NULL, alpha = 0.90, war
     b = floor(n^(1/3))
   }
   else {
-    if (!is.numeric(size) || size <= 1 || size == Inf) 
+    if (!is.numeric(size) || size < 1 || size == Inf) 
         stop("'size' must be a finite numeric quantity larger than 1.")
     b = floor(size)
   }

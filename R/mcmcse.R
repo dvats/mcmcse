@@ -67,6 +67,11 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
       if(is.null(size))
       {
         b <- batchSize(x = x, method = method, g = g)  # optimal
+        if(b == 1)
+          {
+            method = "bm"
+            warning("Method = bm was used since b = 1")
+          }
       }
       else if(size == "sqroot")
       {
@@ -76,17 +81,13 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         b <- floor(n^(1/3))
       }
       else {
-        if (!is.numeric(size) || size <= 1 || size >= n || floor(n/size) <=1) 
+        if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) 
             stop("size is either too large, too small, or not a number")
 
         b <- floor(size)
       }
       a <- floor(n/b)
-     if(b == 1)
-      {
-        method = "bm"
-        warning("Method = bm was used since b = 1")
-      }
+
 
     method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
     if (method == "bm")
@@ -249,7 +250,7 @@ mcse.q = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"
     }
     else
     {
-        if (! is.numeric(size) || size <= 1 || size == Inf)
+        if (! is.numeric(size) || size < 1 || size == Inf)
             stop("'size' must be a finite numeric quantity larger than 1.")
         b = floor(size)
         a = floor(n / b)
