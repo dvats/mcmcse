@@ -148,6 +148,11 @@ mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = 
   if(is.null(size))
   {
     b <- batchSize(x = x, method = method, g = g)  # optimal
+    if(b == 1 && r != 1)
+    {
+      r = 1
+      message <- "r was set to 1 since b = 1. "
+    }
   }
   else if(size == "sqroot")
   {
@@ -157,17 +162,12 @@ mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = 
     b <- floor(n^(1/3))
   }
   else {
-    if (!is.numeric(size) || size <= 1 || size >= n || floor(n/size) <=1) 
+    if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) 
         stop("size is either too large, too small, or not a number")
 
     b <- floor(size)
   }
   a <- floor(n/b)
-  if(b == 1 && r != 1)
-  {
-    r = 1
-    message <- "r was set to 1 since b = 1. "
-  }
  ########################## 
 
 
