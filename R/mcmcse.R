@@ -68,11 +68,6 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
       if(is.null(size))
       {
         b <- batchSize(x = x, method = method, g = g)  # optimal
-        if(b == 1)
-          {
-            method = "bm"
-            warning("Method = bm was used since b = 1")
-          }
       }
       else if(size == "sqroot")
       {
@@ -89,7 +84,11 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
       }
       a <- floor(n/b)
 
-      print(method)
+    if(b == 1)
+      {
+        method = "bm"
+        warning("Method = bm was used since b = 1")
+      }
     if (method == "bm")
     {
         y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
