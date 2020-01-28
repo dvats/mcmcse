@@ -42,25 +42,7 @@ mcse.initseq <- function(x, g = NULL, adjust = FALSE, blather = FALSE)
   {
     sig.adj <- NULL
   }
-  
-  #calculate volume of the confidence region to the pth root
-  #crit <- qchisq(level,df=p)/n
-  #log scale
-  #foo <- -(log(p/2) + lgamma(p/2))/p + log(pi*crit)/2
-  # det2p <- log(det(sig))/2/p
-  ##vol=volume to the pth root without adjustment
- # vol <- exp(foo + det2p)
-  
-  ##vol.adj=volume to the pth root with adjustment, if adjust=T
-  ##       =NULL, if adjust=F
-  # if(adjust)
-  # {
-  #   det2p.adj <- log(det(sig.adj))/2/p
-  #   vol.adj <- exp(foo + det2p.adj)
-  # }else
-  # {
-  #   vol.adj <- NULL
-  # }
+
   
   if(blather)
   {

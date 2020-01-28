@@ -5,10 +5,10 @@
 Multivariate Monte Carlo standard errors for expectations with the initial sequence method of Dai and Jones (2017).
 }
 \description{
-Function returns the estimate of the covariance matrix in the Markov Chain CLT using initial sequence method. The function also returns the volume of the resulting ellipsoidal confidence regions. This method is designed to give an asymptotically conservative estimate of the Monte Carlo standard error.
+Function returns the estimate of the covariance matrix in the Markov Chain central limit theorem using initial sequence method. This method is designed to give an asymptotically conservative estimate of the Monte Carlo standard error.
 }
 \usage{
-mcse.initseq(x, g = NULL,adjust = FALSE, blather = FALSE)
+mcse.initseq(x, g = NULL, adjust = FALSE, blather = FALSE)
 }
 
 \arguments{

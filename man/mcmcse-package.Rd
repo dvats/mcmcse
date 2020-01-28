@@ -17,8 +17,8 @@ versus sample size.
 \tabular{ll}{
 Package: \tab mcmcse\cr
 Type: \tab Package\cr
-Version: \tab 1.3-2\cr
-Date: \tab 2017-07-03\cr
+Version: \tab 1.4-1\cr
+Date: \tab 2020-01-29\cr
 License: \tab GPL (>= 2)\cr
 }
 
@@ -63,9 +63,13 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
   Carlo. \emph{Journal of the American Statistical
   Association}, \bold{101}, 1537--1547.
 
+  Liu, Y., Vats, D., and Flegal, J. M. Batch size selection for variance estimators in MCMC, \emph{arXiv preprint arXiv:1804.05975  (2019)}.
+
   Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
 
   Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
+
+
 
 }
 
@@ -83,7 +87,7 @@ phi <- foo / (max(eigen(foo)$values) + 1)
   
 out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
 
-mcse(out[,1], method = "bart")
+mcse(out[,1], method = "bartlett")
 
 mcse.bm <- mcse.multi(x = out)
 mcse.tuk <- mcse.multi(x = out, method = "tukey")

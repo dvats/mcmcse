@@ -2,33 +2,24 @@
 \alias{mcse}
 \title{Compute Monte Carlo standard errors for expectations.}
 \usage{
-  mcse(x, size = NULL, g = NULL,
+  mcse(x, size = NULL, g = NULL, r = 3,
     method = "bm",
     warn = FALSE)
 }
 \arguments{
   \item{x}{a vector of values from a Markov chain.}
 
-  \item{size}{the batch size. The default value is
-  \dQuote{\code{sqroot}}, which uses the square root of the
-  sample size. \dQuote{\code{cuberoot}} will cause the
-  function to use the cube root of the sample size. A
-  numeric value may be provided if neither
-  \dQuote{\code{sqroot}} nor \dQuote{\code{cuberoot}} is
-  satisfactory.}
+  \item{size}{represents the batch size in ``bm'' and the truncation point in ``bartlett'' and ``tukey''. Default is \code{NULL} which implies that an optimal batch size is calculated using the \code{batchSize()} function. Can take character values of \code{``sqroot''} and \code{``cuberoot''} or any numeric value between 1 and n/2. \code{``sqroot''} means size is floor(n^(1/2)) and ``cuberoot'' means size is floor(n^(1/3)).}
 
   \item{g}{a function such that \eqn{E(g(x))} is the
   quantity of interest. The default is \code{NULL}, which
   causes the identity function to be used.}
 
-  \item{method}{the method used to compute the standard
-  error. This is one of \dQuote{\code{bm}} (batch means,
-  the default),\dQuote{\code{bm}} (weighted batch means),
-  \dQuote{\code{bm}} (lugsail batch means),
-   \dQuote{\code{obm}} (overlapping batch
-  means), \dQuote{\code{tukey}} (spectral variance method
-  with a Tukey-Hanning window), or \dQuote{\code{bartlett}}
-  (spectral variance method with a Bartlett window).}
+\item{method}{any of \code{``bm'', ``obm'', ``bartlett'', ``tukey''}. \code{``bm''} represents batch means estimator, \code{``obm''} represents overlapping batch means estimator with, \code{``bartlett''} and \code{``tukey''} represents the modified-Bartlett window and the Tukey-Hanning windows for  spectral variance estimators. }
+
+\item{r}{the lugsail parameter that converts a lag window into its lugsail equivalent. Larger values of \code{``r''} will typically imply less underestimation of \code{``cov''},  but higher variability of the estimator. Default is \code{``r = 3''} and \code{``r = 1,2''} are good choices. \code{``r > 5''} is not recommended. Non-integer values are ok.}
+
+
 
   \item{warn}{a logical value indicating whether the
   function should issue a warning if the sample size is too
@@ -61,7 +52,6 @@ mcse.q(x, 0.9)
 
 mcse(x, method = "obm")
 mcse.q(x, 0.1, method = "obm")
-mcse.q(x, 0.9, method = "obm")
 
 # Estimate E(x^2) with MCSE using spectral methods.
 

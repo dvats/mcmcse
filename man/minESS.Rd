@@ -40,8 +40,7 @@ Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Marko
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
 \seealso{
   \code{\link{multiESS}}, which calculates multivariate effective sample size using a Markov chain and a function g.
 

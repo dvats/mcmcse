@@ -52,11 +52,33 @@
 #'
 #' @export
 
-mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
+mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
 {
+    method.used <- method
+      if(method == "lug")   # not releaved to the public. Inside option for developers
+      {
+        method = "bm"
+        r <- 3
+      }
+
+      if(!is.numeric(r)) stop("r should be numeric")
+      if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
+      {
+        stop("No such method available")
+      }
+       
+      if(r > 5) warning("We recommend using r <=5")
+      if(r < 0) stop("r cannot be negative")
+      # making matrix compatible and applying g
+      chain <- as.matrix(x)
+      if(!is.matrix(chain) && !is.data.frame(chain))
+        stop("'x' must be a matrix or data frame.")
+
     if (! is.function(g))
         g = function(x) return(x)
     n = length(x)
+
+
     if (n < 1000)
     {
         if (warn)
@@ -65,7 +87,8 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
             return(NA)
     }
     method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
-      if(is.null(size))
+      
+    if(is.null(size))
       {
         b <- batchSize(x = x, method = method, g = g)  # optimal
       }
@@ -84,48 +107,76 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
       }
       a <- floor(n/b)
 
-    if(b == 1)
+      if(b == 1 && r != 1)
       {
-        method = "bm"
-        warning("Method = bm was used since b = 1")
+        r = 1
+        message <- "r was set to 1 since b = 1. "
       }
+
+ ########################## 
     if (method == "bm")
     {
         y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
         mu.hat = mean(g(x)) 
         var.hat = b * sum((y - mu.hat)^2) / (a - 1)
-        se = sqrt(var.hat / n)
-    }
-    if (method == "wbm")
-    {
-        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-        mu.hat = mean(g(x)) 
-        var.hat1 = b * sum((y - mu.hat)^2) / (a - 1)
 
-        b <- floor(b/2)
-        a = floor(n / b)
-        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-        var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
-        se = sqrt(var.hat / n)
-    }
-    if (method == "lug")
-    {
-        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-        mu.hat = mean(g(x)) 
-        var.hat1 = b * sum((y - mu.hat)^2) / (a - 1)
+        if(r != 1)
+        {
+            b1 <- floor(b/r)
+            a1 <- floor(n / b1)
+            y <- sapply(1:a1, function(k) return(mean(g(x[((k - 1) * b1 + 1):(k * b1)]))))
+            var.hat1 = 2*var.hat - b1 * sum((y - mu.hat)^2) / (a1 - 1)  
+            if(var.hat1 > 0)
+            {
+                var.hat <- var.hat1  
+            }
+        }
 
-        b <- floor(b/3)
-        a = floor(n / b)
-        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-        var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
         se = sqrt(var.hat / n)
     }
+    # if (method == "wbm")
+    # {
+    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
+    #     mu.hat = mean(g(x)) 
+    #     var.hat1 = b * sum((y - mu.hat)^2) / (a - 1)
+
+    #     b <- floor(b/2)
+    #     a = floor(n / b)
+    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
+    #     var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
+    #     se = sqrt(var.hat / n)
+    # }
+    # if (method == "lug")
+    # {
+    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
+    #     mu.hat = mean(g(x)) 
+    #     var.hat1 = b * sum((y - mu.hat)^2) / (a - 1)
+
+    #     b <- floor(b/3)
+    #     a = floor(n / b)
+    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
+    #     var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
+    #     se = sqrt(var.hat / n)
+    # }
     if (method == "obm")
     {
         a = n - b + 1
         y = sapply(1:a, function(k) return(mean(g(x[k:(k + b - 1)]))))
         mu.hat = mean(g(x))
-        var.hat = n * b * sum((y - mu.hat)^2) / (a - 1) / a
+        var.hat =  b * sum((y - mu.hat)^2) / n
+
+        if(r != 1)
+        {
+            b1 <- floor(b/r)
+            a1 = n - b1 + 1
+            y = sapply(1:a1, function(k) return(mean(g(x[k:(k + b1 - 1)]))))
+            mu.hat = mean(g(x))
+            var.hat1 = 2*var.hat - (b1 * sum((y - mu.hat)^2) / n)
+            if(var.hat1 > 0)
+            {
+                var.hat <- var.hat1  
+            }
+        }
         se = sqrt(var.hat / n)
     } 
     if (method == "tukey")
@@ -135,6 +186,21 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         mu.hat = mean(g(x))
         R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
         var.hat = R[1] + 2 * sum(alpha * R[-1])
+
+        if(r != 1)
+        {
+            b1 <- floor(b/r)
+            alpha = 1:b1
+            alpha = (1 + cos(pi * alpha / b1)) / 2 * (1 - alpha / n)
+            mu.hat = mean(g(x))
+            R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
+            var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
+            if(var.hat1 > 0)
+            {
+                var.hat <- var.hat1  
+            }
+        }
+
         se = sqrt(var.hat / n)
     }
     if(method == "bartlett")
@@ -144,6 +210,21 @@ mcse <- function(x, size = NULL, g = NULL, method = "bm", warn = FALSE)
         mu.hat = mean(g(x))
         R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
         var.hat = R[1] + 2 * sum(alpha * R[-1])
+
+        if(r != 1)
+        {
+            b1 <- floor(b/r)
+            alpha = 1:b1
+            alpha = (1 - abs(alpha) / b1) * (1 - alpha / n)
+            mu.hat = mean(g(x))
+            R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
+            var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
+            if(var.hat1 > 0)
+            {
+                var.hat <- var.hat1  
+            }
+        }
+
         se = sqrt(var.hat / n)
     }
     list(est = mu.hat, se = se)

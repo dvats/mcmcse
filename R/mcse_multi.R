@@ -101,7 +101,7 @@ batchSize <- function(x, method = "bm", g = NULL)
 ### Main function. Estimates the covariance matrix
 ### Recommend blather = FALSE for users and TRUE for developers
 #####################################################################
-mcse.multi <- function(x, method = "bm", r = 1, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
   
   # at some point the method used may be different

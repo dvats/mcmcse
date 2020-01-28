@@ -1,20 +1,13 @@
 \name{ess}
 \alias{ess}
-\title{Estimate effective sample size (ESS) as described in Gong and Felgal (2015).}
+\title{Univariate estimate effective sample size (ESS) as described in Gong and Felgal (2015).}
 \usage{
   ess(x, g = NULL, ...)
 }
 \arguments{
 \item{x}{a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample size.}
   \item{...}{arguments passed on to the \code{mcse.mat} function. For example \code{method = "tukey"} and \code{size = "cuberoot"} can be used.}
-  % \item{imse}{logical. If \code{TRUE}, use an approach that
-  % is analogous to Geyer's initial monotone positive
-  % sequence estimator (IMSE), where correlations beyond a
-  % certain lag are removed to reduce noise.}
 
-  % \item{verbose}{logical. If \code{TRUE} and \code{imse =
-  % TRUE}, inform about the lag at which truncation occurs,
-  % and warn if the lag is probably too small.}
 \item{g}{a function that represents features of interest. g is applied to each row of \code{x} and thus g should take a vector input only. If g is \code{NULL}, g is set to be identity, which is estimation of the mean of the target density.}
 }
 \value{
@@ -27,7 +20,7 @@
   ESS is the size of an iid sample with the same variance
   as the current sample. ESS is given by
   \deqn{\mbox{ESS}=n \frac{\lambda^2}{\sigma^2},}{ESS = n  \lambda^2/\sigma^2,} where
-\eqn{\lambda^2} is the sample variance and \eqn{\sigma^2} is an estimate of the variance in the CLT. This is by default the batch means estimator, but the default can be changed with the \code{method} argument.
+\eqn{\lambda^2} is the sample variance and \eqn{\sigma^2} is an estimate of the variance in the CLT. This is by default the lugsail batch means estimator, but the default can be changed with the \code{method} argument.
 }
 \references{
 

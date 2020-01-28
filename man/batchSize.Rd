@@ -5,7 +5,7 @@
 Batch size (truncation point) selection
 }
 \description{
-Function returns the optimal batch size (truncation point) for a given chain and method. 
+Function returns the optimal batch size (or truncation point) for a given chain and method. 
 }
 \usage{
 batchSize(x, method = "bm", g = NULL)	
@@ -13,13 +13,14 @@ batchSize(x, method = "bm", g = NULL)
 \arguments{
 \item{x}{a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample size.}
 
-\item{method}{any of \code{``bm'', ``wbm'', ``lug'', ``bartlett'', ``tukey''}. \code{``bm''} represents batch means estimator, \code{``wbm''} represents weighted batch means estimator with flat-top lag window, \code{``lug''} represents the lugsail lag window with $r = 3$, \code{``bartlett''} and \code{``tukey''} represents the modified-Bartlett window and the Tukey-Hanning windows for the spectral variance estimators. }
+\item{method}{any of \code{``bm'', ``obm'', ``bartlett'', ``tukey''}. \code{``bm''} represents batch means estimator, \code{``obm''} represents the overlapping batch means estimator, and \code{``bartlett''} and \code{``tukey''} represent the modified-Bartlett window and the Tukey-Hanning windows for the spectral variance estimators. }
 
 \item{g}{a function that represents features of interest. g is applied to each row of \code{x} and thus g should take a vector input only. If g is \code{NULL}, g is set to be identity, which is estimation of the mean of the target density.}
 
 }
 \seealso{
   \code{\link{mcse.multi}}, which calls on \code{batchSize}.
+  \code{\link{mcse}}, which calls on \code{batchSize}.
 }
 
 \value{
@@ -44,4 +45,5 @@ out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
 
 batchSize(out)
 batchSize(out, method = "obm")
+batchSize(out, method = "bartlett")
 }
