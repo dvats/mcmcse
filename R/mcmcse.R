@@ -54,7 +54,11 @@
 
 mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
 {
-    method.used <- method
+    x <- as.numeric(x)
+    if (! is.function(g))
+    g = function(x) return(x)
+    n = length(x)
+
       if(method == "lug")   # not releaved to the public. Inside option for developers
       {
         method = "bm"
@@ -69,15 +73,7 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
        
       if(r > 5) warning("We recommend using r <=5")
       if(r < 0) stop("r cannot be negative")
-      # making matrix compatible and applying g
-      chain <- as.matrix(x)
-      if(!is.matrix(chain) && !is.data.frame(chain))
-        stop("'x' must be a matrix or data frame.")
-
-    if (! is.function(g))
-        g = function(x) return(x)
-    n = length(x)
-
+      # making matrix compatible and applying 
 
     if (n < 1000)
     {
@@ -86,8 +82,12 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
         if (n < 10)
             return(NA)
     }
-    method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
+    #method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
       
+    if(var(x) == 0) # if zero variance series, then just calculate the sample variance
+    {
+        size <- 1
+    }
     if(is.null(size))
       {
         b <- batchSize(x = x, method = method, g = g)  # optimal

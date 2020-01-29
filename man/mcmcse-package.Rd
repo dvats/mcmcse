@@ -69,8 +69,6 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
 
   Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
 
-
-
 }
 
 \examples{
