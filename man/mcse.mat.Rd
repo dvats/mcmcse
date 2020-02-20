@@ -3,7 +3,7 @@
 \title{Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.}
 \usage{
   mcse.mat(x, size = NULL, g = NULL,
-    method = "bm")
+    method = "bm", r = 3)
 }
 \arguments{
   \item{x}{a matrix or data frame with each row being a
@@ -15,8 +15,9 @@
   quantity of interest. The default is \code{NULL}, which
   causes the identity function to be used.}
 
-
   \item{method}{any of \code{``bm'', ``obm'', ``bartlett'', ``tukey''}. \code{``bm''} represents batch means estimator, \code{``obm''} represents overlapping batch means estimator with, \code{``bartlett''} and \code{``tukey''} represents the modified-Bartlett window and the Tukey-Hanning windows for  spectral variance estimators. }
+
+  \item{r}{the lugsail parameter that converts a lag window into its lugsail equivalent. Larger values of \code{``r''} will typically imply less underestimation of \code{``cov''},  but higher variability of the estimator. Default is \code{``r = 3''} and \code{``r = 1,2''} are good choices. \code{``r > 5''} is not recommended. Non-integer values are ok.}
 }
 
 

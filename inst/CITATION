@@ -9,10 +9,10 @@ citEntry(entry = "Manual",
                              as.person("Dootika Vats"),
                              as.person("Ning Dai")),
          year = year,
-         address = "Riverside, CA, Denver, CO, Coventry, UK, and Minneapolis, MN",
+         address = "Riverside, CA, Denver, CO, and Kanpur, India",
          note = vers,
          textVersion =
          paste("James M. Flegal, John Hughes, Dootika Vats, and Ning Dai. (",
                year,
                "). mcmcse: Monte Carlo Standard Errors for MCMC. ",
-               vers, ". Riverside, CA, Denver, CO, Coventry, UK, and Minneapolis, MN.", sep = ""))
+               vers, ". Riverside, CA, Denver, CO, and Kanpur, India.", sep = ""))

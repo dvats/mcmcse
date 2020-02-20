@@ -59,81 +59,86 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
     g = function(x) return(x)
     n = length(x)
 
-      if(method == "lug")   # not releaved to the public. Inside option for developers
-      {
-        method = "bm"
-        r <- 3
-      }
+    calls <- mcse.multi(x, method = method, r = r, size = size, g = NULL, adjust = FALSE, blather = FALSE)
+    se <- as.numeric(sqrt(calls$cov / n))
+    mu.hat <- calls$est
 
-      if(!is.numeric(r)) stop("r should be numeric")
-      if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
-      {
-        stop("No such method available")
-      }
+ #      if(method == "lug")   # not releaved to the public. Inside option for developers
+ #      {
+ #        method = "bm"
+ #        r <- 3
+ #      }
+
+ #      if(!is.numeric(r)) stop("r should be numeric")
+ #      if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
+ #      {
+ #        stop("No such method available")
+ #      }
        
-      if(r > 5) warning("We recommend using r <=5")
-      if(r < 0) stop("r cannot be negative")
-      # making matrix compatible and applying 
+ #      if(r > 5) warning("We recommend using r <=5")
+ #      if(r < 0) stop("r cannot be negative")
+ #      # making matrix compatible and applying 
 
-    if (n < 1000)
-    {
-        if (warn)
-            warning("too few samples (less than 1,000)")
-        if (n < 10)
-            return(NA)
-    }
-    #method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
-      
-    if(var(x) == 0) # if zero variance series, then just calculate the sample variance
-    {
-        size <- 1
-    }
-    if(is.null(size))
-      {
-        b <- batchSize(x = x, method = method, g = g)  # optimal
-      }
-      else if(size == "sqroot")
-      {
-        b <- floor(sqrt(n))
-      } 
-      else if(size == "cuberoot") {
-        b <- floor(n^(1/3))
-      }
-      else {
-        if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) 
-            stop("size is either too large, too small, or not a number")
+ #    if (n < 1000)
+ #    {
+ #        if (warn)
+ #            warning("too few samples (less than 1,000)")
+ #        if (n < 10)
+ #            return(NA)
+ #    }
+ #    #method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
+    
+ #    if(var(x) == 0) # if zero variance series, then just calculate the sample variance
+ #    {
+ #        size <- 1
+ #    }
+ #    if(is.null(size))
+ #      {
+ #        b <- batchSize(x = x, method = method, g = g)  # optimal
+ #      }
+ #      else if(size == "sqroot")
+ #      {
+ #        b <- floor(sqrt(n))
+ #      } 
+ #      else if(size == "cuberoot") {
+ #        b <- floor(n^(1/3))
+ #      }
+ #      else {
+ #        if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) 
+ #            stop("size is either too large, too small, or not a number")
 
-        b <- floor(size)
-      }
-      a <- floor(n/b)
+ #        b <- floor(size)
+ #      }
+ #      a <- floor(n/b)
 
-      if(b == 1 && r != 1)
-      {
-        r = 1
-        message <- "r was set to 1 since b = 1. "
-      }
+ #      if(b == 1 && r != 1)
+ #      {
+ #        r = 1
+ #        message <- "r was set to 1 since b = 1. "
+ #      }
 
- ########################## 
-    if (method == "bm")
-    {
-        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-        mu.hat = mean(g(x)) 
-        var.hat = b * sum((y - mu.hat)^2) / (a - 1)
+ #    if(floor(b/r) < 1) r <- 1
+ # ########################## 
+ #    if (method == "bm")
+ #    {
+ #        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
+ #        mu.hat = mean(g(x)) 
+ #        var.hat = b * sum((y - mu.hat)^2) / (a - 1)
 
-        if(r != 1)
-        {
-            b1 <- floor(b/r)
-            a1 <- floor(n / b1)
-            y <- sapply(1:a1, function(k) return(mean(g(x[((k - 1) * b1 + 1):(k * b1)]))))
-            var.hat1 = 2*var.hat - b1 * sum((y - mu.hat)^2) / (a1 - 1)  
-            if(var.hat1 > 0)
-            {
-                var.hat <- var.hat1  
-            }
-        }
+ #        if(r != 1)
+ #        {
+ #            b1 <- floor(b/r)
+ #            a1 <- floor(n / b1)
+ #            y <- sapply(1:a1, function(k) return(mean(g(x[((k - 1) * b1 + 1):(k * b1)]))))
+ #            var.hat1 = 2*var.hat - b1 * sum((y - mu.hat)^2) / (a1 - 1)  
+ #            if(var.hat1 > 0)
+ #            {
+ #                var.hat <- var.hat1  
+ #            }
+ #        }
 
-        se = sqrt(var.hat / n)
-    }
+ #        se = sqrt(var.hat / n)
+ #    }
     # if (method == "wbm")
     # {
     #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
@@ -158,75 +163,75 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
     #     var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
     #     se = sqrt(var.hat / n)
     # }
-    if (method == "obm")
-    {
-        a = n - b + 1
-        y = sapply(1:a, function(k) return(mean(g(x[k:(k + b - 1)]))))
-        mu.hat = mean(g(x))
-        var.hat =  b * sum((y - mu.hat)^2) / n
+    # if (method == "obm")
+    # {
+    #     a = n - b + 1
+    #     y = sapply(1:a, function(k) return(mean(g(x[k:(k + b - 1)]))))
+    #     mu.hat = mean(g(x))
+    #     var.hat =  b * sum((y - mu.hat)^2) / n
 
-        if(r != 1)
-        {
-            b1 <- floor(b/r)
-            a1 = n - b1 + 1
-            y = sapply(1:a1, function(k) return(mean(g(x[k:(k + b1 - 1)]))))
-            mu.hat = mean(g(x))
-            var.hat1 = 2*var.hat - (b1 * sum((y - mu.hat)^2) / n)
-            if(var.hat1 > 0)
-            {
-                var.hat <- var.hat1  
-            }
-        }
-        se = sqrt(var.hat / n)
-    } 
-    if (method == "tukey")
-    {
-        alpha = 1:b
-        alpha = (1 + cos(pi * alpha / b)) / 2 * (1 - alpha / n)
-        mu.hat = mean(g(x))
-        R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-        var.hat = R[1] + 2 * sum(alpha * R[-1])
+    #     if(r != 1)
+    #     {
+    #         b1 <- floor(b/r)
+    #         a1 = n - b1 + 1
+    #         y = sapply(1:a1, function(k) return(mean(g(x[k:(k + b1 - 1)]))))
+    #         mu.hat = mean(g(x))
+    #         var.hat1 = 2*var.hat - (b1 * sum((y - mu.hat)^2) / n)
+    #         if(var.hat1 > 0)
+    #         {
+    #             var.hat <- var.hat1  
+    #         }
+    #     }
+    #     se = sqrt(var.hat / n)
+    # } 
+    # if (method == "tukey")
+    # {
+    #     alpha = 1:b
+    #     alpha = (1 + cos(pi * alpha / b)) / 2 * (1 - alpha / n)
+    #     mu.hat = mean(g(x))
+    #     R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
+    #     var.hat = R[1] + 2 * sum(alpha * R[-1])
 
-        if(r != 1)
-        {
-            b1 <- floor(b/r)
-            alpha = 1:b1
-            alpha = (1 + cos(pi * alpha / b1)) / 2 * (1 - alpha / n)
-            mu.hat = mean(g(x))
-            R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-            var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
-            if(var.hat1 > 0)
-            {
-                var.hat <- var.hat1  
-            }
-        }
+    #     if(r != 1)
+    #     {
+    #         b1 <- floor(b/r)
+    #         alpha = 1:b1
+    #         alpha = (1 + cos(pi * alpha / b1)) / 2 * (1 - alpha / n)
+    #         mu.hat = mean(g(x))
+    #         R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
+    #         var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
+    #         if(var.hat1 > 0)
+    #         {
+    #             var.hat <- var.hat1  
+    #         }
+    #     }
 
-        se = sqrt(var.hat / n)
-    }
-    if(method == "bartlett")
-    {
-        alpha = 1:b
-        alpha = (1 - abs(alpha) / b) * (1 - alpha / n)
-        mu.hat = mean(g(x))
-        R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-        var.hat = R[1] + 2 * sum(alpha * R[-1])
+    #     se = sqrt(var.hat / n)
+    # }
+    # if(method == "bartlett")
+    # {
+    #     alpha = 1:b
+    #     alpha = (1 - abs(alpha) / b) * (1 - alpha / n)
+    #     mu.hat = mean(g(x))
+    #     R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
+    #     var.hat = R[1] + 2 * sum(alpha * R[-1])
 
-        if(r != 1)
-        {
-            b1 <- floor(b/r)
-            alpha = 1:b1
-            alpha = (1 - abs(alpha) / b1) * (1 - alpha / n)
-            mu.hat = mean(g(x))
-            R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-            var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
-            if(var.hat1 > 0)
-            {
-                var.hat <- var.hat1  
-            }
-        }
+    #     if(r != 1)
+    #     {
+    #         b1 <- floor(b/r)
+    #         alpha = 1:b1
+    #         alpha = (1 - abs(alpha) / b1) * (1 - alpha / n)
+    #         mu.hat = mean(g(x))
+    #         R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
+    #         var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
+    #         if(var.hat1 > 0)
+    #         {
+    #             var.hat <- var.hat1  
+    #         }
+    #     }
 
-        se = sqrt(var.hat / n)
-    }
+    #     se = sqrt(var.hat / n)
+    # }
     list(est = mu.hat, se = se)
 }
 
@@ -243,7 +248,7 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
 #' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
 #' @export
 
-mcse.mat = function(x, size = NULL, g = NULL, method = "bm")
+mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r = 3)
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")
@@ -251,7 +256,7 @@ mcse.mat = function(x, size = NULL, g = NULL, method = "bm")
     vals = matrix(NA, num, 2)
     colnames(vals) = c("est", "se")
     rownames(vals) = colnames(x)
-    res = apply(x, 2, mcse, size = size, g = g, method = method)
+    res = apply(x, 2, mcse, size = size, g = g, method = method, r = r)
     for (i in 1:num)
         vals[i, ] = c(res[[i]]$est, res[[i]]$se)
     vals

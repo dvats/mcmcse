@@ -1,6 +1,6 @@
 Package: mcmcse
-Version: 1.4-1
-Date: 2020-01-29
+Version: 1.4-2
+Date: 2020-02-20
 Title: Monte Carlo Standard Errors for MCMC
 Author: James M. Flegal <jflegal@ucr.edu>, 
 	John Hughes <j.hughes@ucdenver.edu>, 
