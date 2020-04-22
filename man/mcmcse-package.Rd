@@ -26,8 +26,9 @@ License: \tab GPL (>= 2)\cr
 \author{
 James M. Flegal <jflegal@ucr.edu>,\\
 John Hughes <j.hughes@ucdenver.edu> \\
-Dootika Vats <dootika@iitk.ac.in> and\\
-Ning Dai <daixx224@umn.edu>
+Dootika Vats <dootika@iitk.ac.in> \\
+Ning Dai <daixx224@umn.edu> and\\
+Uttiya Maji \\ 
 
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
@@ -68,7 +69,8 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
   Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
 
   Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
-
+  
+  Herberle, J., and, Sattarhoff, C. (2017) A Fast Algorithm for the Computation of HAC Covariance Matrix Estimators, \emph{Econometrics}.
 }
 
 \examples{

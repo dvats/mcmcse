@@ -29,7 +29,7 @@ mcse.initseq <- function(x, g = NULL, adjust = FALSE, blather = FALSE)
 
   ## Initial Sequence Estimator(s)
   res <- inseq(chain, adjust)
-  
+
   ##sig=initial sequence estimator without asjustment
   sig <- res$Sig
   

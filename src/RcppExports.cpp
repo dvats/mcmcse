@@ -56,3 +56,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// lag
+vec lag(vec s, int n, double b, String method);
+RcppExport SEXP _mcmcse_lag(SEXP sSEXP, SEXP nSEXP, SEXP bSEXP, SEXP methodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP); 
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< String >::type method(methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(lag(s, n, b, method));
+    return rcpp_result_gen;
+END_RCPP
+}

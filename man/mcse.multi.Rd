@@ -49,6 +49,8 @@ A list is returned with the following components,
  Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}.
 
   Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}.
+
+  Herberle, J., and, Sattarhoff, C. (2017) A Fast Algorithm for the Computation of HAC Covariance Matrix Estimators, \emph{Econometrics}.
 }
 \examples{
 library(mAr)

@@ -17,3 +17,6 @@ msveC <- function(chain, b, method = "bartlett") {
     .Call(`_mcmcse_msveC`, chain, b, method)
 }
 
+lag <- function(chain, n, b, method) {
+    .Call(`_mcmcse_lag`, chain, n, b, method)
+}

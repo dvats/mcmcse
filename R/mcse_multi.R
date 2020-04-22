@@ -97,6 +97,42 @@ batchSize <- function(x, method = "bm", g = NULL)
   return(b)
 }
 
+
+#####################################################################
+### Fast calculation of SVE estimators using Herberle et. al (2017)
+#####################################################################
+# library(fftwtools)
+# library(Rcpp)
+# library(RcppArmadillo)
+# sourceCpp("lag.cpp")
+
+mSVEfft <- function (A, b, method = "bartlett")
+{
+  n <- nrow(A) # A must be centered matrix
+  p <- ncol(A)
+  w <- as.vector(lag(1:b, n = n, b = b, method = method)) # calculate lags
+  w <- c(1, w[1:(n-1)], 0, w[(n-1):1])  # starting steps from FFT paper
+  w <- Re(fftw_r2c(w))            
+  FF <- matrix(0, ncol = p, nrow = 2*n)  
+  FF[1:n,] <- A    
+  if(p > 1)  # multivariate
+  {
+    FF <- mvfftw_r2c (FF)        
+    FF <- FF * matrix(w, nrow = 2*n, ncol = p) 
+    FF <- mvfftw_c2r(FF) / (2* n ) 
+    return ((t(A) %*% FF[1:n, ]) / n )    
+  } else if(p == 1)  ##univariate calls
+  {
+    FF <- fftw_r2c (FF)        
+    FF <- FF * matrix(w, nrow = 2*n, ncol = p) 
+    FF <- fftw_c2r(FF) / (2* n ) 
+    return ((t(A) %*% FF[1:n]) / n )
+  }              
+
+}
+
+
+
 #####################################################################
 ### Main function. Estimates the covariance matrix
 ### Recommend blather = FALSE for users and TRUE for developers
@@ -223,12 +259,12 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   if(method == "bartlett")
   {
    chain <- scale(chain, center = mu.hat, scale = FALSE)
-   bar.mat <- msveC(chain, b, "bartlett")
+   bar.mat <-  mSVEfft(A = chain, b = b, method = "bartlett")#msveC(chain, b, "bartlett")
    sig.mat <- bar.mat
    method.used <- "Bartlett Spectral Variance"
    if(r > 1)
    {
-    sig.mat <- 2*bar.mat - msveC(chain, floor(b/r), "bartlett")
+    sig.mat <- 2*bar.mat - mSVEfft(A = chain, b = floor(b/r), method = "bartlett")
     method.used <- paste("Lugsail Bartlett Spectral Variance with r = ", r)
     if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
     {
@@ -243,12 +279,12 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   if(method == "tukey")
   {
    chain <- scale(chain, center = mu.hat, scale = FALSE)
-   tuk.mat <- msveC(chain, b, "tukey")
+   tuk.mat <- mSVEfft(A = chain, b = b, method = "tukey")
    sig.mat <- tuk.mat
    method.used <- "Tukey Spectral Variance"
    if(r > 1)
    {
-    sig.mat <- 2*tuk.mat - msveC(chain, floor(b/r), "tukey")
+    sig.mat <- 2*tuk.mat - mSVEfft(A = chain, b = floor(b/r), method = "tukey")
     method.used <- paste("Lugsail Tukey Spectral Variance with r = ", r)
     if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
     {
