@@ -91,7 +91,7 @@ batchSize <- function(x, method = "bm", g = NULL)
 
   b.const <- (3/2*n)*(method == "obm" || method == "bartlett" || method == "tukey") + (n)*(method == "bm")
   b <- b.const^(1/3) * coeff
-  if(b == 0) b <- 1
+  if(b <= 1) b <- 1
 
   b <- floor(b)
   return(b)
@@ -155,8 +155,8 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
     stop("No such method available")
   }
    
-  if(r > 5) warning("We recommend using r <=5")
-  if(r < 0) stop("r cannot be negative")
+  if(r > 5) warning("We recommend using r <=5. r = 1,2,3 are standard")
+  if(r < 1) stop("r cannot be less than 1")
   # making matrix compatible and applying g
   chain <- as.matrix(x)
   if(!is.matrix(chain) && !is.data.frame(chain))
@@ -312,7 +312,7 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
     return(list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, 
         "method" = method.used, "size" = b, "Adjustment-Used" = adjust.used, "message" = message))
   } else {
-    return(list("cov" = sig.mat, "est" = mu.hat))
+    return(list("cov" = sig.mat, "est" = mu.hat, "nsim" = n))
   }
 
 }
