@@ -1,0 +1,179 @@
+---
+title: "Improving AR part in batchsize()"
+author: "Kushagra Gupta"
+date: "5/31/2021"
+output: html_document
+---
+
+#### Trying to make arp_approx more compact
+```{r echo=2    }
+library(mcmcse)
+library(purrr)
+library(rbenchmark)
+library(FitAR)
+```
+
+```{r}
+foo <- 0
+order = 50
+ar = rnorm(order)
+gammas = rnorm(order)
+
+## Existing implementation
+forloop = function() {
+    foo <- 0
+    for (i in 1:order) {
+        for (k in 1:i) {
+            foo <- foo + ar[i] * k * gammas[abs(k - i) + 1]
+        }
+    }
+    return(foo)
+}
+
+## Implementation with sapply
+useapply <- function() {
+    foo = 0
+    for (i in 1:order) {
+        foo = foo + ar[i] * sum(sapply(1:i, function(t) t * gammas[abs(t - i) + 1]))
+    }
+    return(foo)
+}
+
+## implementation with reduce
+fun1 <- function(x, y, i) {
+    ans = x + y * gammas[abs(y - i) + 1]
+    return(ans)
+}
+fun2 <- function(x, y) {
+    ans = x + ar[y] * reduce(.f = fun1, .x = 1:y, .init = 0, i = y)
+    return(ans)
+}
+usereduce <- function() {
+    ans = reduce(.f = fun2, .x = 1:order, .init = 0)
+    return(ans)
+}
+
+```
+
+```{r}
+## comparing performance of existing vs new implementations
+benchmark(replications = 1000,
+          forloop(),
+          usereduce(),
+          useapply())
+```
+Double for loop is performing better than reduce or using apply. Therefore, existing implementation of arp_approx() seems ideal. The for loops was the only place that might have required optimization.
+
+#### Fitting AR approximation.
+
+
+```{r}
+make_AR1 <- function(n, X0, rho, tau) {
+    x = numeric(n)
+    x[1] = X0
+    y = rnorm(n, sd = tau)
+    for (i in 2:n) {
+        x[i] = rho * x[i - 1] + y[i]
+    }
+
+    return(x)
+}
+x = make_AR1(1e3, 0, 0.5, 1)
+ar.fit <- ar(x, aic = TRUE)
+```
+
+##### Compare different fitting methods in ar() with and without fixing order
+```{r}
+benchmark(replications = 1e2,
+          ar(x, aic = TRUE, method = "yule-walker"),
+          ar(x, aic = TRUE, method = "burg"),
+          ar(x, aic = TRUE, method = "ols"),
+          ar(x, aic = TRUE, method = "mle"),
+          ar(x, aic = TRUE, method = "yw"))
+
+benchmark(replications = 1e2,
+          ar(x, aic = FALSE, method = "yule-walker"),
+          ar(x, aic = FALSE, method = "burg"),
+          ar(x, aic = FALSE, method = "ols"),
+          ar(x, aic = FALSE, method = "mle"),
+          ar(x, aic = FALSE, method = "yw"))
+
+benchmark(replications = 1e2,
+          ar(x, aic = FALSE, order.max = 5, method = "yule-walker"),
+          ar(x, aic = FALSE, order.max = 5, method = "burg"),
+          ar(x, aic = FALSE, order.max = 5, method = "ols"),
+          ar(x, aic = FALSE, order.max = 5, method = "mle"),
+          ar(x, aic = FALSE, order.max = 5, method = "yw"))
+```
+methods "burg", "yule-walker" and "yw" are optimal.
+
+
+```{r}
+X = matrix(rnorm(1e5), nrow = 1e2)
+sapply(1:1e2, function(t) ar(X[t,], aic = TRUE)$order)
+ar.fit = ar(X[18,], aic = TRUE)$order
+```
+AIC works by fitting ar models using arima0 from order 1 to order.max, and then choosing the order with the maximum aic. Since this requires fitting arima at each step, we can create our own method with aic=TRUE where we set a threshold on fitted coefficient. This way, we won't need to fit arima0 from order 1 to order.max, stopping at the stage where the estimated coefficients fail to cross the threshold.
+
+##### Compare model selection method in ar and FitAR
+FitAR is an alternate package for identification and parameter estimation of AR processes.
+```{r}
+## Order selection method for ar MLE, the code is similar for ar.yw (run getAnywhere(ar.yw.default)). 
+####
+#### ar.yw runs fortran code to estimate coefficients, ar.burg uses C code.
+ar_selectm <- function(x, order.max=15) {
+    coefs <- matrix(NA, order.max + 1L, order.max + 1L)
+    var.pred <- numeric(order.max + 1L)
+    xaic <- numeric(order.max + 1L)
+    demean = 0
+    xm <- 0
+    coefs[1, 1L] <- xm
+    n.used <- length(x)
+    var0 <- sum((x - xm) ^ 2) / n.used
+    var.pred[1L] <- var0
+    xaic[1L] <- n.used * log(var0) + 2 * demean + 2 + n.used +
+            n.used * log(2 * pi)
+    for (i in seq_len(order.max)) {
+        fit <- arima0(x, order = c(i, 0L, 0L), include.mean = demean)
+        coefs[i + 1L, seq_len(i + demean)] <- fit$coef[seq_len(i +
+                demean)]
+        xaic[i + 1L] <- fit$aic
+        var.pred[i + 1L] <- fit$sigma2
+    }
+    xaic <- setNames(xaic - min(xaic), 0L:order.max)
+    order <- (0L:order.max)[xaic == 0L]
+    return(order)
+}
+```
+
+```{r}
+benchmark(replications = 1e2,
+              ar_selectm(x, 15),
+              SelectModel(x, ARModel = "AR", Criterion = "AIC", Best = 1))
+
+benchmark(replications = 1e2,
+              SelectModel(x, ARModel = "AR", Criterion = "BIC", Best = 1),
+              SelectModel(x, ARModel = "AR", Criterion = "AIC", Best = 1))
+```
+
+FitAR outperforms ar.mle. Also, BIC seems more accurate than AIC.
+
+```{r}
+# Select model using FitAR and use fortran implementation of ar to compute coefficients
+####
+#### although BIC is more accurate, possible only in FitAR
+FitAR_aryw <- function(x, order.max=15) {
+    order = SelectModel(x, ARModel = "AR", Criterion = "AIC", Best = 1)
+    ans = ar(x, aic = FALSE, order.max = order)
+    return(ans)
+}
+```
+
+```{r}
+benchmark(replications = 1e2,
+              ar(x, aic = TRUE, method = "yule-walker"),
+              FitAR_aryw(x, order.max = 15))
+```
+ar.yw outperforms hybrid of FitAR (for model selection) and ar.yw (for parameter estimation). Therefore, it seems like even model selection is somehow better in ar.yw. 
+
+ar and FitAR seem to be the only popular methods for fitting an AR process.
