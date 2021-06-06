@@ -105,7 +105,7 @@ benchmark(replications = 1e2,
           ar(x, aic = FALSE, order.max = 5, method = "mle"),
           ar(x, aic = FALSE, order.max = 5, method = "yw"))
 ```
-methods "burg", "yule-walker" and "yw" are optimal.
+methods "burg", "yule-walker" and "yw" are optimal. SURPRISINGLY, setting aic = TRUE is faster in "burg", "yule-walker" and "yw"
 
 
 ```{r}

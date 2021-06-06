@@ -16,6 +16,14 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
   d = r(1);
   a(0) = 1.0;
   coefs(0,0) = g(1)/v;
+  
+  if(abs(coefs(0,0)) <= threshold) {
+    ans["vars"] = var;
+    ans["coefs"] = coefs;
+    ans["order"] = 0;
+    return ans;
+  }
+  
   q = coefs(0,0) * r(1);
   var(0) = (1 - coefs(0,0)*coefs(0,0)) * r(0);
 
@@ -55,16 +63,20 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
       return ans;
     }
     
+    // since coefficienets will most likely be in decreasing order, coefs[l-1,l-1] will be the smallest. 
+    // Therefore checking the first occurence of where this is smaller than the threshold would be enough.
+    
     for(j = 1; j <= l-1; j++) {
       coefs(l-1, j-1) = coefs(l-2, j-1) + coefs(l-1, l-1) * a(l-j);
-      if(abs(coefs(l-1,j-1)) <= threshold)  {
-        ans["vars"] = var;
-        ans["coefs"] = coefs;
-        ans["order"] = l-1;
-        //Rcout << "threshold j " <<  j  << " " << l-1 << "\n";
-        return ans;
-      }
+      // if(abs(coefs(l-1,j-1)) <= threshold)  {    
+      //   ans["vars"] = var;                       
+      //   ans["coefs"] = coefs;                    
+      //   ans["order"] = l-1;                      
+      //   //Rcout << "threshold j " <<  j  << " " << l-1 << "\n";
+      //   return ans;
+      // }
     }
+    // Rcout << coefs(l-1, l-1) << " " << coefs(l-1, 0) << "\n";
     
     var(l-1) = var(l-2) * (1 - coefs(l-1,l-1)*coefs(l-1,l-1));
     

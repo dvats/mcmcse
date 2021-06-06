@@ -2,6 +2,7 @@ set.seed(10)
 
 sourceCpp('eureka.cpp')
 
+# Correct for predicted order = 0
 ar.yw.new <-
   function (x, aic = TRUE, order.max = NULL, na.action = na.fail,
             demean = TRUE, series = NULL, ...)
@@ -102,21 +103,31 @@ ar.yw.new <-
       #               vars = double(order.max),
       #               double(order.max))
       order.max = z$order
-      coefs <- matrix(z$coefs[1:order.max, 1:order.max], nrow = order.max)
-      #coefs <- matrix(z$coefs, order.max, order.max)
-      partialacf <- array(diag(coefs), dim = c(order.max, 1L, 1L))
-      var.pred <- c(r[1L], z$vars[1:order.max])
-      #var.pred <- c(r[1L], z$vars)
-      xaic <- n.obs * log(var.pred) + 2 * (0L:order.max) + 2 * demean
-      maic <- min(aic)
-      xaic <- setNames(if(is.finite(maic)) xaic - min(xaic) else
-        ifelse(xaic == maic, 0, Inf),
-        0L:order.max)
-      order <- if (aic) (0L:order.max)[xaic == 0L] else order.max
-      ar <- if (order) coefs[order, seq_len(order)] else numeric()
-      var.pred <- var.pred[order + 1L]
-      ## Splus compatibility fix
-      var.pred <- var.pred * n.obs/(n.obs - (order + 1L))
+      if(z$order) {
+        coefs <- matrix(z$coefs[1:order.max, 1:order.max], nrow = order.max)
+        #coefs <- matrix(z$coefs, order.max, order.max)
+        partialacf <- array(diag(coefs), dim = c(order.max, 1L, 1L))
+        var.pred <- c(r[1L], z$vars[1:order.max])
+        #var.pred <- c(r[1L], z$vars)
+        xaic <- n.obs * log(var.pred) + 2 * (0L:order.max) + 2 * demean
+        maic <- min(aic)
+        xaic <- setNames(if(is.finite(maic)) xaic - min(xaic) else
+          ifelse(xaic == maic, 0, Inf),
+          0L:order.max)
+        order <- if (aic) (0L:order.max)[xaic == 0L] else order.max
+        ar <- if (order) coefs[order, seq_len(order)] else numeric()
+        var.pred <- var.pred[order + 1L]
+        ## Splus compatibility fix
+        var.pred <- var.pred * n.obs/(n.obs - (order + 1L))
+      }
+      else  {
+        order = 0
+        ar = 0
+        var.pred = 0
+        xaic = 0
+        partialacf = 0
+      }
+      
       resid <- if(order) c(rep.int(NA, order), embed(x, order + 1L) %*% c(1, -ar))
       else as.vector(x) # we had as.matrix() above
       if(ists) {
@@ -134,5 +145,3 @@ ar.yw.new <-
     class(res) <- "ar"
     res
   }
-
-

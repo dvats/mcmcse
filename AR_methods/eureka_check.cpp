@@ -6,7 +6,7 @@ using namespace arma;
 // Rcpp copy of eureka.f to check that it's answer matches with ar.yw()
 
 // [[Rcpp::export]]
-List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a)  {
+List eureka_check(int order_max, vec r, vec g, mat coefs, vec var, vec a)  {
   
   int l, l1, l2, i, j, k;
   double v, d, q, hold;
