@@ -59,7 +59,6 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
       ans["vars"] = var;
       ans["coefs"] = coefs;
       ans["order"] = l-1;
-      //Rcout << "threshold " <<  l  << " " << l-1 << "\n";
       return ans;
     }
     
@@ -76,7 +75,6 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
       //   return ans;
       // }
     }
-    // Rcout << coefs(l-1, l-1) << " " << coefs(l-1, 0) << "\n";
     
     var(l-1) = var(l-2) * (1 - coefs(l-1,l-1)*coefs(l-1,l-1));
     
@@ -84,7 +82,6 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
       ans["vars"] = var;
       ans["coefs"] = coefs;
       ans["order"] = order_max;
-      //Rcout << "running entire length \n";
       return ans;
     }
     
@@ -102,7 +99,6 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
   ans["vars"] = var;
   ans["coefs"] = coefs;
   ans["order"] = order_max;
-  //Rcout << "running to the end \n";
   return ans;
 }
 
