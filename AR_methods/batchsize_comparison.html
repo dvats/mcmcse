@@ -511,8 +511,8 @@ batchSize_threshold_R &lt;- function(x, method = &quot;bm&quot;, g = NULL)
     stop(&quot;&#39;x&#39; must be numeric&quot;)
   if(any(is.na(x) != is.na(x[,1]))) stop(&quot;NAs in &#39;x&#39; must be the same row-wise&quot;)
   p &lt;- ncol(x)
-  xm &lt;- colMeans(x, na.rm=TRUE)
-  x &lt;- sweep(x, 2L, xm, check.margin=FALSE)
+  # xm &lt;- colMeans(x, na.rm=TRUE)
+  # x &lt;- sweep(x, 2L, xm, check.margin=FALSE)
   n &lt;- sum(!is.na(x[,1])) # number of non-missing rows
   chain &lt;- as.matrix(x)
   if(!is.matrix(chain) &amp;&amp; !is.data.frame(chain))
@@ -569,7 +569,7 @@ batchSize_threshold_R &lt;- function(x, method = &quot;bm&quot;, g = NULL)
   }
   order.max &lt;- min(p, n - 1L, floor(10 * log10(n))) 
   xacf = matrix(, nrow = order.max+1, ncol = p)
-  last = min(n, 1e4)
+  last = min(n, 5e4)
   chain2 = chain[(n-last+1):n,]
   for(i in 1:p) {
     xacf[,i] = acf(chain2[,i], type = &quot;covariance&quot;, lag.max = order.max, plot = FALSE,
@@ -589,14 +589,14 @@ ans = RWMH(n, init, h)</code></pre>
 <pre><code>## [1] 0.388</code></pre>
 <pre class="r"><code>benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))</code></pre>
 <pre><code>##                                test replications elapsed relative user.self
-## 4                    batchSize(ans)           10    5.70    3.295      5.59
-## 2      batchSize_threshold_cpp(ans)           10    1.91    1.104      1.89
-## 1 batchSize_threshold_cpp_last(ans)           10    1.73    1.000      1.72
-## 3        batchSize_threshold_R(ans)           10    4.33    2.503      4.24
+## 4                    batchSize(ans)           10    5.37    3.274      5.28
+## 2      batchSize_threshold_cpp(ans)           10    1.64    1.000      1.64
+## 1 batchSize_threshold_cpp_last(ans)           10    1.70    1.037      1.70
+## 3        batchSize_threshold_R(ans)           10    4.14    2.524      4.08
 ##   sys.self user.child sys.child
-## 4     0.10         NA        NA
-## 2     0.01         NA        NA
-## 1     0.02         NA        NA
+## 4     0.06         NA        NA
+## 2     0.00         NA        NA
+## 1     0.00         NA        NA
 ## 3     0.06         NA        NA</code></pre>
 <pre class="r"><code>n = 1e6
 p = 20
@@ -604,17 +604,24 @@ init = numeric(p)
 h = 0.5
 ans = RWMH(n, init, h)</code></pre>
 <pre><code>## [1] 0.128769</code></pre>
+<pre class="r"><code>benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans))</code></pre>
+<pre><code>##                                test replications elapsed relative user.self
+## 2      batchSize_threshold_cpp(ans)           10   20.97    7.681     18.78
+## 1 batchSize_threshold_cpp_last(ans)           10    2.73    1.000      2.27
+##   sys.self user.child sys.child
+## 2     2.11         NA        NA
+## 1     0.47         NA        NA</code></pre>
 <pre class="r"><code>benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))</code></pre>
 <pre><code>##                                test replications elapsed relative user.self
-## 4                    batchSize(ans)           10   92.51   45.571     80.49
-## 2      batchSize_threshold_cpp(ans)           10   32.02   15.773     28.73
-## 1 batchSize_threshold_cpp_last(ans)           10    2.03    1.000      1.58
-## 3        batchSize_threshold_R(ans)           10   38.20   18.818     29.31
+## 4                    batchSize(ans)           10   89.12   33.130     77.87
+## 2      batchSize_threshold_cpp(ans)           10   20.91    7.773     18.97
+## 1 batchSize_threshold_cpp_last(ans)           10    2.69    1.000      2.26
+## 3        batchSize_threshold_R(ans)           10   36.14   13.435     28.74
 ##   sys.self user.child sys.child
-## 4    11.78         NA        NA
-## 2     3.21         NA        NA
-## 1     0.43         NA        NA
-## 3     8.77         NA        NA</code></pre>
+## 4    10.91         NA        NA
+## 2     1.86         NA        NA
+## 1     0.42         NA        NA
+## 3     7.25         NA        NA</code></pre>
 <pre class="r"><code>adjust_matrix &lt;- function(mat, N, epsilon = sqrt(log(N)/dim(mat)[2]), b = 9/10)
 {
   mat.adj &lt;- mat
@@ -671,15 +678,15 @@ ans2 = RWMH_new(n, init, h)</code></pre>
 <pre><code>## [1] 0.999999</code></pre>
 <pre class="r"><code>benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))</code></pre>
 <pre><code>##                                test replications elapsed relative user.self
-## 4                    batchSize(ans)           10   92.16   45.624     78.75
-## 2      batchSize_threshold_cpp(ans)           10   31.22   15.455     28.06
-## 1 batchSize_threshold_cpp_last(ans)           10    2.02    1.000      1.57
-## 3        batchSize_threshold_R(ans)           10   37.54   18.584     28.17
+## 4                    batchSize(ans)           10   89.70   32.618     77.91
+## 2      batchSize_threshold_cpp(ans)           10   21.17    7.698     19.05
+## 1 batchSize_threshold_cpp_last(ans)           10    2.75    1.000      2.33
+## 3        batchSize_threshold_R(ans)           10   36.66   13.331     28.25
 ##   sys.self user.child sys.child
-## 4    13.03         NA        NA
-## 2     3.06         NA        NA
-## 1     0.46         NA        NA
-## 3     9.23         NA        NA</code></pre>
+## 4    11.62         NA        NA
+## 2     2.06         NA        NA
+## 1     0.40         NA        NA
+## 3     8.32         NA        NA</code></pre>
 
 
 
