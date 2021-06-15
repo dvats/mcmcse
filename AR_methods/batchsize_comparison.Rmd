@@ -1,0 +1,297 @@
+---
+title: "batchsize_comparision"
+author: "Kushagra Gupta"
+date: "6/11/2021"
+output: html_document
+---
+```{r}
+library(Rcpp)
+library(mcmcse)
+library(rbenchmark)
+library(mvtnorm)
+sourceCpp('batchsize.cpp')
+source('hard_task.R')
+```
+
+```{r}
+ar.yw.threshold <-
+  function (x, aic = TRUE, order.max = NULL, na.action = na.fail,
+            demean = TRUE, series = NULL, threshold = 0.01, ...)
+  {
+    if(is.null(series)) series <- deparse1(substitute(x))
+    ists <- is.ts(x)
+    x <- na.action(as.ts(x))
+    if(ists) xtsp <- tsp(x)
+    xfreq <- frequency(x)
+    x <- as.matrix(x)
+    if(!is.numeric(x))
+      stop("'x' must be numeric")
+    if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
+    nser <- ncol(x)
+    if (demean) {
+      xm <- colMeans(x, na.rm=TRUE)
+      x <- sweep(x, 2L, xm, check.margin=FALSE)
+    } else xm <- rep.int(0, nser)
+    n.used <- nrow(x)
+    n.obs <- sum(!is.na(x[,1])) # number of non-missing rows
+    order.max <- if (is.null(order.max))
+      min(nser, n.obs - 1L, floor(10 * log10(n.obs))) else floor(order.max)
+    if (order.max < 1L) stop("'order.max' must be >= 1")
+    else if (order.max >= n.obs) stop("'order.max' must be < 'n.obs'")
+    xacf <- acf(x, type = "covariance", lag.max = order.max, plot = FALSE,
+                demean=demean, na.action = na.pass)$acf
+    if (xacf[1L] == 0) stop("zero-variance series")
+    r <- as.double(drop(xacf))
+    z <- eureka(as.integer(order.max), r, r, matrix(double(order.max^2), nrow = order.max), 
+                double(order.max), double(order.max), threshold)
+    order = z$order
+    ar = if (order) z$coefs[order, seq_len(order)] else numeric()
+    var.pred <- c(r[1L], z$vars[1:order.max])
+    var.pred <- var.pred[order + 1L]
+    var.pred <- var.pred * n.obs/(n.obs - (order + 1L))
+    res <- list(order = order, ar = ar, var.pred = var.pred, x.mean  =  drop(xm),
+                n.used = n.used, n.obs = n.obs, order.max = order.max, method = "Yule-Walker",
+                series = series, frequency = xfreq, call = match.call())
+    if(nser == 1L && order)
+      res$asy.var.coef <- var.pred/n.obs *
+      solve(toeplitz(drop(xacf)[seq_len(order)]))
+    class(res) <- "ar"
+    res
+  }
+
+arp_approx_threshold <- function(x)
+{
+  
+  # Fitting a univariate AR(m) model
+  ar.fit <- ar.yw.threshold(x, aic = TRUE)
+  
+  # estimated autocovariances
+  gammas <- as.numeric(acf(x, type = "covariance", lag.max = ar.fit$order, plot = FALSE)$acf)
+  spec <- ar.fit$var.pred/(1-sum(ar.fit$ar))^2  #asym variance
+  
+  if(ar.fit$order != 0)
+  {
+    foo <- 0
+    for(i in 1:ar.fit$order)
+    {
+      for(k in 1:i)
+      {
+        foo <- foo + ar.fit$ar[i]*k*gammas[abs(k-i)+1]
+      }
+    }
+    Gamma <- 2*(foo + (spec - gammas[1])/2 *sum(1:ar.fit$order * ar.fit$ar)  )/(1-sum(ar.fit$ar))
+  } else{
+    Gamma <- 0
+  }
+  rtn <- cbind(Gamma, spec)
+  colnames(rtn) <- c("Gamma", "Sigma")
+  return(rtn)
+}
+
+batchSize_threshold_R <- function(x, method = "bm", g = NULL)
+{
+  
+  chain <- as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+  
+  if (is.function(g)) 
+  {
+    chain <- apply(chain, 1, g)
+    
+    if(is.vector(chain))
+    {
+      chain <- as.matrix(chain)
+    }else
+    {
+      chain <- t(chain)
+    }
+  }
+  
+  n <- dim(chain)[1]
+  ar_fit <- apply(chain, 2, arp_approx_threshold)^2
+  coeff <- ( sum(ar_fit[1,])/sum(ar_fit[2,]) )^(1/3)
+  
+  b.const <- (3/2*n)*(method == "obm" || method == "bartlett" || method == "tukey") + (n)*(method == "bm")
+  b <- b.const^(1/3) * coeff
+  if(b <= 1) b <- 1
+  
+  b <- floor(b)
+  return(b)
+}
+```
+
+```{r}
+batchSize_threshold_cpp <- function(x, method = "bm", g = NULL) {
+
+  if(!is.numeric(x))
+    stop("'x' must be numeric")
+  if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
+  p <- ncol(x)
+  xm <- colMeans(x, na.rm=TRUE)
+  x <- sweep(x, 2L, xm, check.margin=FALSE)
+  n <- sum(!is.na(x[,1])) # number of non-missing rows
+  chain <- as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+
+  if (is.function(g)) 
+  {
+    chain <- apply(chain, 1, g)
+
+    if(is.vector(chain))
+    {
+      chain <- as.matrix(chain)
+    }else
+    {
+      chain <- t(chain)
+    }
+  }
+  order.max <- min(p, n - 1L, floor(10 * log10(n))) 
+  xacf = matrix(, nrow = order.max+1, ncol = p)
+  for(i in 1:p) {
+    xacf[,i] = acf(chain[,i], type = "covariance", lag.max = order.max, plot = FALSE,
+                 demean=TRUE, na.action = na.pass)$acf
+  }
+  # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
+  #               demean=TRUE, na.action = na.pass)$acf
+  
+  b = batchsize_cpp(chain, xacf, order.max, method)
+  return(b)
+}
+```
+
+```{r}
+batchSize_threshold_cpp_last <- function(x, method = "bm", g = NULL) {
+
+  if(!is.numeric(x))
+    stop("'x' must be numeric")
+  if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
+  p <- ncol(x)
+  xm <- colMeans(x, na.rm=TRUE)
+  x <- sweep(x, 2L, xm, check.margin=FALSE)
+  n <- sum(!is.na(x[,1])) # number of non-missing rows
+  chain <- as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+
+  if (is.function(g)) 
+  {
+    chain <- apply(chain, 1, g)
+
+    if(is.vector(chain))
+    {
+      chain <- as.matrix(chain)
+    }else
+    {
+      chain <- t(chain)
+    }
+  }
+  order.max <- min(p, n - 1L, floor(10 * log10(n))) 
+  xacf = matrix(, nrow = order.max+1, ncol = p)
+  last = min(n, 1e4)
+  for(i in 1:p) {
+    xacf[,i] = acf(chain[(n - last+1):n,i], type = "covariance", lag.max = order.max, plot = FALSE,
+                 demean=TRUE, na.action = na.pass)$acf
+  }
+  # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
+  #               demean=TRUE, na.action = na.pass)$acf
+  
+  b = batchsize_cpp(chain, xacf, order.max, method)
+  return(b)
+}
+```
+
+```{r}
+n = 1e3
+p = 500
+init = numeric(p)
+h = 0.005
+ans = RWMH(n, init, h)
+
+```
+
+
+```{r}
+benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))
+```
+
+```{r}
+n = 1e6
+p = 20
+init = numeric(p)
+h = 0.5
+ans = RWMH(n, init, h)
+
+```
+
+
+```{r}
+benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))
+
+```
+
+```{r}
+adjust_matrix <- function(mat, N, epsilon = sqrt(log(N)/dim(mat)[2]), b = 9/10)
+{
+  mat.adj <- mat
+  adj <- epsilon*N^(-b)
+  vars <- diag(mat)
+  corr <- cov2cor(mat)
+  eig <- eigen(corr)
+  adj.eigs <- pmax(eig$values, adj)
+  mat.adj <- diag(vars^(1/2))%*% eig$vectors %*% diag(adj.eigs) %*% t(eig$vectors) %*% diag(vars^(1/2))
+  return(mat.adj)
+}
+
+# Mean is 0 and covariance matrix is identity
+log_unnormalised_posterior <- function(X)  {
+  #ans = (-0.5) * sum(X^2)
+  ans = dmvnorm(X, mean = Mu, sigma = Sigma)
+}
+
+# Random walk MH
+RWMH_new <- function(n, init, h)  {
+    p = length(init)
+    accept = 0
+    output = matrix(, nrow = n, ncol = p)
+    output[1,] = init
+    h_root = sqrt(h)
+    for(t in 2:n) {
+      prop =  output[t-1,] + rnorm(p,0,h_root) 
+      log_ratio = log_unnormalised_posterior(prop) - log_unnormalised_posterior(output[t-1,]) # work with log for numerical stability
+      if(log(runif(1)) < log_ratio) {
+        output[t,] = prop
+        accept = accept + 1
+      }
+      else  {
+        output[t,] = output[t-1,]
+      }
+    }
+    print(accept/n) # acceptance probability
+    output
+}
+```
+
+```{r}
+n = 1e6
+p = 20
+Mu = rep(0,p)
+Sigma = matrix(runif(p*p, min = 0.95, max = 1), nrow = p)
+Sigma[lower.tri(Sigma)] = t(Sigma)[lower.tri(Sigma)]
+if (min(eigen(Sigma, only.values = TRUE)$values) <= 0)  {
+  print("adjust Sigma")
+  Sigma = adjust_matrix(Sigma, N=n) # Tweak the matrix if BM estimate is not pd
+}
+Sigma = diag(runif(p, 0.95))
+init = numeric(p)
+h = 0.5
+ans2 = RWMH_new(n, init, h)
+```
+
+```{r}
+benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))
+
+```
+
+

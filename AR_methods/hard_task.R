@@ -11,24 +11,24 @@ log_unnormalised_posterior <- function(X)  {
 
 # Random walk MH
 RWMH <- function(n, init, h)  {
-    p = length(init)
-    accept = 0
-    output = matrix(, nrow = n, ncol = p)
-    output[1,] = init
-    h_root = sqrt(h)
-    for(t in 2:n) {
-      prop =  output[t-1,] + rnorm(p,0,h_root) 
-      log_ratio = log_unnormalised_posterior(prop) - log_unnormalised_posterior(output[t-1,]) # work with log for numerical stability
-      if(log(runif(1)) < log_ratio) {
-        output[t,] = prop
-        accept = accept + 1
-      }
-      else  {
-        output[t,] = output[t-1,]
-      }
+  p = length(init)
+  accept = 0
+  output = matrix(, nrow = n, ncol = p)
+  output[1,] = init
+  h_root = sqrt(h)
+  for(t in 2:n) {
+    prop =  output[t-1,] + rnorm(p,0,h_root) 
+    log_ratio = log_unnormalised_posterior(prop) - log_unnormalised_posterior(output[t-1,]) # work with log for numerical stability
+    if(log(runif(1)) < log_ratio) {
+      output[t,] = prop
+      accept = accept + 1
     }
-    print(accept/n) # acceptance probability
-    output
+    else  {
+      output[t,] = output[t-1,]
+    }
+  }
+  print(accept/n) # acceptance probability
+  output
 }
 
 # Divide X into a batches of b length each

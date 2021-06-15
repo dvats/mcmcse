@@ -541,6 +541,7 @@ print(foo1$ar)</code></pre>
 <pre class="r"><code>if(all(foo1$ar == foo2$ar))
   print(&quot;same coefficients&quot;)</code></pre>
 <pre><code>## [1] &quot;same coefficients&quot;</code></pre>
+<p>Checking with aic = FALSE</p>
 <pre class="r"><code>foo1 = ar(ans, aic = FALSE, order.max = 10, method = &quot;yule-walker&quot;)
 foo2 = ar.yw.new(ans, order.max = 10, aic = FALSE)
 print(foo1$ar)</code></pre>
@@ -561,82 +562,82 @@ print(foo1$ar)</code></pre>
   print(ar.fit$order)
 }</code></pre>
 <pre><code>##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26     1.04
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.25     1.00
-##   user.self sys.self user.child sys.child
-## 1      0.25        0         NA        NA
-## 2      0.25        0         NA        NA
-## [1] 0
-##                                        test replications elapsed relative
 ## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
 ## 2                  ar.yw.new(x, aic = TRUE)           10    0.25        1
 ##   user.self sys.self user.child sys.child
-## 1      0.25        0         NA        NA
-## 2      0.25        0         NA        NA
-## [1] 0
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.25        1
-##   user.self sys.self user.child sys.child
-## 1      0.24     0.02         NA        NA
+## 1      0.22     0.02         NA        NA
 ## 2      0.25     0.00         NA        NA
 ## [1] 0
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.35    1.129
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.31    1.000
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.25        1
 ##   user.self sys.self user.child sys.child
-## 1      0.29        0         NA        NA
-## 2      0.31        0         NA        NA
-## [1] 2
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26     1.04
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.25     1.00
-##   user.self sys.self user.child sys.child
-## 1      0.25     0.01         NA        NA
-## 2      0.21     0.04         NA        NA
+## 1      0.25        0         NA        NA
+## 2      0.23        0         NA        NA
 ## [1] 0
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26        1
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.26        1
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.27     1.08
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.25     1.00
 ##   user.self sys.self user.child sys.child
-## 1      0.26     0.00         NA        NA
-## 2      0.23     0.01         NA        NA
+## 1      0.26        0         NA        NA
+## 2      0.23        0         NA        NA
+## [1] 0
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.33        1
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.33        1
+##   user.self sys.self user.child sys.child
+## 1      0.31     0.01         NA        NA
+## 2      0.32     0.00         NA        NA
+## [1] 2
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26    1.000
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.27    1.038
+##   user.self sys.self user.child sys.child
+## 1      0.25     0.00         NA        NA
+## 2      0.25     0.02         NA        NA
+## [1] 0
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25     1.00
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.26     1.04
+##   user.self sys.self user.child sys.child
+## 1      0.20     0.03         NA        NA
+## 2      0.24     0.02         NA        NA
+## [1] 0
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.38        1
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.38        1
+##   user.self sys.self user.child sys.child
+## 1      0.32     0.01         NA        NA
+## 2      0.36     0.02         NA        NA
+## [1] 3
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.25        1
+##   user.self sys.self user.child sys.child
+## 1      0.20     0.01         NA        NA
+## 2      0.25     0.00         NA        NA
 ## [1] 0
 ##                                        test replications elapsed relative
 ## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.34    1.000
 ## 2                  ar.yw.new(x, aic = TRUE)           10    0.36    1.059
 ##   user.self sys.self user.child sys.child
-## 1      0.34     0.00         NA        NA
-## 2      0.33     0.02         NA        NA
+## 1      0.33     0.02         NA        NA
+## 2      0.32     0.03         NA        NA
 ## [1] 3
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.25        1
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.30    1.154
+## 2                  ar.yw.new(x, aic = TRUE)           10    0.26    1.000
 ##   user.self sys.self user.child sys.child
-## 1      0.24        0         NA        NA
-## 2      0.25        0         NA        NA
-## [1] 0
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.34        1
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.34        1
-##   user.self sys.self user.child sys.child
-## 1      0.31     0.02         NA        NA
-## 2      0.35     0.00         NA        NA
-## [1] 3
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.23    1.000
-## 2                  ar.yw.new(x, aic = TRUE)           10    0.27    1.174
-##   user.self sys.self user.child sys.child
-## 1      0.22        0         NA        NA
-## 2      0.27        0         NA        NA
+## 1      0.28     0.00         NA        NA
+## 2      0.25     0.01         NA        NA
 ## [1] 0</code></pre>
 <pre class="r"><code>benchmark(replications = 1e2, ar(ans, aic = TRUE, method = &quot;yule-walker&quot;), ar.yw.new(ans, aic = TRUE))</code></pre>
 <pre><code>##                                          test replications elapsed relative
-## 1 ar(ans, aic = TRUE, method = &quot;yule-walker&quot;)          100    3.19    1.000
-## 2                  ar.yw.new(ans, aic = TRUE)          100    3.23    1.013
+## 1 ar(ans, aic = TRUE, method = &quot;yule-walker&quot;)          100    3.25    1.000
+## 2                  ar.yw.new(ans, aic = TRUE)          100    3.30    1.015
 ##   user.self sys.self user.child sys.child
-## 1      3.00     0.11         NA        NA
-## 2      3.13     0.08         NA        NA</code></pre>
+## 1      3.08     0.11         NA        NA
+## 2      3.14     0.11         NA        NA</code></pre>
 <p>The methods are more or less comparable in terms of speed, with the fortran code maybe edging slightly.</p>
 </div>
 <div id="adding-a-threshold" class="section level4">
@@ -696,82 +697,82 @@ print(foo1$ar)</code></pre>
   print(c(ar.fit$order, ar.fit.thresh$order))
 }</code></pre>
 <pre><code>##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.27        1
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.27        1
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25        1
 ##   user.self sys.self user.child sys.child
-## 1      0.23     0.02         NA        NA
-## 2      0.27     0.00         NA        NA
-## [1] 0 0
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26     1.04
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
-##   user.self sys.self user.child sys.child
-## 1      0.25     0.01         NA        NA
-## 2      0.25     0.00         NA        NA
+## 1      0.25     0.00         NA        NA
+## 2      0.24     0.02         NA        NA
 ## [1] 0 0
 ##                                        test replications elapsed relative
 ## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25     1.00
 ## 2            ar.yw.threshold(x, aic = TRUE)           10    0.26     1.04
 ##   user.self sys.self user.child sys.child
-## 1      0.25     0.00         NA        NA
-## 2      0.25     0.01         NA        NA
+## 1      0.24     0.01         NA        NA
+## 2      0.27     0.00         NA        NA
 ## [1] 0 0
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.39     1.56
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25        1
 ##   user.self sys.self user.child sys.child
-## 1      0.38     0.02         NA        NA
-## 2      0.24     0.00         NA        NA
-## [1] 6 0
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25     1.00
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.27     1.08
-##   user.self sys.self user.child sys.child
-## 1      0.23     0.01         NA        NA
-## 2      0.25     0.00         NA        NA
-## [1] 0 0
-##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.27        1
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.27        1
-##   user.self sys.self user.child sys.child
-## 1      0.22        0         NA        NA
+## 1      0.25        0         NA        NA
 ## 2      0.25        0         NA        NA
 ## [1] 0 0
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.43     1.72
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.41     1.64
 ## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
 ##   user.self sys.self user.child sys.child
-## 1      0.40     0.00         NA        NA
-## 2      0.24     0.02         NA        NA
+## 1      0.38     0.03         NA        NA
+## 2      0.25     0.00         NA        NA
 ## [1] 6 0
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.27    1.000
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.30    1.111
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.25        1
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25        1
 ##   user.self sys.self user.child sys.child
-## 1      0.24     0.02         NA        NA
-## 2      0.28     0.00         NA        NA
+## 1      0.22     0.03         NA        NA
+## 2      0.23     0.02         NA        NA
 ## [1] 0 0
 ##                                        test replications elapsed relative
 ## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26     1.04
 ## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
 ##   user.self sys.self user.child sys.child
-## 1      0.27     0.00         NA        NA
-## 2      0.24     0.02         NA        NA
+## 1      0.25     0.02         NA        NA
+## 2      0.22     0.01         NA        NA
 ## [1] 0 0
 ##                                        test replications elapsed relative
-## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.27        1
-## 2            ar.yw.threshold(x, aic = TRUE)           10    0.27        1
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.44     1.76
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
 ##   user.self sys.self user.child sys.child
-## 1      0.24     0.03         NA        NA
-## 2      0.26     0.00         NA        NA
+## 1      0.43     0.00         NA        NA
+## 2      0.22     0.02         NA        NA
+## [1] 6 0
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26    1.000
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.29    1.115
+##   user.self sys.self user.child sys.child
+## 1      0.23     0.01         NA        NA
+## 2      0.29     0.00         NA        NA
+## [1] 0 0
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.26     1.04
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
+##   user.self sys.self user.child sys.child
+## 1      0.25        0         NA        NA
+## 2      0.25        0         NA        NA
+## [1] 0 0
+##                                        test replications elapsed relative
+## 1 ar(x, aic = TRUE, method = &quot;yule-walker&quot;)           10    0.27     1.08
+## 2            ar.yw.threshold(x, aic = TRUE)           10    0.25     1.00
+##   user.self sys.self user.child sys.child
+## 1      0.25     0.02         NA        NA
+## 2      0.24     0.01         NA        NA
 ## [1] 0 0</code></pre>
 <pre class="r"><code>benchmark(replications = 1e2, ar(ans, aic = TRUE, method = &quot;yule-walker&quot;), ar.yw.threshold(ans, aic = TRUE))</code></pre>
 <pre><code>##                                          test replications elapsed relative
-## 1 ar(ans, aic = TRUE, method = &quot;yule-walker&quot;)          100    3.23    1.252
-## 2            ar.yw.threshold(ans, aic = TRUE)          100    2.58    1.000
+## 1 ar(ans, aic = TRUE, method = &quot;yule-walker&quot;)          100    3.28    1.262
+## 2            ar.yw.threshold(ans, aic = TRUE)          100    2.60    1.000
 ##   user.self sys.self user.child sys.child
-## 1      2.99     0.14         NA        NA
-## 2      2.50     0.08         NA        NA</code></pre>
+## 1      3.09     0.14         NA        NA
+## 2      2.45     0.09         NA        NA</code></pre>
 <pre class="r"><code>ar.fit = ar(ans, aic = TRUE, method = &quot;yule-walker&quot;)
 ar.fit.thresh = ar.yw.threshold(ans, aic = TRUE)
 print(c(ar.fit$order, ar.fit.thresh$order))</code></pre>
