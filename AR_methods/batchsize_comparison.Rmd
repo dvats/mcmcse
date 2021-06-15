@@ -156,7 +156,7 @@ batchSize_threshold_cpp <- function(x, method = "bm", g = NULL) {
   # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
   #               demean=TRUE, na.action = na.pass)$acf
   
-  b = batchsize_cpp(chain, xacf, order.max, method)
+  b = batchsize_cpp(n, p, xacf, order.max, method)
   return(b)
 }
 ```
@@ -168,8 +168,8 @@ batchSize_threshold_cpp_last <- function(x, method = "bm", g = NULL) {
     stop("'x' must be numeric")
   if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
   p <- ncol(x)
-  xm <- colMeans(x, na.rm=TRUE)
-  x <- sweep(x, 2L, xm, check.margin=FALSE)
+  # xm <- colMeans(x, na.rm=TRUE)
+  # x <- sweep(x, 2L, xm, check.margin=FALSE)
   n <- sum(!is.na(x[,1])) # number of non-missing rows
   chain <- as.matrix(x)
   if(!is.matrix(chain) && !is.data.frame(chain))
@@ -190,16 +190,18 @@ batchSize_threshold_cpp_last <- function(x, method = "bm", g = NULL) {
   order.max <- min(p, n - 1L, floor(10 * log10(n))) 
   xacf = matrix(, nrow = order.max+1, ncol = p)
   last = min(n, 1e4)
+  chain2 = chain[(n-last+1):n,]
   for(i in 1:p) {
-    xacf[,i] = acf(chain[(n - last+1):n,i], type = "covariance", lag.max = order.max, plot = FALSE,
+    xacf[,i] = acf(chain2[,i], type = "covariance", lag.max = order.max, plot = FALSE,
                  demean=TRUE, na.action = na.pass)$acf
   }
   # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
   #               demean=TRUE, na.action = na.pass)$acf
   
-  b = batchsize_cpp(chain, xacf, order.max, method)
+  b = b = batchsize_cpp(n, p, xacf, order.max, method)
   return(b)
 }
+
 ```
 
 ```{r}
@@ -224,8 +226,6 @@ h = 0.5
 ans = RWMH(n, init, h)
 
 ```
-
-
 ```{r}
 benchmark(replications = 1e1, batchSize_threshold_cpp_last(ans), batchSize_threshold_cpp(ans), batchSize_threshold_R(ans), batchSize(ans))
 
