@@ -1,2 +1,12 @@
 batchsize_constant_compare_cache/** filter=lfs diff=lfs merge=lfs -text
 batchsize_constant_compare_cache/. filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-5_b0d4f9b332a03a2bf588890d9ee7ca3d.rdx filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-6_b8c88426945d1eb28bf6896676b04725.RData filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-6_b8c88426945d1eb28bf6896676b04725.rdb filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/__packages filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-5_b0d4f9b332a03a2bf588890d9ee7ca3d.RData filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-7_e67d7dd9e1f15c51984f156496d70ee7.RData filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-7_e67d7dd9e1f15c51984f156496d70ee7.rdb filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-7_e67d7dd9e1f15c51984f156496d70ee7.rdx filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-5_b0d4f9b332a03a2bf588890d9ee7ca3d.rdb filter=lfs diff=lfs merge=lfs -text
+batchsize_constant_compare_cache/html/unnamed-chunk-6_b8c88426945d1eb28bf6896676b04725.rdx filter=lfs diff=lfs merge=lfs -text
