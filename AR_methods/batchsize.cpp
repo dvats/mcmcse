@@ -128,9 +128,9 @@ List ar_yw(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thresh
 
 }
 
-List arp_approx(vec xacf, int max_order, uword n) {
+List arp_approx(vec xacf, int max_order, uword n, double threshold) {
   List ar_fit = ar_yw(max_order, xacf, xacf, zeros<mat>(max_order, max_order),
-                       zeros<vec>(max_order), zeros<vec>(max_order), 0.01, n);
+                       zeros<vec>(max_order), zeros<vec>(max_order), threshold, n);
 
   vec coefs = ar_fit["coefs"];
   double vars = ar_fit["vars"];
@@ -162,7 +162,7 @@ List arp_approx(vec xacf, int max_order, uword n) {
 
 
 // [[Rcpp::export]]
-double batchsize_cpp(uword n, int p, mat xacf_mat, int max_order, String method) {
+double batchsize_cpp(uword n, int p, mat xacf_mat, int max_order, String method, double threshold = 0.01) {
   // uword n = size(chain)(0);
   // int p = size(chain)(1);
   mat ar_fit(2,p, fill::none);
@@ -176,7 +176,7 @@ double batchsize_cpp(uword n, int p, mat xacf_mat, int max_order, String method)
 
   for(int i = 0; i<p; i++)  {
     // acf_output = acf(chain.col(i), max_order, "covariance", false, na_pass);
-    arp_output = arp_approx(xacf_mat.col(i), max_order, n);
+    arp_output = arp_approx(xacf_mat.col(i), max_order, n, threshold);
     Gamma = arp_output["Gamma"];
     Sigma = arp_output["Sigma"];
     ar_fit(0,i) = pow(Gamma,2.0);
@@ -192,6 +192,6 @@ double batchsize_cpp(uword n, int p, mat xacf_mat, int max_order, String method)
   if(b < 1)
     b = 1;
   b = floor(b);
-  return(b);
+  return(coeff);
 }
 

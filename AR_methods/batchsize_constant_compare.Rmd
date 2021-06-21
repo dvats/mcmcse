@@ -1,0 +1,270 @@
+---
+title: "batchsize_constant_compare"
+author: "Kushagra Gupta"
+date: "6/21/2021"
+output: html_document
+---
+```{r}
+library(MCMCpack)
+library(Rcpp)
+library(rbenchmark)
+source("optimal_bs_egs/eel_data.R")
+source("optimal_bs_egs/spatio_temp_function.R")
+source("optimal_bs_egs/var1_function.R")
+sourceCpp('batchsize.cpp')
+```
+
+```{r}
+arp_approx <- function(x)
+{
+  
+  # Fitting a univariate AR(m) model
+  ar.fit <- ar(x, aic = TRUE)
+
+  # estimated autocovariances
+  gammas <- as.numeric(acf(x, type = "covariance", lag.max = ar.fit$order, plot = FALSE)$acf)
+  spec <- ar.fit$var.pred/(1-sum(ar.fit$ar))^2  #asym variance
+  
+  if(ar.fit$order != 0)
+  {
+  foo <- 0
+  for(i in 1:ar.fit$order)
+  {
+    for(k in 1:i)
+    {
+      foo <- foo + ar.fit$ar[i]*k*gammas[abs(k-i)+1]
+    }
+  }
+  Gamma <- 2*(foo + (spec - gammas[1])/2 *sum(1:ar.fit$order * ar.fit$ar)  )/(1-sum(ar.fit$ar))
+  } else{
+    Gamma <- 0
+  }
+  rtn <- cbind(Gamma, spec)
+  colnames(rtn) <- c("Gamma", "Sigma")
+  return(rtn)
+}
+
+
+batchSize_const <- function(x, method = "bm", g = NULL)
+{
+
+  chain <- as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+
+  if (is.function(g)) 
+  {
+    chain <- apply(chain, 1, g)
+
+    if(is.vector(chain))
+    {
+      chain <- as.matrix(chain)
+    }else
+    {
+      chain <- t(chain)
+    }
+  }
+
+  n <- dim(chain)[1]
+  ar_fit <- apply(chain, 2, arp_approx)^2
+  coeff <- ( sum(ar_fit[1,])/sum(ar_fit[2,]) )^(1/3)
+
+  b.const <- (3/2*n)*(method == "obm" || method == "bartlett" || method == "tukey") + (n)*(method == "bm")
+  b <- b.const^(1/3) * coeff
+  if(b <= 1) b <- 1
+
+  b <- floor(b)
+  return(coeff)
+}
+```
+
+
+```{r}
+batchSize_threshold_cpp_const <- function(x, method = "bm", g = NULL) {
+
+  if(!is.numeric(x))
+    stop("'x' must be numeric")
+  if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
+  p <- ncol(x)
+  # xm <- colMeans(x, na.rm=TRUE)
+  # x <- sweep(x, 2L, xm, check.margin=FALSE)
+  n <- sum(!is.na(x[,1])) # number of non-missing rows
+  chain <- as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+
+  if (is.function(g)) 
+  {
+    chain <- apply(chain, 1, g)
+
+    if(is.vector(chain))
+    {
+      chain <- as.matrix(chain)
+    }else
+    {
+      chain <- t(chain)
+    }
+  }
+  order.max <- min(p, n - 1L, floor(10 * log10(n))) 
+  xacf = matrix(, nrow = order.max+1, ncol = p)
+  for(i in 1:p) {
+    xacf[,i] = acf(chain[,i], type = "covariance", lag.max = order.max, plot = FALSE,
+                 demean=TRUE, na.action = na.pass)$acf
+  }
+  # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
+  #               demean=TRUE, na.action = na.pass)$acf
+  
+  b = batchsize_cpp(n, p, xacf, order.max, method)
+  return(b)
+}
+```
+
+```{r}
+batchSize_threshold_cpp_last_const <- function(x, method = "bm", g = NULL, last_size = 1e4) {
+
+  if(!is.numeric(x))
+    stop("'x' must be numeric")
+  if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
+  p <- ncol(x)
+  # xm <- colMeans(x, na.rm=TRUE)
+  # x <- sweep(x, 2L, xm, check.margin=FALSE)
+  n <- sum(!is.na(x[,1])) # number of non-missing rows
+  chain <- as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+
+  if (is.function(g)) 
+  {
+    chain <- apply(chain, 1, g)
+
+    if(is.vector(chain))
+    {
+      chain <- as.matrix(chain)
+    }else
+    {
+      chain <- t(chain)
+    }
+  }
+  order.max <- min(p, n - 1L, floor(10 * log10(n))) 
+  xacf = matrix(, nrow = order.max+1, ncol = p)
+  last = min(n, last_size)
+  chain2 = chain[(n-last+1):n,]
+  for(i in 1:p) {
+    xacf[,i] = acf(chain2[,i], type = "covariance", lag.max = order.max, plot = FALSE,
+                 demean=TRUE, na.action = na.pass)$acf
+  }
+  # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
+  #               demean=TRUE, na.action = na.pass)$acf
+  
+  b = batchsize_cpp(n, p, xacf, order.max, method)
+  return(b)
+}
+
+```
+
+### VAR 1 process
+```{r, cache=TRUE}
+var_fit_truth <- function(phi,omega)
+{
+
+  p <- dim(phi)[2]
+  Inv.IPhi <- qr.solve(diag(1,p) - phi)
+  V <- matrix(qr.solve(diag(1, p^2) - kronecker(phi, phi))%*%as.numeric(omega), nrow = p, ncol = p)
+  Sigma <- Inv.IPhi%*%V + V%*%t(Inv.IPhi) - V
+  Gamma <- - ( Inv.IPhi %*% Inv.IPhi %*% phi %*% V + V %*% t(phi) %*% t(Inv.IPhi) %*% t(Inv.IPhi) )
+  return(list(Sigma = Sigma, Gamma = Gamma))
+}
+
+p <- 20
+reps <- 1e2
+N <- 1e5
+
+A <- matrix(rnorm(p^2), ncol = p, nrow = p)
+B <-  A %*% t(A)
+Phi0 <- B/(max(eigen(B)$values) + .001)
+phi <- 0.9 * Phi0
+omega <- diag(p)
+var_truth <- var_fit_truth(phi = phi, omega = omega)
+const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3)
+
+OG_bs = numeric(reps)
+bs_thresh_cpp = numeric(reps)
+bs_thresh_cpp_last_1e4 = numeric(reps)
+bs_thresh_cpp_last_5e4 = numeric(reps)
+
+for(i in 1:reps)  {
+  if(i %% (reps/10) == 0) print(i)
+  chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
+  OG_bs[i] = batchSize_const(chain)
+  bs_thresh_cpp[i] = batchSize_threshold_cpp_const(chain)
+  bs_thresh_cpp_last_1e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 1e4)
+  bs_thresh_cpp_last_5e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 5e4)
+}
+
+pdf("VAR_coeff_box.pdf")
+boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
+abline(h=const_truth)
+dev.off()
+
+chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
+benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4))
+```
+
+### Spatio Temporal 
+
+```{r, cache=TRUE}
+N = 1e5
+reps = 1e2
+OG_bs = numeric(reps)
+bs_thresh_cpp = numeric(reps)
+bs_thresh_cpp_last_1e4 = numeric(reps)
+bs_thresh_cpp_last_5e4 = numeric(reps)
+
+for(i in 1:reps)  {
+  if(i %% (reps/10) == 0) print(i)
+  chain <- spatio_temp(N = N, verbose = FALSE)
+  OG_bs[i] = batchSize_const(chain)
+  bs_thresh_cpp[i] = batchSize_threshold_cpp_const(chain)
+  bs_thresh_cpp_last_1e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 1e4)
+  bs_thresh_cpp_last_5e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 5e4)
+}
+
+pdf("spt_temp_coeff_box.pdf")
+boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
+dev.off()
+
+chain <- spatio_temp(N = N, verbose = FALSE)
+benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4))
+```
+
+### EEL
+
+```{r, cache=TRUE}
+data(Anguilla_train)
+N = 1e5
+reps = 1e2
+random <- sample(1:1e6, reps)
+
+OG_bs = numeric(reps)
+bs_thresh_cpp = numeric(reps)
+bs_thresh_cpp_last_1e4 = numeric(reps)
+bs_thresh_cpp_last_5e4 = numeric(reps)
+
+for(i in 1:reps)  {
+  if(i %% (reps/10) == 0) print(i)
+  chain <- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = random[i], burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
+  OG_bs[i] = batchSize_const(chain)
+  bs_thresh_cpp[i] = batchSize_threshold_cpp_const(chain)
+  bs_thresh_cpp_last_1e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 1e4)
+  bs_thresh_cpp_last_5e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 5e4)
+}
+
+pdf("EEL_coeff_box.pdf")
+boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
+dev.off()
+
+chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = random[1], burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
+benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4))
+
+```
+
