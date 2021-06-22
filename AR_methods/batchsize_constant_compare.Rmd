@@ -4,7 +4,7 @@ author: "Kushagra Gupta"
 date: "6/21/2021"
 output: html_document
 ---
-```{r}
+```{r, results=FALSE, warning=FALSE, message=FALSE}
 library(MCMCpack)
 library(Rcpp)
 library(rbenchmark)
@@ -13,7 +13,7 @@ source("optimal_bs_egs/spatio_temp_function.R")
 source("optimal_bs_egs/var1_function.R")
 sourceCpp('batchsize.cpp')
 ```
-
+Original batchsize function currently implemented in the package, modified to return the coefficient rather than the batchsize.
 ```{r}
 arp_approx <- function(x)
 {
@@ -78,7 +78,7 @@ batchSize_const <- function(x, method = "bm", g = NULL)
 }
 ```
 
-
+cpp implementation of batchsize with a threshold used for confidence interval by plot.acf. If estimated coefficients fall below the threshold while iterating from order = 1:order.max, the method uses order-1 as the order of the AR process.
 ```{r}
 batchSize_threshold_cpp_const <- function(x, method = "bm", g = NULL) {
 
@@ -113,12 +113,14 @@ batchSize_threshold_cpp_const <- function(x, method = "bm", g = NULL) {
   }
   # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
   #               demean=TRUE, na.action = na.pass)$acf
-  
-  b = batchsize_cpp(n, p, xacf, order.max, method)
+  ci = 0.95
+  threshold = qnorm((1 + ci)/2)/sqrt(N)
+  b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
   return(b)
 }
 ```
 
+cpp implementation with threshold which uses min(N, last_size) samples from the end of the Markov chain to calculate acf.
 ```{r}
 batchSize_threshold_cpp_last_const <- function(x, method = "bm", g = NULL, last_size = 1e4) {
 
@@ -155,15 +157,18 @@ batchSize_threshold_cpp_last_const <- function(x, method = "bm", g = NULL, last_
   }
   # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
   #               demean=TRUE, na.action = na.pass)$acf
-  
-  b = batchsize_cpp(n, p, xacf, order.max, method)
+  ci = 0.95
+  threshold = qnorm((1 + ci)/2)/sqrt(N)
+  b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
   return(b)
 }
 
 ```
 
 ### VAR 1 process
-```{r, cache=TRUE}
+
+
+```{r VAR1, cache=TRUE, results = FALSE}
 var_fit_truth <- function(phi,omega)
 {
 
@@ -177,7 +182,7 @@ var_fit_truth <- function(phi,omega)
 
 p <- 20
 reps <- 1e2
-N <- 1e5
+N <- 1e6
 
 A <- matrix(rnorm(p^2), ncol = p, nrow = p)
 B <-  A %*% t(A)
@@ -201,18 +206,22 @@ for(i in 1:reps)  {
   bs_thresh_cpp_last_5e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 5e4)
 }
 
-pdf("VAR_coeff_box.pdf")
+
 boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
 abline(h=const_truth)
-dev.off()
 
-chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
-benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4))
 ```
+
+
+```{r}
+chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
+benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4), columns = c("test", "replications", "elapsed", "relative"))
+```
+
 
 ### Spatio Temporal 
 
-```{r, cache=TRUE}
+```{r spatemp, cache=TRUE, results=FALSE}
 N = 1e5
 reps = 1e2
 OG_bs = numeric(reps)
@@ -229,17 +238,20 @@ for(i in 1:reps)  {
   bs_thresh_cpp_last_5e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 5e4)
 }
 
-pdf("spt_temp_coeff_box.pdf")
-boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
-dev.off()
 
+boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
+
+```
+
+
+```{r}
 chain <- spatio_temp(N = N, verbose = FALSE)
-benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4))
+benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4), columns = c("test", "replications", "elapsed", "relative"))
 ```
 
 ### EEL
 
-```{r, cache=TRUE}
+```{r eel, cache=TRUE, results=FALSE}
 data(Anguilla_train)
 N = 1e5
 reps = 1e2
@@ -259,12 +271,14 @@ for(i in 1:reps)  {
   bs_thresh_cpp_last_5e4[i] = batchSize_threshold_cpp_last_const(chain, last_size = 5e4)
 }
 
-pdf("EEL_coeff_box.pdf")
+
 boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, names = c("original", "thresh", "thresh last=1e4", "thresh last=5e4"))
-dev.off()
+
+```
+
+```{r}
 
 chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = random[1], burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
-benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4))
-
+benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4), columns = c("test", "replications", "elapsed", "relative"))
 ```
 
