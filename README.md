@@ -1,4 +1,4 @@
-batchsize constant compare folder - [here](https://www.dropbox.com/sh/zehyagg334fsp0o/AADnflJFLWfHdz8BJcU0fKIna?dl=0)
+batchsize constant compare folder - [here](https://www.dropbox.com/sh/u45vgqgjwrhovkm/AAAoxYcs0L5aS-7aMFbs8jB-a?dl=0)
 # mcmcse
 An R package for computing Monte Carlo standard
 errors (MCSE) in Markov chain Monte Carlo (MCMC) settings. MCSE
