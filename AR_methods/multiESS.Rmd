@@ -1,0 +1,94 @@
+---
+title: "ess_wrapper"
+author: "Kushagra Gupta"
+date: "6/25/2021"
+output: html_document
+---
+
+```{r}
+library(mcmcse)
+library(MCMCpack)
+library(Rcpp)
+library(rbenchmark)
+source("optimal_bs_egs/eel_data.R")
+source("optimal_bs_egs/spatio_temp_function.R")
+source("optimal_bs_egs/var1_function.R")
+sourceCpp('multiess_cpp.cpp')
+```
+
+
+```{r}
+multiESS_new <- function(x, covmat = NULL, g = NULL, ...)
+{
+
+	chain <- as.matrix(x)
+	if(!is.matrix(x) && !is.data.frame(x))
+	  stop("'x' must be a matrix or data frame.")
+
+	if (is.function(g)) 
+	{
+	  chain <- apply(x, 1, g)
+
+	  if(is.vector(chain))
+	  {
+	    chain <- as.matrix(chain)
+	  }else
+	  {
+	    chain <- t(chain)
+	  }
+	}
+
+
+	if(!is.matrix(covmat))
+	{
+		covmat <- mcse.multi(chain, ...)$cov
+	} 
+	ess = multiESS_cpp(chain, covmat)
+return(ess)
+}
+```
+
+```{r}
+var_fit_truth <- function(phi,omega)
+{
+
+  p <- dim(phi)[2]
+  Inv.IPhi <- qr.solve(diag(1,p) - phi)
+  V <- matrix(qr.solve(diag(1, p^2) - kronecker(phi, phi))%*%as.numeric(omega), nrow = p, ncol = p)
+  Sigma <- Inv.IPhi%*%V + V%*%t(Inv.IPhi) - V
+  Gamma <- - ( Inv.IPhi %*% Inv.IPhi %*% phi %*% V + V %*% t(phi) %*% t(Inv.IPhi) %*% t(Inv.IPhi) )
+  return(list(Sigma = Sigma, Gamma = Gamma))
+}
+
+p <- 20
+N <- 1e6
+
+A <- matrix(rnorm(p^2), ncol = p, nrow = p)
+B <-  A %*% t(A)
+Phi0 <- B/(max(eigen(B)$values) + .001)
+phi <- 0.9 * Phi0
+omega <- diag(p)
+var_truth <- var_fit_truth(phi = phi, omega = omega)
+const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3)
+
+```
+
+```{r, cache = TRUE}
+chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain))
+```
+
+```{r, cache = TRUE}
+N = 1e5
+chain <- spatio_temp(N = N, verbose = FALSE)
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain))
+```
+
+```{r, cache = TRUE}
+data(Anguilla_train)
+N = 1e6
+chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain))
+```
+
+
