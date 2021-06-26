@@ -2,19 +2,47 @@
 title: "batchsize_constant_compare"
 author: "Kushagra Gupta"
 date: "6/21/2021"
-output: html_document
+output:
+  html_document: default
 ---
-```{r, results=FALSE, warning=FALSE, message=FALSE}
+```{r, results=FALSE, warning=FALSE, message=FALSE, echo = FALSE}
 library(MCMCpack)
 library(Rcpp)
 library(rbenchmark)
 source("optimal_bs_egs/eel_data.R")
 source("optimal_bs_egs/spatio_temp_function.R")
 source("optimal_bs_egs/var1_function.R")
-sourceCpp('batchsize.cpp')
+sourceCpp('extra/batchsize_const.cpp')
 ```
-Original batchsize function currently implemented in the package, modified to return the coefficient rather than the batchsize.
-```{r}
+
+### Adding a threshold
+The Levinson algorithm used for calculating the AR coefficients in stats package of R runs recursively, i.e. it uses coefficients obtained from fitting AR(p-1) to obtain coefficients from fitting AR(p). The current fortran implementation  estimates coefficients for fitting AR(p) for p = 1 to order.max, irrespective of the value of aic parameter to ar(). We have added a check in our implementation which compares the coefficient to a threshold. If at any time a coefficient falls below the threshold, we don’t compute coefficients beyond that order (i.e. we don’t always complete the loop from 1 to order.max) and return. Therefore, we have added a threshold check in the Levinson algorithm which can stop the recurssion going from 1 to order.max if at any time any estimated coefficient falls below the threshold.
+
+### Calculating acf
+THe Levinson algorithm requires acf of the components of the Markov chain. We explore the option of using just the last 1e4 or 5e4 samples of the chain for calculating the acf in order to speed up the overall function.
+
+### Functions compared
+
+```{r, warning=FALSE, message=FALSE, echo = FALSE}
+library(kableExtra)
+
+func_table = data.frame(functions = c("batchSize_const()", "batchSize_threshold_cpp_const()", "batchSize_threshold_cpp_last_const(last_size = 1e4)", "batchSize_threshold_cpp_last_const(last_size = 5e4)"),
+                        description = c(
+                          "Original batchsize function currently implemented in the package, modified to return the coefficient rather than the batchsize.",
+                          "cpp implementation of batchsize with a threshold (used for confidence interval by plot.acf). If estimated coefficients fall below the threshold while iterating from order = 1:order.max, the method uses order-1 as the order of the AR process.",
+                          "cpp implementation with threshold which uses min(N, last_size=1e4) samples from the end of the Markov chain to calculate acf",
+                          "cpp implementation with threshold which uses min(N, last_size=5e4) samples from the end of the Markov chain to calculate acf"
+                        ))
+
+kbl(func_table) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 17) %>%
+  kable_paper(full_width = T) %>%
+  column_spec(1, bold = T, border_right = T) %>%
+  column_spec(2, width = "90em")
+```
+
+
+```{r, echo = FALSE}
 arp_approx <- function(x)
 {
   
@@ -78,8 +106,7 @@ batchSize_const <- function(x, method = "bm", g = NULL)
 }
 ```
 
-cpp implementation of batchsize with a threshold used for confidence interval by plot.acf. If estimated coefficients fall below the threshold while iterating from order = 1:order.max, the method uses order-1 as the order of the AR process.
-```{r}
+```{r, echo = FALSE}
 batchSize_threshold_cpp_const <- function(x, method = "bm", g = NULL) {
 
   if(!is.numeric(x))
@@ -120,8 +147,8 @@ batchSize_threshold_cpp_const <- function(x, method = "bm", g = NULL) {
 }
 ```
 
-cpp implementation with threshold which uses min(N, last_size) samples from the end of the Markov chain to calculate acf.
-```{r}
+
+```{r, echo = FALSE}
 batchSize_threshold_cpp_last_const <- function(x, method = "bm", g = NULL, last_size = 1e4) {
 
   if(!is.numeric(x))
@@ -164,6 +191,11 @@ batchSize_threshold_cpp_last_const <- function(x, method = "bm", g = NULL, last_
 }
 
 ```
+
+## Simulation study of examples in the paper 'Batch size selection for variance estimators in MCMC'
+
+We compare the boxplots of 1e2 estimates of the coefficient = $\left( \frac{\sum_{i=1}^{p} \Gamma_{ii}^{2}}{\sum_{i=1}^{p} \Sigma_{ii}^{2}} \right)^{1/3}$ of the optimal batch size, as defined in the paper. We also compare the run times of each function after comparing the boxplots.
+
 
 ### VAR 1 process
 
@@ -213,11 +245,11 @@ abline(h=const_truth)
 ```
 
 
-```{r}
+```{r, cache=TRUE}
 chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
 benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4), columns = c("test", "replications", "elapsed", "relative"))
 ```
-
+The cpp implementaion with threshold and last_size = 5e4 is 69 times faster than the original implementation. Additionally, the box plots show that results with last_size = 5e4 are less variable. The Markov chain for this example is 20 dimensional and of size 1e6.
 
 ### Spatio Temporal 
 
@@ -244,10 +276,11 @@ boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, na
 ```
 
 
-```{r}
+```{r, cache=TRUE}
 chain <- spatio_temp(N = N, verbose = FALSE)
 benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4), columns = c("test", "replications", "elapsed", "relative"))
 ```
+The cpp implementaion with threshold and last_size = 5e4 is 38 times faster than the original implementation. Additionally, the box plots show that results with last_size = 5e4 are less variable, although take thrice the amount of time. The Markov chain for this example is 185 dimensional and of size 1e5.
 
 ### EEL
 
@@ -276,9 +309,13 @@ boxplot(OG_bs, bs_thresh_cpp, bs_thresh_cpp_last_1e4, bs_thresh_cpp_last_5e4, na
 
 ```
 
-```{r}
+```{r, cache=TRUE}
 
 chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = random[1], burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
 benchmark(replications = 10, batchSize_const(chain), batchSize_threshold_cpp_const(chain), batchSize_threshold_cpp_last_const(chain, last_size = 1e4), batchSize_threshold_cpp_last_const(chain, last_size = 5e4), columns = c("test", "replications", "elapsed", "relative"))
 ```
+The cpp implementaion with threshold and last_size = 5e4 is 16 times faster than the original implementation. Additionally, the box plots show that results with last_size = 5e4 are less variable, although take twice the amount of time. The Markov chain for this example is 10 dimensional and of size 1e5.  
 
+We find that the cpp implementation with thresholding is significantly faster than the original implementation, and although slightly under-estimates the coefficient, the difference in the estimates is not a lot. Using last_size = 5e4 instead of 1e4 reduces the variability in the estimates without much increase in the computation time, and will be preferred for the future. 
+
+As a final update to the package, we suggest adding a Boolean option fast to the batchSize() function. Setting fast = TRUE will call the cpp implementation with thresholding using the last 5e4 samples for acf calculation. Setting fast = FALSE will call the cpp implementation with thresholding using the entire chain for acf calculation. This update will balance speed with quality, improving remarkably on the existing implementation with only reasonable under-estimation.
