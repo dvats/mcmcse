@@ -10,11 +10,50 @@ library(mcmcse)
 library(MCMCpack)
 library(Rcpp)
 library(rbenchmark)
-source("optimal_bs_egs/eel_data.R")
-source("optimal_bs_egs/spatio_temp_function.R")
-source("optimal_bs_egs/var1_function.R")
-sourceCpp('multiess_cpp.cpp')
+# source("../optimal_bs_egs/eel_data.R")
+# source("../optimal_bs_egs/spatio_temp_function.R")
+source("../optimal_bs_egs/var1_function.R")
+sourceCpp('../experiment.cpp')
+source("batchsize_final.R")
 ```
+
+```{r}
+multiESS_no_sym_log <- function(x, covmat = NULL, g = NULL, ...) {
+  chain <- as.matrix(x)
+	if(!is.matrix(x) && !is.data.frame(x))
+	  stop("'x' must be a matrix or data frame.")
+
+	if (is.function(g)) 
+	{
+	  chain <- apply(x, 1, g)
+
+	  if(is.vector(chain))
+	  {
+	    chain <- as.matrix(chain)
+	  }else
+	  {
+	    chain <- t(chain)
+	  }
+	}
+	## Setting dimensions on the mcmc output. 
+	n = dim(chain)[1]
+	p = dim(chain)[2]
+
+	if(!is.matrix(covmat))
+	{
+	  bs = batchSize_final(chain, fast = FALSE)
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
+	} 
+	
+	var_mat <- cov(chain)
+	log.det.var.p <- sum(log(eigen(var_mat, only.values = TRUE)$values))
+	log.det.covmat.p <- sum(log(eigen(covmat, only.values = TRUE)$values))
+	ess <- n*exp((log.det.var.p - log.det.covmat.p)/p)
+return(ess)
+}
+```
+
+
 ```{r}
 multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
   chain <- as.matrix(x)
@@ -39,13 +78,14 @@ multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
 
 	if(!is.matrix(covmat))
 	{
-	  covmat <- mcse.multi(chain, ...)$cov
+	  bs = batchSize_final(chain, fast = FALSE)
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 	} 
 	
 	var_mat <- cov(chain)
-	det.var.p <- exp(sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))/p)
-	det.covmat.p <- exp(sum(log(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values))/p)
-	ess <- n*(det.var.p/det.covmat.p)
+	log.det.var.p <- sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))
+	log.det.covmat.p <- sum(log(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values))
+	ess <- n*exp((log.det.var.p - log.det.covmat.p)/p)
 return(ess)
 }
 ```
@@ -76,14 +116,15 @@ multiESS_eigen_symmetric <- function(x, covmat = NULL, g = NULL, ...)
 
 	if(!is.matrix(covmat))
 	{
-	  covmat <- mcse.multi(chain, ...)$cov
+	  bs = batchSize_final(chain, fast = FALSE)
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 		
 	} 
 	
 	var_mat <- cov(chain)
-		det.var.p <- prod(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
-		det.covmat.p <- prod(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
-		ess <- n*(det.var.p/det.covmat.p)
+  det.var.p <- prod(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
+  det.covmat.p <- prod(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
+  ess <- n*(det.var.p/det.covmat.p)
 return(ess)
 
 }
@@ -113,7 +154,8 @@ multiESS_new <- function(x, covmat = NULL, g = NULL, ...)
 
 	if(!is.matrix(covmat))
 	{
-		covmat <- mcse.multi(chain, ...)$cov
+		bs = batchSize_final(chain)
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 	} 
 	ess = multiESS_cpp(chain, covmat)
 return(ess)
@@ -133,7 +175,7 @@ var_fit_truth <- function(phi,omega)
 }
 
 p <- 20
-N <- 1e6
+N <- 1e4
 
 A <- matrix(rnorm(p^2), ncol = p, nrow = p)
 B <-  A %*% t(A)
@@ -147,20 +189,53 @@ const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3
 
 ```{r, cache = TRUE}
 chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain))
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+```
+```{r}
+make_VAR <- function(p, N)  {
+
+  A <- matrix(rnorm(p^2), ncol = p, nrow = p)
+  B <-  A %*% t(A)
+  Phi0 <- B/(max(eigen(B)$values) + .001)
+  phi <- 0.9 * Phi0
+  omega <- diag(p)
+  var_truth <- var_fit_truth(phi = phi, omega = omega)
+  const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3)
+  chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
+  return(chain)
+}
 ```
 
-```{r, cache = TRUE}
-N = 1e5
-chain <- spatio_temp(N = N, verbose = FALSE)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain))
+```{r, cache=TRUE}
+chain = make_VAR(20, 1e4)
+print(multiESS(chain))
+print(multiESS_eigen_log(chain))
+# chain = make_VAR(20, 1e4)
+# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+# 
+chain = make_VAR(50, 1e4)
+print(multiESS(chain))
+print(multiESS_eigen_log(chain))
+# chain = make_VAR(50, 1e4)
+# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+# 
+# chain = make_VAR(100, 1e4)
+# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+
 ```
 
-```{r, cache = TRUE}
-data(Anguilla_train)
-N = 1e6
-chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain))
-```
+
+<!-- ```{r, cache = TRUE} -->
+<!-- N = 1e5 -->
+<!-- chain <- spatio_temp(N = N, verbose = FALSE) -->
+<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
+<!-- ``` -->
+
+<!-- ```{r, cache = TRUE} -->
+<!-- data(Anguilla_train) -->
+<!-- N = 1e6 -->
+<!-- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8) -->
+<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
+<!-- ``` -->
 
 

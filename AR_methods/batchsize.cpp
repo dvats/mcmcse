@@ -4,7 +4,11 @@ using namespace Rcpp;
 using namespace arma;
 
 // [[Rcpp::export]]
-List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double threshold)  {
+List eureka(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold)  {
+// Using the levinson algorithm to calculate AR coefficients and variance.
+// We have added a check which compares the coefficient to a threshold. If at any time a coefficient falls 
+// below the threshold, we don't compute coefficients beyond that order (i.e. we don't always complete the 
+// loop from 1 to order.max) and return. 
 
   int l, l1, l2, i, j, k;
   double v, d, q, hold;
@@ -65,13 +69,6 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
 
     for(j = 1; j <= l-1; j++) {
       coefs(l-1, j-1) = coefs(l-2, j-1) + coefs(l-1, l-1) * a(l-j);
-      // if(abs(coefs(l-1,j-1)) <= threshold)  {
-      //   ans["vars"] = var;
-      //   ans["coefs"] = coefs;
-      //   ans["order"] = l-1;
-      //   //Rcout << "threshold j " <<  j  << " " << l-1 << "\n";
-      //   return ans;
-      // }
     }
 
     var(l-1) = var(l-2) * (1 - coefs(l-1,l-1)*coefs(l-1,l-1));
@@ -101,15 +98,13 @@ List eureka(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thres
 }
 
 
-List ar_yw(int order_max, vec r, vec g, mat coefs, vec var, vec a, double threshold, uword n)  {
+List ar_yw(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold, uword n)  {
+// Wrapper function to calculate AR coefficients and variance from the output of Levinson algorithm (eureka).
   List ans = eureka(order_max, r, g, coefs, var, a, threshold);
 
   vec vars = ans["vars"];
   mat coef_mat = ans["coefs"];
   int order = ans["order"];
-  // Rcout << vars << '\n';
-  // Rcout << coef_mat << "\n";
-  // Rcout << order << "\n";
   vec coef_vec(order, fill::zeros);
   double var_pred = 0;
 
@@ -128,7 +123,8 @@ List ar_yw(int order_max, vec r, vec g, mat coefs, vec var, vec a, double thresh
 
 }
 
-List arp_approx(vec xacf, int max_order, uword n, double threshold) {
+List arp_approx(const vec& xacf, int max_order, uword n, double threshold) {
+// Calculate Gamma and Sigma from AR approximation
   List ar_fit = ar_yw(max_order, xacf, xacf, zeros<mat>(max_order, max_order),
                        zeros<vec>(max_order), zeros<vec>(max_order), threshold, n);
 
@@ -136,9 +132,6 @@ List arp_approx(vec xacf, int max_order, uword n, double threshold) {
   double vars = ar_fit["vars"];
   int order = ar_fit["order"];
 
-  // Rcout << coefs.t() << "\n";
-  // Rcout << vars << "\n";
-  // Rcout << order << "\n";
   double spec = vars/pow(1 - sum(coefs),2.0);
   double foo = 0, Gamma = 0;
 
@@ -162,20 +155,15 @@ List arp_approx(vec xacf, int max_order, uword n, double threshold) {
 
 
 // [[Rcpp::export]]
-double batchsize_cpp(uword n, int p, mat xacf_mat, int max_order, String method, double threshold = 0.01) {
-  // uword n = size(chain)(0);
-  // int p = size(chain)(1);
+double batchsize_cpp(uword n, int p, const mat& xacf_mat, int max_order, String method, double threshold = 0.01) {
+// Calculates batchsize from Gamma and Sigma from AR approximation. Uses the "optimal" batchsize parametric 
+// method  from of Liu et.al.
   mat ar_fit(2,p, fill::none);
   double num_sum = 0, denom_sum = 0, Gamma = 0, Sigma = 0;
   List arp_output = List::create(_["Gamma"] = 0, _["Sigma"] = 0);
-  
-  // Environment stats("package:stats");
-  // Function acf = stats["acf"];
-  // Function na_pass = stats["na.pass"];
-  // List acf_output;
 
   for(int i = 0; i<p; i++)  {
-    // acf_output = acf(chain.col(i), max_order, "covariance", false, na_pass);
+
     arp_output = arp_approx(xacf_mat.col(i), max_order, n, threshold);
     Gamma = arp_output["Gamma"];
     Sigma = arp_output["Sigma"];
