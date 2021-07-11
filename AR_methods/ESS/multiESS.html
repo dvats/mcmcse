@@ -403,25 +403,53 @@ summary {
 <pre class="r"><code>library(Rcpp)
 library(rbenchmark)</code></pre>
 <pre><code>## Warning: package &#39;rbenchmark&#39; was built under R version 4.0.3</code></pre>
-<pre class="r"><code>source(&quot;optimal_bs_egs/eel_data.R&quot;)</code></pre>
-<pre><code>## Warning: package &#39;dismo&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Loading required package: raster</code></pre>
-<pre><code>## Warning: package &#39;raster&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
-<pre><code>## Warning: package &#39;sp&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## 
-## Attaching package: &#39;raster&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:MASS&#39;:
-## 
-##     area, select</code></pre>
-<pre class="r"><code>source(&quot;optimal_bs_egs/spatio_temp_function.R&quot;)</code></pre>
-<pre><code>## Warning: package &#39;spBayes&#39; was built under R version 4.0.5</code></pre>
-<pre class="r"><code>source(&quot;optimal_bs_egs/var1_function.R&quot;)
-sourceCpp(&#39;multiess_cpp.cpp&#39;)</code></pre>
+<pre class="r"><code># source(&quot;../optimal_bs_egs/eel_data.R&quot;)
+# source(&quot;../optimal_bs_egs/spatio_temp_function.R&quot;)
+source(&quot;../optimal_bs_egs/var1_function.R&quot;)
+sourceCpp(&#39;../experiment.cpp&#39;)</code></pre>
 <pre><code>## Warning in readLines(file, skipNul = TRUE): incomplete final line found on &#39;F:/
 ## mcmcse/AR_methods/../DESCRIPTION&#39;</code></pre>
 <pre><code>## Warning in normalizePath(path.expand(path), winslash, mustWork): path[1]=&quot;F:/
 ## mcmcse/AR_methods/../inst/include&quot;: The system cannot find the file specified</code></pre>
+<pre class="r"><code>source(&quot;batchsize_final.R&quot;)</code></pre>
+<pre><code>## Warning in readLines(file, skipNul = TRUE): incomplete final line found on &#39;F:/
+## mcmcse/AR_methods/../DESCRIPTION&#39;
+
+## Warning in readLines(file, skipNul = TRUE): path[1]=&quot;F:/mcmcse/AR_methods/../
+## inst/include&quot;: The system cannot find the file specified</code></pre>
+<pre class="r"><code>multiESS_no_sym_log &lt;- function(x, covmat = NULL, g = NULL, ...) {
+  chain &lt;- as.matrix(x)
+    if(!is.matrix(x) &amp;&amp; !is.data.frame(x))
+      stop(&quot;&#39;x&#39; must be a matrix or data frame.&quot;)
+
+    if (is.function(g)) 
+    {
+      chain &lt;- apply(x, 1, g)
+
+      if(is.vector(chain))
+      {
+        chain &lt;- as.matrix(chain)
+      }else
+      {
+        chain &lt;- t(chain)
+      }
+    }
+    ## Setting dimensions on the mcmc output. 
+    n = dim(chain)[1]
+    p = dim(chain)[2]
+
+    if(!is.matrix(covmat))
+    {
+      bs = batchSize_final(chain, fast = FALSE)
+      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
+    } 
+    
+    var_mat &lt;- cov(chain)
+    log.det.var.p &lt;- sum(log(eigen(var_mat, only.values = TRUE)$values))
+    log.det.covmat.p &lt;- sum(log(eigen(covmat, only.values = TRUE)$values))
+    ess &lt;- n*exp((log.det.var.p - log.det.covmat.p)/p)
+return(ess)
+}</code></pre>
 <pre class="r"><code>multiESS_eigen_log &lt;- function(x, covmat = NULL, g = NULL, ...) {
   chain &lt;- as.matrix(x)
     if(!is.matrix(x) &amp;&amp; !is.data.frame(x))
@@ -445,13 +473,14 @@ sourceCpp(&#39;multiess_cpp.cpp&#39;)</code></pre>
 
     if(!is.matrix(covmat))
     {
-      covmat &lt;- mcse.multi(chain, ...)$cov
+      bs = batchSize_final(chain, fast = FALSE)
+      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
     } 
     
     var_mat &lt;- cov(chain)
-    det.var.p &lt;- exp(sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))/p)
-    det.covmat.p &lt;- exp(sum(log(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values))/p)
-    ess &lt;- n*(det.var.p/det.covmat.p)
+    log.det.var.p &lt;- sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))
+    log.det.covmat.p &lt;- sum(log(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values))
+    ess &lt;- n*exp((log.det.var.p - log.det.covmat.p)/p)
 return(ess)
 }</code></pre>
 <pre class="r"><code>multiESS_eigen_symmetric &lt;- function(x, covmat = NULL, g = NULL, ...)
@@ -479,14 +508,15 @@ return(ess)
 
     if(!is.matrix(covmat))
     {
-      covmat &lt;- mcse.multi(chain, ...)$cov
+      bs = batchSize_final(chain, fast = FALSE)
+      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
         
     } 
     
     var_mat &lt;- cov(chain)
-        det.var.p &lt;- prod(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
-        det.covmat.p &lt;- prod(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
-        ess &lt;- n*(det.var.p/det.covmat.p)
+  det.var.p &lt;- prod(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
+  det.covmat.p &lt;- prod(eigen(covmat, symmetric = TRUE, only.values = TRUE)$values^(1/p))
+  ess &lt;- n*(det.var.p/det.covmat.p)
 return(ess)
 
 }</code></pre>
@@ -513,7 +543,8 @@ return(ess)
 
     if(!is.matrix(covmat))
     {
-        covmat &lt;- mcse.multi(chain, ...)$cov
+        bs = batchSize_final(chain)
+      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
     } 
     ess = multiESS_cpp(chain, covmat)
 return(ess)
@@ -530,7 +561,7 @@ return(ess)
 }
 
 p &lt;- 20
-N &lt;- 1e6
+N &lt;- 1e4
 
 A &lt;- matrix(rnorm(p^2), ncol = p, nrow = p)
 B &lt;-  A %*% t(A)
@@ -540,44 +571,60 @@ omega &lt;- diag(p)
 var_truth &lt;- var_fit_truth(phi = phi, omega = omega)
 const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3)</code></pre>
 <pre class="r"><code>chain &lt;-  var1(p = p, phi = phi, nsim = N, omega = omega)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain))</code></pre>
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))</code></pre>
 <pre><code>##                              test replications elapsed relative user.self
-## 1                 multiESS(chain)           10  199.39    1.005    172.49
-## 3       multiESS_eigen_log(chain)           10  201.43    1.015    171.93
-## 4 multiESS_eigen_symmetric(chain)           10  198.48    1.000    170.93
-## 2             multiESS_new(chain)           10  198.45    1.000    170.77
+## 1                 multiESS(chain)           10    1.54    5.310      1.55
+## 3       multiESS_eigen_log(chain)           10    0.29    1.000      0.29
+## 4 multiESS_eigen_symmetric(chain)           10    0.31    1.069      0.32
+## 2             multiESS_new(chain)           10    0.32    1.103      0.33
+## 5      multiESS_no_sym_log(chain)           10    0.29    1.000      0.30
 ##   sys.self user.child sys.child
-## 1    25.17         NA        NA
-## 3    26.16         NA        NA
-## 4    26.19         NA        NA
-## 2    26.08         NA        NA</code></pre>
-<pre class="r"><code>N = 1e5
-chain &lt;- spatio_temp(N = N, verbose = FALSE)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain))</code></pre>
-<pre><code>##                              test replications elapsed relative user.self
-## 1                 multiESS(chain)           10  269.00    1.002    233.64
-## 3       multiESS_eigen_log(chain)           10  279.42    1.041    239.90
-## 4 multiESS_eigen_symmetric(chain)           10  323.21    1.204    261.55
-## 2             multiESS_new(chain)           10  268.45    1.000    234.06
-##   sys.self user.child sys.child
-## 1    33.28         NA        NA
-## 3    32.91         NA        NA
-## 4    38.21         NA        NA
-## 2    32.45         NA        NA</code></pre>
-<pre class="r"><code>data(Anguilla_train)
-N = 1e6
-chain &lt;- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain))</code></pre>
-<pre><code>##                              test replications elapsed relative user.self
-## 1                 multiESS(chain)           10   60.68    1.044     53.30
-## 3       multiESS_eigen_log(chain)           10   60.10    1.034     52.67
-## 4 multiESS_eigen_symmetric(chain)           10   58.14    1.000     51.28
-## 2             multiESS_new(chain)           10   60.39    1.039     52.47
-##   sys.self user.child sys.child
-## 1     6.14         NA        NA
-## 3     6.34         NA        NA
-## 4     6.34         NA        NA
-## 2     6.72         NA        NA</code></pre>
+## 1        0         NA        NA
+## 3        0         NA        NA
+## 4        0         NA        NA
+## 2        0         NA        NA
+## 5        0         NA        NA</code></pre>
+<pre class="r"><code>make_VAR &lt;- function(p, N)  {
+
+  A &lt;- matrix(rnorm(p^2), ncol = p, nrow = p)
+  B &lt;-  A %*% t(A)
+  Phi0 &lt;- B/(max(eigen(B)$values) + .001)
+  phi &lt;- 0.9 * Phi0
+  omega &lt;- diag(p)
+  var_truth &lt;- var_fit_truth(phi = phi, omega = omega)
+  const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3)
+  chain &lt;-  var1(p = p, phi = phi, nsim = N, omega = omega)
+  return(chain)
+}</code></pre>
+<pre class="r"><code>chain = make_VAR(20, 1e4)
+print(multiESS(chain))</code></pre>
+<pre><code>## [1] 11745.29</code></pre>
+<pre class="r"><code>print(multiESS_eigen_log(chain))</code></pre>
+<pre><code>## [1] 9875.407</code></pre>
+<pre class="r"><code># chain = make_VAR(20, 1e4)
+# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+# 
+chain = make_VAR(50, 1e4)
+print(multiESS(chain))</code></pre>
+<pre><code>## [1] 23829.5</code></pre>
+<pre class="r"><code>print(multiESS_eigen_log(chain))</code></pre>
+<pre><code>## [1] 21797.05</code></pre>
+<pre class="r"><code># chain = make_VAR(50, 1e4)
+# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+# 
+# chain = make_VAR(100, 1e4)
+# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))</code></pre>
+<!-- ```{r, cache = TRUE} -->
+<!-- N = 1e5 -->
+<!-- chain <- spatio_temp(N = N, verbose = FALSE) -->
+<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
+<!-- ``` -->
+<!-- ```{r, cache = TRUE} -->
+<!-- data(Anguilla_train) -->
+<!-- N = 1e6 -->
+<!-- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8) -->
+<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
+<!-- ``` -->
 
 
 
