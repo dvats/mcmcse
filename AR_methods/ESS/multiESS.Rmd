@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r}
+set.seed(10)
 library(mcmcse)
 library(MCMCpack)
 library(Rcpp)
@@ -42,7 +43,7 @@ multiESS_no_sym_log <- function(x, covmat = NULL, g = NULL, ...) {
 	if(!is.matrix(covmat))
 	{
 	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, size = bs, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, r=1,  ...)$cov
 	} 
 	
 	var_mat <- cov(chain)
@@ -79,7 +80,7 @@ multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
 	if(!is.matrix(covmat))
 	{
 	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, size = bs, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, r = 1, ...)$cov
 	} 
 	
 	var_mat <- cov(chain)
@@ -117,7 +118,7 @@ multiESS_eigen_symmetric <- function(x, covmat = NULL, g = NULL, ...)
 	if(!is.matrix(covmat))
 	{
 	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, size = bs, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, r = 1, ...)$cov
 		
 	} 
 	
@@ -155,7 +156,7 @@ multiESS_new <- function(x, covmat = NULL, g = NULL, ...)
 	if(!is.matrix(covmat))
 	{
 		bs = batchSize_final(chain)
-	  covmat <- mcse.multi(chain, size = bs, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, r = 1, ...)$cov
 	} 
 	ess = multiESS_cpp(chain, covmat)
 return(ess)

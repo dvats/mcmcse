@@ -378,7 +378,8 @@ summary {
 </div>
 
 
-<pre class="r"><code>library(mcmcse)</code></pre>
+<pre class="r"><code>set.seed(10)
+library(mcmcse)</code></pre>
 <pre><code>## Warning: package &#39;mcmcse&#39; was built under R version 4.0.4</code></pre>
 <pre><code>## mcmcse: Monte Carlo Standard Errors for MCMC
 ## Version 1.4-1 created on 2020-01-29.
@@ -441,7 +442,7 @@ sourceCpp(&#39;../experiment.cpp&#39;)</code></pre>
     if(!is.matrix(covmat))
     {
       bs = batchSize_final(chain, fast = FALSE)
-      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
+      covmat &lt;- mcse.multi(chain, size = bs, r=1,  ...)$cov
     } 
     
     var_mat &lt;- cov(chain)
@@ -474,7 +475,7 @@ return(ess)
     if(!is.matrix(covmat))
     {
       bs = batchSize_final(chain, fast = FALSE)
-      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
+      covmat &lt;- mcse.multi(chain, size = bs, r = 1, ...)$cov
     } 
     
     var_mat &lt;- cov(chain)
@@ -509,7 +510,7 @@ return(ess)
     if(!is.matrix(covmat))
     {
       bs = batchSize_final(chain, fast = FALSE)
-      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
+      covmat &lt;- mcse.multi(chain, size = bs, r = 1, ...)$cov
         
     } 
     
@@ -544,7 +545,7 @@ return(ess)
     if(!is.matrix(covmat))
     {
         bs = batchSize_final(chain)
-      covmat &lt;- mcse.multi(chain, size = bs, ...)$cov
+      covmat &lt;- mcse.multi(chain, size = bs, r = 1, ...)$cov
     } 
     ess = multiESS_cpp(chain, covmat)
 return(ess)
