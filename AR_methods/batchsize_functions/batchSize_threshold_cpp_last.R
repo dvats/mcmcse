@@ -1,14 +1,14 @@
 library(Rcpp)
 sourceCpp('../batchsize.cpp')
 
-batchSize_threshold_cpp_last <- function(x, method = "bm", g = NULL, last_size = 1e4) {
+batchSize_threshold_cpp_last <- function(x, method = "bm", g = NULL, last_size = 5e4) {
   
   if(!is.numeric(x))
     stop("'x' must be numeric")
-  if(any(is.na(x) != is.na(x[,1]))) stop("NAs in 'x' must be the same row-wise")
+  if(any(is.na(x)))
+    stop("NAs found")
   p <- ncol(x)
-  # xm <- colMeans(x, na.rm=TRUE)
-  # x <- sweep(x, 2L, xm, check.margin=FALSE)
+
   n <- sum(!is.na(x[,1])) # number of non-missing rows
   chain <- as.matrix(x)
   if(!is.matrix(chain) && !is.data.frame(chain))
@@ -30,14 +30,10 @@ batchSize_threshold_cpp_last <- function(x, method = "bm", g = NULL, last_size =
   xacf = matrix(, nrow = order.max+1, ncol = p)
   last = min(n, last_size)
   chain2 = chain[(n-last+1):n,]
-  for(i in 1:p) {
-    xacf[,i] = acf(chain2[,i], type = "covariance", lag.max = order.max, plot = FALSE,
-                   demean=TRUE, na.action = na.pass)$acf
-  }
-  # xacf <- acf(chain, type = "covariance", lag.max = order.max, plot = FALSE,
-  #               demean=TRUE, na.action = na.pass)$acf
-  ci = 0.95
-  threshold = qnorm((1 + ci)/2)/sqrt(N)
+  xacf = sapply(1:p, function(i) acf(chain2[,i], type = "covariance", lag.max = order.max, plot = FALSE,
+                                     demean=TRUE, na.action = na.pass)$acf)
+
+  threshold = qnorm((1.95)/2)/sqrt(n)
   b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
   return(b)
 }

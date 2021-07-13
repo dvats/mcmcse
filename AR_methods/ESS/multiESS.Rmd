@@ -5,20 +5,19 @@ date: "6/25/2021"
 output: html_document
 ---
 
-```{r}
+```{r, results=FALSE, warning=FALSE, message=FALSE}
 set.seed(10)
 library(mcmcse)
 library(MCMCpack)
 library(Rcpp)
 library(rbenchmark)
-# source("../optimal_bs_egs/eel_data.R")
-# source("../optimal_bs_egs/spatio_temp_function.R")
 source("../optimal_bs_egs/var1_function.R")
-sourceCpp('../experiment.cpp')
+sourceCpp('../ess_cpp.cpp')
 source("batchsize_final.R")
 ```
 
 ```{r}
+# ESS without symmetric=TRUE but the numerically stable e^log(eigen values)
 multiESS_no_sym_log <- function(x, covmat = NULL, g = NULL, ...) {
   chain <- as.matrix(x)
 	if(!is.matrix(x) && !is.data.frame(x))
@@ -43,7 +42,7 @@ multiESS_no_sym_log <- function(x, covmat = NULL, g = NULL, ...) {
 	if(!is.matrix(covmat))
 	{
 	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, size = bs, r=1,  ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 	} 
 	
 	var_mat <- cov(chain)
@@ -56,6 +55,7 @@ return(ess)
 
 
 ```{r}
+# # ESS with symmetric=TRUE but the numerically stable e^log(eigen values)
 multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
   chain <- as.matrix(x)
 	if(!is.matrix(x) && !is.data.frame(x))
@@ -80,7 +80,7 @@ multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
 	if(!is.matrix(covmat))
 	{
 	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, size = bs, r = 1, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 	} 
 	
 	var_mat <- cov(chain)
@@ -92,6 +92,7 @@ return(ess)
 ```
 
 ```{r}
+# # ESS with symmetric=TRUE 
 multiESS_eigen_symmetric <- function(x, covmat = NULL, g = NULL, ...)
 {
 
@@ -118,7 +119,7 @@ multiESS_eigen_symmetric <- function(x, covmat = NULL, g = NULL, ...)
 	if(!is.matrix(covmat))
 	{
 	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, size = bs, r = 1, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 		
 	} 
 	
@@ -132,6 +133,7 @@ return(ess)
 ```
 
 ```{r}
+# cpp calculation for ess estimation with the numerically stable e^log(eigen values)
 multiESS_new <- function(x, covmat = NULL, g = NULL, ...)
 {
 
@@ -156,7 +158,7 @@ multiESS_new <- function(x, covmat = NULL, g = NULL, ...)
 	if(!is.matrix(covmat))
 	{
 		bs = batchSize_final(chain)
-	  covmat <- mcse.multi(chain, size = bs, r = 1, ...)$cov
+	  covmat <- mcse.multi(chain, size = bs, ...)$cov
 	} 
 	ess = multiESS_cpp(chain, covmat)
 return(ess)
@@ -188,10 +190,6 @@ const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3
 
 ```
 
-```{r, cache = TRUE}
-chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
-```
 ```{r}
 make_VAR <- function(p, N)  {
 
@@ -209,19 +207,22 @@ make_VAR <- function(p, N)  {
 
 ```{r, cache=TRUE}
 chain = make_VAR(20, 1e4)
-print(multiESS(chain))
-print(multiESS_eigen_log(chain))
-# chain = make_VAR(20, 1e4)
-# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
-# 
+print(multiESS(chain, r = 1))
+print(multiESS_eigen_log(chain, r=1))
+
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+
 chain = make_VAR(50, 1e4)
-print(multiESS(chain))
-print(multiESS_eigen_log(chain))
-# chain = make_VAR(50, 1e4)
-# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
-# 
-# chain = make_VAR(100, 1e4)
-# benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+print(multiESS(chain, r = 1))
+print(multiESS_eigen_log(chain, r=1))
+
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+
+chain = make_VAR(75, 1e4)
+print(multiESS(chain, r = 1))
+print(multiESS_eigen_log(chain, r=1))
+
+benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
 
 ```
 
