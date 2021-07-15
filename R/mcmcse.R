@@ -335,8 +335,11 @@ mcse.q = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"
     }
     else
     {
-        if (! is.numeric(size) || size < 1 || size == Inf)
-            stop("'size' must be a finite numeric quantity larger than 1.")
+        if (! is.numeric(size) || size < 1 || size == Inf)  {
+            warning("'size' must be a finite numeric quantity larger than 1. Setting 'size' to n^(1/2)")
+            size = sqrt(n)
+        }
+            
         b = floor(size)
         a = floor(n / b)
     }
@@ -345,8 +348,11 @@ mcse.q = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"
     {
         return(length(var.vector[var.vector <= var.number]))
     }
-    if (! is.numeric(q) || q <= 0 || q >= 1)
-        stop("'q' must be from (0, 1).")
+    if (! is.numeric(q) || q <= 0 || q >= 1)    {
+        warning("'q' must be from (0, 1). Setting q to 0.5")
+        q = 0.5
+    }
+        
     quant = function(input) { quantile(input, prob = q, type = 1, names = FALSE) }
     if (method == "bm")
     {

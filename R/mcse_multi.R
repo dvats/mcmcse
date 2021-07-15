@@ -152,11 +152,15 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   if(!is.numeric(r)) stop("r should be numeric")
   if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
   {
-    stop("No such method available")
+    warning("No such method available. Using default method = bm.")
+    method = "bm"
   }
    
   if(r > 5) warning("We recommend using r <=5. r = 1,2,3 are standard")
-  if(r < 1) stop("r cannot be less than 1")
+  if(r < 1)  {
+    warning("r cannot be less than 1. Setting r = 3")
+    r = 3
+  }
   # making matrix compatible and applying g
   chain <- as.matrix(x)
   if(!is.matrix(chain) && !is.data.frame(chain))
@@ -193,8 +197,11 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
     b <- floor(n^(1/3))
   }
   else {
-    if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) 
-        stop("size is either too large, too small, or not a number")
+    if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) {
+      warning("size is either too large, too small, or not a number. Setting 'size' to n^(1/2)")
+      size = sqrt(n)
+    }
+        
 
     b <- floor(size)
   }
@@ -213,7 +220,10 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   ## Setting matrix sizes to avoid dynamic memory 
   sig.mat = matrix(0, nrow = p, ncol = p)
 
-  if(floor(b/r) < 1) stop("Either decrease r or increase n")
+  if(floor(b/r) < 1) {
+    warning("Either decrease r or increase n. Setting b = r")
+    b = r
+  }
 
   message <- ""   # will store some info for blather
 
