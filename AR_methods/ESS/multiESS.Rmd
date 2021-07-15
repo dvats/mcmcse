@@ -206,38 +206,33 @@ make_VAR <- function(p, N)  {
 ```
 
 ```{r, cache=TRUE}
+#set.seed(10)
 chain = make_VAR(20, 1e4)
+bs = batchSize_final(chain)
+covmat = mcse.multi(chain, size = bs)$cov
 print(multiESS(chain, r = 1))
 print(multiESS_eigen_log(chain, r=1))
 
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))
 
 chain = make_VAR(50, 1e4)
+bs = batchSize_final(chain)
+covmat <- mcse.multi(chain, size = bs)$cov
 print(multiESS(chain, r = 1))
 print(multiESS_eigen_log(chain, r=1))
 
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))
 
 chain = make_VAR(75, 1e4)
+bs = batchSize_final(chain)
+covmat  <- mcse.multi(chain, size = bs)$cov
 print(multiESS(chain, r = 1))
 print(multiESS_eigen_log(chain, r=1))
 
-benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))
+benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))
 
 ```
 
-
-<!-- ```{r, cache = TRUE} -->
-<!-- N = 1e5 -->
-<!-- chain <- spatio_temp(N = N, verbose = FALSE) -->
-<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
-<!-- ``` -->
-
-<!-- ```{r, cache = TRUE} -->
-<!-- data(Anguilla_train) -->
-<!-- N = 1e6 -->
-<!-- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8) -->
-<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
-<!-- ``` -->
+Using e^(sum(log(eigen values))) improves the stability of the estimates but doesn't give any advantage in terms of speed. One thing of note is the difference in the ESS estimate using the old and new batchsize function. Minor difference in batchsize is resulting in a reasonably large difference in ESS estimate. This has largely to do with the fact that adjust_matrix() is being called for the old batchsize and not for the new one. Therefore, the covariance estimate is significantly different for the two methods. Possible solutions to this is to modify the adjust_matrix() function or to use only p-1 eigen values. 
 
 

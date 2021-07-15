@@ -555,71 +555,68 @@ const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3
   chain &lt;-  var1(p = p, phi = phi, nsim = N, omega = omega)
   return(chain)
 }</code></pre>
-<pre class="r"><code>chain = make_VAR(20, 1e4)
+<pre class="r"><code>#set.seed(10)
+chain = make_VAR(20, 1e4)
+bs = batchSize_final(chain)
+covmat = mcse.multi(chain, size = bs)$cov
 print(multiESS(chain, r = 1))</code></pre>
 <pre><code>## [1] 6341.277</code></pre>
 <pre class="r"><code>print(multiESS_eigen_log(chain, r=1))</code></pre>
 <pre><code>## [1] 6304.125</code></pre>
-<pre class="r"><code>benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))</code></pre>
-<pre><code>##                              test replications elapsed relative user.self
-## 1                 multiESS(chain)           10    1.22    3.813      1.20
-## 3       multiESS_eigen_log(chain)           10    0.33    1.031      0.33
-## 4 multiESS_eigen_symmetric(chain)           10    0.32    1.000      0.31
-## 2             multiESS_new(chain)           10    0.33    1.031      0.28
-## 5      multiESS_no_sym_log(chain)           10    0.32    1.000      0.29
-##   sys.self user.child sys.child
-## 1     0.01         NA        NA
-## 3     0.00         NA        NA
-## 4     0.00         NA        NA
-## 2     0.03         NA        NA
-## 5     0.03         NA        NA</code></pre>
+<pre class="r"><code>benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))</code></pre>
+<pre><code>##                                                      test replications elapsed
+## 1                 multiESS(chain, covmat = covmat, r = 1)           10    0.05
+## 3       multiESS_eigen_log(chain, covmat = covmat, r = 1)           10    0.04
+## 4 multiESS_eigen_symmetric(chain, covmat = covmat, r = 1)           10    0.03
+## 2             multiESS_new(chain, covmat = covmat, r = 1)           10    0.05
+## 5      multiESS_no_sym_log(chain, covmat = covmat, r = 1)           10    0.04
+##   relative user.self sys.self user.child sys.child
+## 1    1.667      0.04     0.00         NA        NA
+## 3    1.333      0.04     0.00         NA        NA
+## 4    1.000      0.03     0.00         NA        NA
+## 2    1.667      0.03     0.02         NA        NA
+## 5    1.333      0.04     0.00         NA        NA</code></pre>
 <pre class="r"><code>chain = make_VAR(50, 1e4)
+bs = batchSize_final(chain)
+covmat &lt;- mcse.multi(chain, size = bs)$cov
 print(multiESS(chain, r = 1))</code></pre>
 <pre><code>## [1] 6804.259</code></pre>
 <pre class="r"><code>print(multiESS_eigen_log(chain, r=1))</code></pre>
 <pre><code>## [1] 6667.922</code></pre>
-<pre class="r"><code>benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))</code></pre>
-<pre><code>##                              test replications elapsed relative user.self
-## 1                 multiESS(chain)           10    3.03    2.681      2.82
-## 3       multiESS_eigen_log(chain)           10    1.20    1.062      1.15
-## 4 multiESS_eigen_symmetric(chain)           10    1.13    1.000      1.13
-## 2             multiESS_new(chain)           10    1.22    1.080      1.13
-## 5      multiESS_no_sym_log(chain)           10    1.19    1.053      1.17
-##   sys.self user.child sys.child
-## 1     0.21         NA        NA
-## 3     0.03         NA        NA
-## 4     0.00         NA        NA
-## 2     0.09         NA        NA
-## 5     0.00         NA        NA</code></pre>
+<pre class="r"><code>benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))</code></pre>
+<pre><code>##                                                      test replications elapsed
+## 1                 multiESS(chain, covmat = covmat, r = 1)           10    0.18
+## 3       multiESS_eigen_log(chain, covmat = covmat, r = 1)           10    0.19
+## 4 multiESS_eigen_symmetric(chain, covmat = covmat, r = 1)           10    0.19
+## 2             multiESS_new(chain, covmat = covmat, r = 1)           10    0.20
+## 5      multiESS_no_sym_log(chain, covmat = covmat, r = 1)           10    0.19
+##   relative user.self sys.self user.child sys.child
+## 1    1.000      0.19     0.00         NA        NA
+## 3    1.056      0.19     0.00         NA        NA
+## 4    1.056      0.19     0.00         NA        NA
+## 2    1.111      0.17     0.03         NA        NA
+## 5    1.056      0.18     0.00         NA        NA</code></pre>
 <pre class="r"><code>chain = make_VAR(75, 1e4)
+bs = batchSize_final(chain)
+covmat  &lt;- mcse.multi(chain, size = bs)$cov
 print(multiESS(chain, r = 1))</code></pre>
 <pre><code>## [1] 7800.894</code></pre>
 <pre class="r"><code>print(multiESS_eigen_log(chain, r=1))</code></pre>
 <pre><code>## [1] 7423.996</code></pre>
-<pre class="r"><code>benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain), multiESS_no_sym_log(chain))</code></pre>
-<pre><code>##                              test replications elapsed relative user.self
-## 1                 multiESS(chain)           10    4.89    2.643      4.42
-## 3       multiESS_eigen_log(chain)           10    1.87    1.011      1.88
-## 4 multiESS_eigen_symmetric(chain)           10    1.85    1.000      1.84
-## 2             multiESS_new(chain)           10    1.90    1.027      1.87
-## 5      multiESS_no_sym_log(chain)           10    1.86    1.005      1.86
-##   sys.self user.child sys.child
-## 1     0.44         NA        NA
-## 3     0.00         NA        NA
-## 4     0.02         NA        NA
-## 2     0.03         NA        NA
-## 5     0.00         NA        NA</code></pre>
-<!-- ```{r, cache = TRUE} -->
-<!-- N = 1e5 -->
-<!-- chain <- spatio_temp(N = N, verbose = FALSE) -->
-<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
-<!-- ``` -->
-<!-- ```{r, cache = TRUE} -->
-<!-- data(Anguilla_train) -->
-<!-- N = 1e6 -->
-<!-- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = floor(runif(1,0,100)), burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8) -->
-<!-- benchmark(replications = 10, multiESS(chain), multiESS_new(chain), multiESS_eigen_log(chain), multiESS_eigen_symmetric(chain)) -->
-<!-- ``` -->
+<pre class="r"><code>benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))</code></pre>
+<pre><code>##                                                      test replications elapsed
+## 1                 multiESS(chain, covmat = covmat, r = 1)           10    0.44
+## 3       multiESS_eigen_log(chain, covmat = covmat, r = 1)           10    0.41
+## 4 multiESS_eigen_symmetric(chain, covmat = covmat, r = 1)           10    0.40
+## 2             multiESS_new(chain, covmat = covmat, r = 1)           10    0.44
+## 5      multiESS_no_sym_log(chain, covmat = covmat, r = 1)           10    0.42
+##   relative user.self sys.self user.child sys.child
+## 1    1.100      0.44     0.00         NA        NA
+## 3    1.025      0.40     0.00         NA        NA
+## 4    1.000      0.41     0.00         NA        NA
+## 2    1.100      0.42     0.02         NA        NA
+## 5    1.050      0.42     0.00         NA        NA</code></pre>
+<p>Using e^(sum(log(eigen values))) improves the stability of the estimates but doesn’t give any advantage in terms of speed. One thing of note is the difference in the ESS estimate using the old and new batchsize function. Minor difference in batchsize is resulting in a reasonably large difference in ESS estimate. This has largely to do with the fact that adjust_matrix() is being called for the old batchsize and not for the new one. Therefore, the covariance estimate is significantly different for the two methods. Possible solutions to this is to modify the adjust_matrix() function or to use only p-1 eigen values.</p>
 
 
 

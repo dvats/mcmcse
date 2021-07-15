@@ -6,16 +6,17 @@ sourceCpp('batchsize.cpp')
 ### on aR coefficients and option to use only the
 ### tail of the chain for acf calculation
 ###################################################
-batchSize_final <- function(x, method = "bm", g = NULL, last_size = 5e4, fast = TRUE) {
+batchSize_final <- function(x, method = "bm", g = NULL, fast = TRUE) {
   
   if(!is.numeric(x))
     stop("'x' must be numeric") # the chain must be numeric
   if(any(is.na(x)))
     stop("NAs found")     # stop in NAs found
   
-  p <- ncol(x)
-  n <- sum(!is.na(x[,1])) # number of non-missing rows
   chain <- as.matrix(x)
+  p <- ncol(chain)
+  n <- sum(!is.na(chain[,1])) # number of non-missing rows
+  
   
   if(!is.matrix(chain) && !is.data.fradim(me(chain)))
     stop("'x' must be a matrix or data frame.")
@@ -35,10 +36,10 @@ batchSize_final <- function(x, method = "bm", g = NULL, last_size = 5e4, fast = 
   
   order.max <- min(p, n - 1L, floor(10 * log10(n))) # Maximum order up to which AR is fit
   xacf = matrix(, nrow = order.max+1, ncol = p)
-
+  
   if(fast)  {                                       # Use only the tail of the chain to calculate acf
-    last = min(n, last_size)
-    chain2 = chain[(n-last+1):n,]
+    last = min(n, 5e4)  # lenght of tail used
+    chain2 = as.matrix(chain[(n-last+1):n,])
     xacf = sapply(1:p, function(i) acf(chain2[,i], type = "covariance", lag.max = order.max, plot = FALSE,
                                        demean=TRUE, na.action = na.pass)$acf)
   }
