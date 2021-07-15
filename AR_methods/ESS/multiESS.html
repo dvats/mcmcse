@@ -616,6 +616,26 @@ print(multiESS(chain, r = 1))</code></pre>
 ## 4    1.000      0.41     0.00         NA        NA
 ## 2    1.100      0.42     0.02         NA        NA
 ## 5    1.050      0.42     0.00         NA        NA</code></pre>
+<pre class="r"><code>chain = matrix(rnorm(5e6), nrow = 1e4, ncol = 500)
+bs = batchSize_final(chain)
+covmat  &lt;- mcse.multi(chain, size = bs)$cov
+print(multiESS(chain, r = 1))</code></pre>
+<pre><code>## [1] 10887.95</code></pre>
+<pre class="r"><code>print(multiESS_eigen_log(chain, r=1))</code></pre>
+<pre><code>## [1] 10000</code></pre>
+<pre class="r"><code>benchmark(replications = 100, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))</code></pre>
+<pre><code>##                                                      test replications elapsed
+## 1                 multiESS(chain, covmat = covmat, r = 1)          100  203.48
+## 3       multiESS_eigen_log(chain, covmat = covmat, r = 1)          100  214.42
+## 4 multiESS_eigen_symmetric(chain, covmat = covmat, r = 1)          100  225.46
+## 2             multiESS_new(chain, covmat = covmat, r = 1)          100  196.12
+## 5      multiESS_no_sym_log(chain, covmat = covmat, r = 1)          100  227.34
+##   relative user.self sys.self user.child sys.child
+## 1    1.038    201.71     0.14         NA        NA
+## 3    1.093    204.52     0.11         NA        NA
+## 4    1.150    214.43     0.46         NA        NA
+## 2    1.000    193.45     1.73         NA        NA
+## 5    1.159    218.55     0.37         NA        NA</code></pre>
 <p>Using e^(sum(log(eigen values))) improves the stability of the estimates but doesn’t give any advantage in terms of speed. One thing of note is the difference in the ESS estimate using the old and new batchsize function. Minor difference in batchsize is resulting in a reasonably large difference in ESS estimate. This has largely to do with the fact that adjust_matrix() is being called for the old batchsize and not for the new one. Therefore, the covariance estimate is significantly different for the two methods. Possible solutions to this is to modify the adjust_matrix() function or to use only p-1 eigen values.</p>
 
 

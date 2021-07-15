@@ -233,6 +233,17 @@ benchmark(replications = 10, multiESS(chain, covmat = covmat, r = 1), multiESS_n
 
 ```
 
+```{r, cache = TRUE}
+chain = matrix(rnorm(5e6), nrow = 1e4, ncol = 500)
+bs = batchSize_final(chain)
+covmat  <- mcse.multi(chain, size = bs)$cov
+print(multiESS(chain, r = 1))
+print(multiESS_eigen_log(chain, r=1))
+
+benchmark(replications = 100, multiESS(chain, covmat = covmat, r = 1), multiESS_new(chain, covmat = covmat, r = 1), multiESS_eigen_log(chain, covmat = covmat, r = 1), multiESS_eigen_symmetric(chain, covmat = covmat, r = 1), multiESS_no_sym_log(chain, covmat = covmat, r = 1))
+```
+
+
 Using e^(sum(log(eigen values))) improves the stability of the estimates but doesn't give any advantage in terms of speed. One thing of note is the difference in the ESS estimate using the old and new batchsize function. Minor difference in batchsize is resulting in a reasonably large difference in ESS estimate. This has largely to do with the fact that adjust_matrix() is being called for the old batchsize and not for the new one. Therefore, the covariance estimate is significantly different for the two methods. Possible solutions to this is to modify the adjust_matrix() function or to use only p-1 eigen values. 
 
 
