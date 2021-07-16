@@ -22,6 +22,7 @@ source('batchSize_final.R')
 (c) mcse.multi(r = 3, adjust = TRUE)
 (d) mcse.multi(r = 1) but replace the diagonals of this with diag( mcse.multi(r = 3, adjust = FALSE) )
       — that is calculate regular BM, but replace the diagonals of BM with the diagonals of lugsail.
+(e) mcse.multi(r=1, adjust = FALSE)
 
 ```{r}
 multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
@@ -124,6 +125,7 @@ ESS_a = numeric(reps)
 ESS_b = numeric(reps)
 ESS_c = numeric(reps)
 ESS_d = numeric(reps)
+ESS_e = numeric(reps)
 
 for(i in 1:reps)  {
   if(i %% (reps/10) == 0) print(i)
@@ -133,12 +135,12 @@ for(i in 1:reps)  {
   ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE, size = bs)
   ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE, size = bs)
   ESS_d[i] = multiESS_diag(chain, adjust = FALSE, size = bs)
-  
+  ESS_e[i] = multiESS_eigen_log(chain, r=1, adjust = FALSE, size = bs)
 }
 
-print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d))))
+print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d)), sum(is.na(ESS_e))))
 
-boxplot(ESS_a, ESS_b, ESS_c, ESS_d, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d"))
+boxplot(ESS_a, ESS_b, ESS_c, ESS_d, ESS_e, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d", "ESS_e"))
 abline(h = ESS_truth)
 ```
 
@@ -149,19 +151,22 @@ ESS_a = numeric(reps)
 ESS_b = numeric(reps)
 ESS_c = numeric(reps)
 ESS_d = numeric(reps)
+ESS_e = numeric(reps)
 
 for(i in 1:reps)  {
   if(i %% (reps/10) == 0) print(i)
   chain <- spatio_temp(N = N, verbose = FALSE)
-  ESS_a[i] = multiESS_eigen_log(chain, r=1)
-  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE)
-  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE)
-  ESS_d[i] = multiESS_diag(chain)
+  bs = batchSize_final(chain, fast = FALSE)
+  ESS_a[i] = multiESS_eigen_log(chain, r=1, size = bs)
+  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE, size = bs)
+  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE, size = bs)
+  ESS_d[i] = multiESS_diag(chain, adjust = FALSE, size = bs)
+  ESS_e[i] = multiESS_eigen_log(chain, r=1, adjust = FALSE, size = bs)
 }
 
-print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d))))
+print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d)), sum(is.na(ESS_e))))
 
-boxplot(ESS_a, ESS_b, ESS_c, ESS_d, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d"))
+boxplot(ESS_a, ESS_b, ESS_c, ESS_d, ESS_e, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d", "ESS_e"))
 
 ```
 
@@ -175,21 +180,23 @@ ESS_a = numeric(reps)
 ESS_b = numeric(reps)
 ESS_c = numeric(reps)
 ESS_d = numeric(reps)
-
+ESS_e = numeric(reps)
 
 
 for(i in 1:reps)  {
   if(i %% (reps/10) == 0) print(i)
   chain <- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = random[i], burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
-  ESS_a[i] = multiESS_eigen_log(chain, r=1)
-  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE)
-  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE)
-  ESS_d[i] = multiESS_diag(chain)
+  bs = batchSize_final(chain, fast = FALSE)
+  ESS_a[i] = multiESS_eigen_log(chain, r=1, size = bs)
+  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE, size = bs)
+  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE, size = bs)
+  ESS_d[i] = multiESS_diag(chain, adjust = FALSE, size = bs)
+  ESS_e[i] = multiESS_eigen_log(chain, r=1, adjust = FALSE, size = bs)
 }
 
-print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d))))
+print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d)), sum(is.na(ESS_e))))
 
-boxplot(ESS_a, ESS_b, ESS_c, ESS_d, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d"))
+boxplot(ESS_a, ESS_b, ESS_c, ESS_d, ESS_e, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d", "ESS_e"))
 
 ```
 
