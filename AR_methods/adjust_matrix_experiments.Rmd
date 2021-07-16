@@ -47,8 +47,7 @@ multiESS_eigen_log <- function(x, covmat = NULL, g = NULL, ...) {
 
 	if(!is.matrix(covmat))
 	{
-	  bs = batchSize_final(chain, fast = FALSE)
-	  covmat <- mcse.multi(chain, ...)$cov
+	  covmat <- mcse.multi(chain,  ...)$cov
 	} 
 	
 	var_mat <- cov(chain)
@@ -83,9 +82,8 @@ multiESS_diag <- function(x, covmat = NULL, g = NULL, ...) {
 
 	if(!is.matrix(covmat))
 	{
-	  #bs = batchSize_final(chain, fast = FALSE)
 	  covmat <- mcse.multi(chain, r=1, ...)$cov
-	  covmat_ls <- mcse.multi(chain, r=3, adjust = FALSE, ...)$cov
+	  covmat_ls <- mcse.multi(chain, r=3, ...)$cov
 	  diag(covmat) = diag(covmat_ls)
 	} 
 	
@@ -107,7 +105,7 @@ var_fit_truth <- function(phi,omega)
   V <- matrix(qr.solve(diag(1, p^2) - kronecker(phi, phi))%*%as.numeric(omega), nrow = p, ncol = p)
   Sigma <- Inv.IPhi%*%V + V%*%t(Inv.IPhi) - V
   Gamma <- - ( Inv.IPhi %*% Inv.IPhi %*% phi %*% V + V %*% t(phi) %*% t(Inv.IPhi) %*% t(Inv.IPhi) )
-  return(list(Sigma = Sigma, Gamma = Gamma))
+  return(list(Sigma = Sigma, Gamma = Gamma, Lambda = V))
 }
 
 p <- 20
@@ -120,7 +118,7 @@ Phi0 <- B/(max(eigen(B)$values) + .001)
 phi <- 0.9 * Phi0
 omega <- diag(p)
 var_truth <- var_fit_truth(phi = phi, omega = omega)
-const_truth = (sum(diag(var_truth$Gamma)^2)/(sum(diag(var_truth$Sigma)^2)))^(1/3)
+ESS_truth = N * (det(var_truth$Lambda)/det(var_truth$Sigma))^(1/p)
 
 ESS_a = numeric(reps)
 ESS_b = numeric(reps)
@@ -130,17 +128,18 @@ ESS_d = numeric(reps)
 for(i in 1:reps)  {
   if(i %% (reps/10) == 0) print(i)
   chain <-  var1(p = p, phi = phi, nsim = N, omega = omega)
-  bs = batchSize_final(chain, fast=FALSE)
+  bs = batchSize_final(chain, fast = FALSE)
   ESS_a[i] = multiESS_eigen_log(chain, r=1, size = bs)
   ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE, size = bs)
   ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE, size = bs)
-  ESS_d[i] = multiESS_diag(chain, size = bs)
+  ESS_d[i] = multiESS_diag(chain, adjust = FALSE, size = bs)
   
 }
 
 print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d))))
 
 boxplot(ESS_a, ESS_b, ESS_c, ESS_d, names = c("ESS_a", "ESS_b", "ESS_c", "ESS_d"))
+abline(h = ESS_truth)
 ```
 
 ```{r spatemp, cache=TRUE, warning = FALSE}
@@ -154,11 +153,10 @@ ESS_d = numeric(reps)
 for(i in 1:reps)  {
   if(i %% (reps/10) == 0) print(i)
   chain <- spatio_temp(N = N, verbose = FALSE)
-  bs = batchSize_final(chain, fast=FALSE)
-  ESS_a[i] = multiESS_eigen_log(chain, r=1, size = bs)
-  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE, size = bs)
-  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE, size = bs)
-  ESS_d[i] = multiESS_diag(chain, size = bs)
+  ESS_a[i] = multiESS_eigen_log(chain, r=1)
+  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE)
+  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE)
+  ESS_d[i] = multiESS_diag(chain)
 }
 
 print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d))))
@@ -183,11 +181,10 @@ ESS_d = numeric(reps)
 for(i in 1:reps)  {
   if(i %% (reps/10) == 0) print(i)
   chain <- chain <- MCMClogit(formula = Angaus~ 1 + . , data = dat, seed = random[i], burnin = 0, mcmc = N, thin = 1, B0 = 1/100, tune = .8)
-  bs = batchSize_final(chain, fast=FALSE)
-  ESS_a[i] = multiESS_eigen_log(chain, r=1, size = bs)
-  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE, size = bs)
-  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE, size = bs)
-  ESS_d[i] = multiESS_diag(chain, size = bs)
+  ESS_a[i] = multiESS_eigen_log(chain, r=1)
+  ESS_b[i] = multiESS_eigen_log(chain, r=3, adjust = FALSE)
+  ESS_c[i] = multiESS_eigen_log(chain, r=3, adjust = TRUE)
+  ESS_d[i] = multiESS_diag(chain)
 }
 
 print(c(sum(is.na(ESS_a)), sum(is.na(ESS_b)), sum(is.na(ESS_c)), sum(is.na(ESS_d))))
