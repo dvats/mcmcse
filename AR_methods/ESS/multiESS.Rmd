@@ -18,6 +18,8 @@ source("batchsize_final.R")
 
 ```{r}
 # ESS without symmetric=TRUE but the numerically stable e^log(eigen values)
+
+### change covmat <- mcse.multi(chain, size = bs, ...)$cov to covmat <- mcse.multi(chain, ...)$cov
 multiESS_no_sym_log <- function(x, covmat = NULL, g = NULL, ...) {
   chain <- as.matrix(x)
 	if(!is.matrix(x) && !is.data.frame(x))

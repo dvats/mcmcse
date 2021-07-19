@@ -51,5 +51,6 @@ batchSize_final <- function(x, method = "bm", g = NULL, fast = TRUE) {
 
   threshold = qnorm((1.95)/2)/sqrt(n)              # threshold used in confidence interaval calculation
   b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
+  b = min(b, n/p)
   return(b)
 }
