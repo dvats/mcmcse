@@ -310,7 +310,8 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
     if(min(sig.eigen) <= 0)  #needs an adjustment. No need to adjust is not needed
     {
       adjust.used <- TRUE
-      sig.mat <- adjust_matrix(sig.mat, N = n) 
+      warning("Estimated matrix not positive definite. The chain might be highly correlated or very high dimensional. Consider increasing the sample size. Using the default batch means estimator as a substitute.")
+      sig.mat = mcse.multi(x, method = "bm", r = 1, size = size, g = g, adjust = FALSE, blather = FALSE)$cov
     }    
   } 
 
