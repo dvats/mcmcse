@@ -198,8 +198,8 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   }
   else {
     if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) {
-      warning("size is either too large, too small, or not a number. Setting 'size' to n^(1/2)")
-      size = sqrt(n)
+      warning("size is either too large, too small, or not a number. Setting 'size' to the optimal value")
+      size = batchSize(x = x, method = method, g = g)
     }
         
 
@@ -220,10 +220,7 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   ## Setting matrix sizes to avoid dynamic memory 
   sig.mat = matrix(0, nrow = p, ncol = p)
 
-  if(floor(b/r) < 1) {
-    warning("Either decrease r or increase n. Setting b = r")
-    b = r
-  }
+  b = max(b, r)
 
   message <- ""   # will store some info for blather
 
