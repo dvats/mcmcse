@@ -5,9 +5,11 @@ date: "7/19/2021"
 output: html_document
 ---
 
-```{r}
+```{r, results=FALSE, warning=FALSE, message=FALSE}
+set.seed(10)
 library(mcmcse)
 library(Rcpp)
+library(rbenchmark)
 sourceCpp('../mcseqbm.cpp')
 sourceCpp('../mcseqobm.cpp')
 sourceCpp('../mcseqsub.cpp')
@@ -71,12 +73,6 @@ mcseq_new <- function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"
     var.hat = mcseqsub(x, b, q, quant)
     se = sqrt(var.hat / n)
     
-    # a = n - b + 1
-    # y = sapply(1:a, function(k) return(quant(x[k:(k + b - 1)], q)))
-    # mu.hat = mean(y)
-    # print(mu.hat)
-    # var.hat = n * b * sum((y - mu.hat)^2) / (a - 1) / a
-    #se = sqrt(var.hat / n)
   }
   
   
@@ -85,4 +81,41 @@ mcseq_new <- function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"
 
 
 ```
+
+```{r, cache = TRUE}
+n = 1e6
+x = double(n)
+rho = 0.99
+x[1] = 2
+for (i in 1:(n - 1))
+    x[i + 1] = rho * x[i] + rnorm(1)
+```
+
+```{r, cache = TRUE}
+print("bm estimators")
+print(mcse.q(x, q = 0.4, size = "sqroot", method = "bm"))
+print(mcseq_new(x, q = 0.4, size = "sqroot", method = "bm"))
+
+print("obm estimators")
+print(mcse.q(x, q = 0.4, size = "sqroot", method = "obm"))
+print(mcseq_new(x, q = 0.4, size = "sqroot", method = "obm"))
+
+print("sub estimators")
+print(mcse.q(x, q = 0.4, size = "sqroot", method = "sub"))
+print(mcseq_new(x, q = 0.4, size = "sqroot", method = "sub"))
+```
+
+
+```{r, cache = TRUE}
+benchmark(replications = 1e2, mcse.q(x, q = 0.4, size = "sqroot", method = "bm"), mcseq_new(x, q = 0.4, size = "sqroot", method = "bm"))
+```
+
+```{r, cache=TRUE}
+benchmark(replications = 1e2, mcse.q(x, q = 0.4, size = "sqroot", method = "obm"), mcseq_new(x, q = 0.4, size = "sqroot", method = "obm"))
+```
+
+```{r, cache = TRUE}
+benchmark(replications = 1e2, mcse.q(x, q = 0.4, size = "sqroot", method = "sub"), mcseq_new(x, q = 0.4, size = "sqroot", method = "sub"))
+```
+
 
