@@ -4,7 +4,7 @@
 ##
 ## method = which method to use. 
 ####################################################################
-mcseR <- function(x, method = "bm", size = "sqroot", g = NULL, alpha = 0.90, warn = FALSE)
+mcseR <- function(x, method = c("bm", "wbm", "bartlett", "tukey"), size = "sqroot", g = NULL, alpha = 0.90, warn = FALSE)
 { 
   chain <- as.matrix(x)
   
@@ -14,7 +14,7 @@ mcseR <- function(x, method = "bm", size = "sqroot", g = NULL, alpha = 0.90, war
   ## Setting dimensions on the mcmc output. 
   n = dim(chain)[1]
   p = dim(chain)[2]
-
+  method = match.arg(method)
 
   ## Initializing b_n 
   if(size == "sqroot")

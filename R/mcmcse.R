@@ -52,7 +52,7 @@
 #'
 #' @export
 
-mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
+mcse <- function(x, size = NULL, g = NULL, r = 3, method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
 {
     x <- as.numeric(x)
     if (! is.function(g))
@@ -248,7 +248,7 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
 #' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
 #' @export
 
-mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r = 3)
+mcse.mat = function(x, size = NULL, g = NULL, method = method = c("bm", "obm", "bartlett", "tukey"), r = 3)
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")

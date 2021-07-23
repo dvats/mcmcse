@@ -65,7 +65,7 @@ arp_approx <- function(x)
 ### Functions estimates the "optimal" batch size using the parametric
 ### method of Liu et.al
 #####################################################################
-batchSize <- function(x, method = "bm", g = NULL)
+batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = NULL)
 {
 
   chain <- as.matrix(x)
@@ -88,6 +88,7 @@ batchSize <- function(x, method = "bm", g = NULL)
   n <- dim(chain)[1]
   ar_fit <- apply(chain, 2, arp_approx)^2
   coeff <- ( sum(ar_fit[1,])/sum(ar_fit[2,]) )^(1/3)
+  method = match.arg(method)
 
   b.const <- (3/2*n)*(method == "obm" || method == "bartlett" || method == "tukey") + (n)*(method == "bm")
   b <- b.const^(1/3) * coeff
@@ -137,7 +138,7 @@ mSVEfft <- function (A, b, method = "bartlett")
 ### Main function. Estimates the covariance matrix
 ### Recommend blather = FALSE for users and TRUE for developers
 #####################################################################
-mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
   
   # at some point the method used may be different
@@ -150,11 +151,7 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   }
 
   if(!is.numeric(r)) stop("r should be numeric")
-  if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
-  {
-    warning("No such method available. Using default method = bm.")
-    method = "bm"
-  }
+  method = match.arg(method)
    
   if(r > 5) warning("We recommend using r <=5. r = 1,2,3 are standard")
   if(r < 1)  {
@@ -220,7 +217,7 @@ mcse.multi <- function(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = 
   ## Setting matrix sizes to avoid dynamic memory 
   sig.mat = matrix(0, nrow = p, ncol = p)
 
-  b = max(b, r)
+  b = max(b, 2*r)
 
   message <- ""   # will store some info for blather
 
