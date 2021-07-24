@@ -138,8 +138,9 @@ mSVEfft <- function (A, b, method = "bartlett")
 ### Main function. Estimates the covariance matrix
 ### Recommend blather = FALSE for users and TRUE for developers
 #####################################################################
-mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), lug_params = c(3,0.5), size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
+  method = match.arg(method)
   
   # at some point the method used may be different
   # from the method asked. Blather will output this
@@ -148,16 +149,25 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
   {
     method = "bm"
     r <- 3
+    c <- 0.5
   }
-
+  
+  r = lug_params[1]
+  c = lug_params[2]
+  
   if(!is.numeric(r)) stop("r should be numeric")
-  method = match.arg(method)
-   
+  if(!is.numeric(c)) stop("c should be numeric")
+  
   if(r > 5) warning("We recommend using r <=5. r = 1,2,3 are standard")
   if(r < 1)  {
     warning("r cannot be less than 1. Setting r = 3")
     r = 3
   }
+  if(c > 1) {
+    warning("c cannot be greater than 1. Setting c = 0.5")
+    c = 0.5
+  }
+  
   # making matrix compatible and applying g
   chain <- as.matrix(x)
   if(!is.matrix(chain) && !is.data.frame(chain))
@@ -229,7 +239,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
     method.used <- "Batch Means"
     if(r > 1)
     {
-      sig.mat <- 2*bm.mat - mbmC(chain, floor(b/r))
+      sig.mat <- (1/(1-c))*bm.mat - (c/(1-c))*mbmC(chain, floor(b/r))
       method.used <- paste("Lugsail Batch Means with r = ", r)
       if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
       {
@@ -248,7 +258,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
     method.used <- "Overlapping Batch Means"
     if(r > 1)
     {
-      sig.mat <- 2*obm.mat - mobmC(chain, floor(b/r))
+      sig.mat <- (1/(1-c))*obm.mat - (c/(1-c))*mobmC(chain, floor(b/r))
       method.used <- paste("Lugsail Overlapping Batch Means with r = ", r)
       if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
       {
@@ -268,7 +278,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
    method.used <- "Bartlett Spectral Variance"
    if(r > 1)
    {
-    sig.mat <- 2*bar.mat - mSVEfft(A = chain, b = floor(b/r), method = "bartlett")
+    sig.mat <- (1/(1-c))*bar.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = "bartlett")
     method.used <- paste("Lugsail Bartlett Spectral Variance with r = ", r)
     if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
     {
@@ -288,7 +298,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
    method.used <- "Tukey Spectral Variance"
    if(r > 1)
    {
-    sig.mat <- 2*tuk.mat - mSVEfft(A = chain, b = floor(b/r), method = "tukey")
+    sig.mat <- (1/(1-c))*tuk.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = "tukey")
     method.used <- paste("Lugsail Tukey Spectral Variance with r = ", r)
     if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
     {
@@ -314,11 +324,13 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
 
   if(blather)
   {
-    return(list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, 
-        "method" = method.used, "size" = b, "Adjustment-Used" = adjust.used, "message" = message))
+    value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, 
+        "method" = method.used, "size" = b, "Adjustment-Used" = adjust.used, "message" = message)
   } else {
-    return(list("cov" = sig.mat, "est" = mu.hat, "nsim" = n))
+    value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n)
   }
+  class(value) = "mcmcse"
+  value
 
 }
 

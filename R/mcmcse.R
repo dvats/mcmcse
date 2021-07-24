@@ -232,7 +232,9 @@ mcse <- function(x, size = NULL, g = NULL, r = 3, method = c("bm", "obm", "bartl
 
     #     se = sqrt(var.hat / n)
     # }
-    list(est = mu.hat, se = se)
+    value = list("est" = mu.hat, "se" = se, "nsim" = n)
+    class(value) = "mcmcse"
+    value
 }
 
 #' Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.
@@ -383,7 +385,9 @@ mcse.q = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"
         var.hat = n * b * sum((y - mu.hat)^2) / (a - 1) / a
         se = sqrt(var.hat / n)
     }
-    list(est = xi.hat, se = se)      
+    value = list("est" = xi.hat, "se" = se, "nsim" = n)
+    class(value) = "mcmcse"
+    value
 }
 
 #' Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples.

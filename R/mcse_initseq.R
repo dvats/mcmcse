@@ -46,12 +46,14 @@ mcse.initseq <- function(x, g = NULL, adjust = FALSE, blather = FALSE)
   
   if(blather)
   {
-    return(list("cov" = sig, "cov.adj"=sig.adj,
-              "est" = mu.hat, "nsim" = n, "adjust" = adjust)) 
+    value = list("cov" = sig, "cov.adj"=sig.adj, "method" = "initial sequence", 
+              "est" = mu.hat, "nsim" = n, "adjust" = adjust)
   } else{
-    return(list("cov" = sig, "cov.adj"=sig.adj,
-              "est" = mu.hat)) 
+    value = list("cov" = sig, "cov.adj"=sig.adj, "nsim" = n, 
+              "est" = mu.hat)
   }
+  class(value) = "mcmcse"
+  value
 
 }
 
