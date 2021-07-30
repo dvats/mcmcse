@@ -13,7 +13,7 @@ double lag(int s, double b, String method)
   }
   else
   {
-    return((1 + cos(PI * s/b))/2 );
+    return((1 + cos(M_PI * s/b))/2 );
   }
 }
 
