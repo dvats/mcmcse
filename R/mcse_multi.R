@@ -65,6 +65,48 @@ arp_approx <- function(x)
 ### Functions estimates the "optimal" batch size using the parametric
 ### method of Liu et.al
 #####################################################################
+
+#' Batch size (truncation point) selection
+#' 
+#' Function returns the optimal batch size (or truncation point) for a given chain and method.
+#' 
+#' @usage batchSize(x, method = "bm", g = NULL)
+#' 
+#' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
+#'   Carlo sample size.
+#' @param method Any of `bm`,`obm`,`bartlett`,`tukey`. `bm` represents batch
+#'   means estimator, `obm` represents the overlapping batch means estimator,
+#'   and `bartlett` and `tukey` represent the modified-Bartlett window and
+#'   the Tukey-Hanning windows for the spectral variance estimators.
+#' @param g A function that represents features of interest. g is applied to each row of x and
+#'   thus g should take a vector input only. If g is NULL, g is set to be identity, which
+#'   is estimation of the mean of the target density.
+#'   
+#' @return A value of the optimal batch size is returned.
+#' 
+#' @references 
+#' Liu, Y., Vats, D., and Flegal, J. M. Batch size selection for variance estimators in MCMC, arXiv
+#' preprint arXiv:1804.05975 (2019).
+#' 
+#' @seealso \code{\link{mcse.multi}}, which calls on batchSize. \code{\link{mcse}}, which calls on batchSize.
+#' 
+#' @export
+#' 
+#' @examples 
+#' library(mAr)
+#' p <- 3
+#' n <- 1e3
+#' omega <- 5*diag(1,p)
+#' ## Making correlation matrix var(1) model
+#' set.seed(100)
+#' foo <- matrix(rnorm(p^2), nrow = p)
+#' foo <- foo %*% t(foo)
+#' phi <- foo / (max(eigen(foo)$values) + 1)
+#' out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
+#' batchSize(out)
+#' batchSize(out, method = "obm")
+#' batchSize(out, method = "bartlett")
+
 batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = NULL)
 {
 
@@ -138,6 +180,76 @@ mSVEfft <- function (A, b, method = "bartlett")
 ### Main function. Estimates the covariance matrix
 ### Recommend blather = FALSE for users and TRUE for developers
 #####################################################################
+
+#' Multivariate Monte Carlo standard errors for expectations.
+#' 
+#' Function returns the estimate of the covariance matrix in the Markov Chain CLT using batch means
+#' or spectral variance methods (with different lag windows). The function also returns the Monte
+#' Carlo estimate.
+#' 
+#' @usage mcse.multi(x, method = "bm", r = 3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+#' 
+#' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
+#' Carlo sample size.
+#' @param method Any of `bm`,`obm`,`bartlett`,`tukey`. `bm` represents batch
+#'   means estimator, `obm` represents the overlapping batch means estimator,
+#'   and `bartlett` and `tukey` represent the modified-Bartlett window and
+#'   the Tukey-Hanning windows for the spectral variance estimators.
+#' @param r The lugsail parameter that converts a lag window into its lugsail equivalent.
+#'   Larger values of `r` will typically imply less underestimation of ''cov'',
+#'   but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
+#'   good choices. `r > 5` is not recommended. Non-integer values are ok.
+#' @param size Represents the batch size in "bm" and the truncation point in "bartlett" and
+#'  "tukey". Default is NULL which implies that an optimal batch size is calculated
+#'  using the batchSize() function. Can take character values of `sqroot` and
+#'  `cuberoot` or any numeric value between 1 and n/2. `sqroot` means
+#'  size is floor(n^(1/2)) and "cuberoot" means size is floor(n^(1/3)).
+#' @param g A function that represents features of interest. g is applied to each row of x and
+#'   thus g should take a vector input only. If g is NULL, g is set to be identity, which
+#'   is estimation of the mean of the target density.
+#' @param adjust Defaults to `TRUE`. logical for whether the matrix should automatically be ad-
+#'  justed if unstable.
+#' @param blather If `TRUE`, returns under-the-hood workings of the package.
+#' 
+#' @return A list is returned with the following components,
+#' \describe{
+#'  \item{`cov`}{a covariance matrix estimate.}
+#'  \item{`est`}{estimate of g(x).}
+#'  \item{`nsim`}{number of rows of the input x.}
+#'  \item{`method`}{method used to calculate matrix cov.}
+#'  \item{`size`}{value of size used to calculate cov.}
+#'  \item{`adjust.used`}{whether an adjustment was used to calculate cov.}
+#' }
+#' @references 
+#'  Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
+#'  Monte Carlo, Biometrika.
+#'  Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral   #'  variance estimators for Markov chain Monte Carlo, Bernoulli.
+#'  
+#' @seealso \code{\link{batchSize}}, which computes an optimal batch size. \code{\link{mcse.initseq}}, which computes
+#' an initial sequence estimator. \code{\link{mcse}}, which acts on a vector. \code{\link{mcse.mat}}, which applies mcse
+#' to each column of a matrix or data frame. \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard
+#' errors for quantiles.
+#'  
+#' @export
+#'  
+#' @examples 
+#' library(mAr)
+#' p <- 3
+#' n <- 1e3
+#' omega <- 5*diag(1,p)
+#' ## Making correlation matrix var(1) model
+#' set.seed(100)
+#' foo <- matrix(rnorm(p^2), nrow = p)
+#' foo <- foo %*% t(foo)
+#' phi <- foo / (max(eigen(foo)$values) + 1)
+#' out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
+#' mcse.bm <- mcse.multi(x = out)
+#' mcse.tuk <- mcse.multi(x = out, method = "tukey")
+#' # If we are only estimating the mean of the first component,
+#' # and the second moment of the second component
+#' g <- function(x) return(c(x[1], x[2]^2))
+#' mcse <- mcse.multi(x = out, g = g)
+
 mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), lug_params = c(3,0.5), size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
   method = match.arg(method)
