@@ -6,9 +6,13 @@ sourceCpp('batchsize.cpp')
 ### on aR coefficients and option to use only the
 ### tail of the chain for acf calculation
 ###################################################
+
 #' Batch size (truncation point) selection
 #' 
 #' Function returns the optimal batch size (or truncation point) for a given chain and method.
+#' 
+#' @details Final update of batchSize using thresholding on aR coefficients and option to use only the tail of the chain for acf
+#' calculation.
 #' 
 #' @usage batchSize(x, method = "bm", g = NULL)
 #' 
