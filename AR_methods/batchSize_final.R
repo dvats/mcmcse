@@ -51,6 +51,30 @@ sourceCpp('batchsize.cpp')
 #' batchSize(out, method = "obm")
 #' batchSize(out, method = "bartlett")
 #' 
+#' library(mvtnorm)
+#' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
+#' p <- 2
+#' n <- 1e3
+#' mu1 <- 2 
+#' mu2 <- 50
+#' A <- 1
+#' B <- 1
+#' rho <- 0.5
+#' sigma = matrix(c(A, rho, rho, B), nrow = 2)
+#' init = rmvnorm(1, mean = c(mu1, mu2), sigma = sigma) ## Starting from stationarity
+#' X <- matrix(0, nrow = n, ncol = p)
+#' X[1, ] = init
+#' ## Gibbs sampler to generate the Markov chain
+#' for (i in 2:n) {
+#'  X[i, 1] = rnorm(1, mu1 + (rho / b) * (X[i - 1, 2] - mu2), sqrt(a - (rho ^ 2) / b))
+#'  X[i, 2] = rnorm(1, mu2 + (rho / a) * (X[i, 1] - mu1), sqrt(b - (rho ^ 2) / a))
+#' }
+#' batchSize(X)
+#' batchSize(X, method = "obm")
+#' batchSize(X, method = "bartlett")
+#' 
+
+
 batchSize_final <- function(x, method = "bm", g = NULL, fast = TRUE) {
   
   if(!is.numeric(x))
