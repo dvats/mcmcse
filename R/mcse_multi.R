@@ -107,24 +107,11 @@ arp_approx <- function(x)
 #' batchSize(out, method = "obm")
 #' batchSize(out, method = "bartlett")
 #' 
-#' library(mvtnorm)
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
-#' p <- 2
 #' n <- 1e3
-#' mu1 <- 2 
-#' mu2 <- 50
-#' A <- 1
-#' B <- 1
-#' rho <- 0.5
-#' sigma = matrix(c(A, rho, rho, B), nrow = 2)
-#' init = rmvnorm(1, mean = c(mu1, mu2), sigma = sigma) ## Starting from stationarity
-#' X <- matrix(0, nrow = n, ncol = p)
-#' X[1, ] = init
-#' ## Gibbs sampler to generate the Markov chain
-#' for (i in 2:n) {
-#'  X[i, 1] = rnorm(1, mu1 + (rho / b) * (X[i - 1, 2] - mu2), sqrt(a - (rho ^ 2) / b))
-#'  X[i, 2] = rnorm(1, mu2 + (rho / a) * (X[i, 1] - mu1), sqrt(b - (rho ^ 2) / a))
-#' }
+#' mu = c(2, 50)
+#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' X = multivariate_Gibbs_normal(n, mu, sigma)
 #' batchSize(X)
 #' batchSize(X, method = "obm")
 #' batchSize(X, method = "bartlett")
@@ -166,10 +153,6 @@ batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = NULL)
 #####################################################################
 ### Fast calculation of SVE estimators using Herberle et. al (2017)
 #####################################################################
-# library(fftwtools)
-# library(Rcpp)
-# library(RcppArmadillo)
-# sourceCpp("lag.cpp")
 
 mSVEfft <- function (A, b, method = "bartlett")
 {
@@ -272,24 +255,11 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' g <- function(x) return(c(x[1], x[2]^2))
 #' mcse <- mcse.multi(x = out, g = g)
 #' 
-#' library(mvtnorm)
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
-#' p <- 2
 #' n <- 1e3
-#' mu1 <- 2 
-#' mu2 <- 50
-#' A <- 1
-#' B <- 1
-#' rho <- 0.5
-#' sigma = matrix(c(A, rho, rho, B), nrow = 2)
-#' init = rmvnorm(1, mean = c(mu1, mu2), sigma = sigma) ## Starting from stationarity
-#' X <- matrix(0, nrow = n, ncol = p)
-#' X[1, ] = init
-#' ## Gibbs sampler to generate the Markov chain
-#' for (i in 2:n) {
-#'  X[i, 1] = rnorm(1, mu1 + (rho / b) * (X[i - 1, 2] - mu2), sqrt(a - (rho ^ 2) / b))
-#'  X[i, 2] = rnorm(1, mu2 + (rho / a) * (X[i, 1] - mu1), sqrt(b - (rho ^ 2) / a))
-#' }
+#' mu = c(2, 50)
+#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' X = multivariate_Gibbs_normal(n, mu, sigma)
 #' mcse.bm <- mcse.multi(x = X)
 #' mcse.tuk <- mcse.multi(x = X, method = "tukey")
 #' # If we are only estimating the mean of the first component,
@@ -375,7 +345,6 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), l
   if(b == 1 && r != 1)
   {
     r = 1
-    message <- "r was set to 1 since b = 1. "
   }
  ########################## 
 
@@ -389,104 +358,75 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), l
   b = max(b, 2*r)
 
   message <- ""   # will store some info for blather
-
+  
   ## Batch Means
-  if(method == "bm")
-  {
-    bm.mat <- mbmC(chain, b)
-    sig.mat <- bm.mat
-    method.used <- "Batch Means"
-    if(r > 1)
-    {
-      sig.mat <- (1/(1-c))*bm.mat - (c/(1-c))*mbmC(chain, floor(b/r))
-      method.used <- paste("Lugsail Batch Means with r = ", r)
-      if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
-      {
-        sig.mat <- bm.mat
-        method.used <- "Batch Means"
-        message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
-      }
+  if(method == "bm")  {
+    init.mat = mbmC(chain, b)
+    sig.mat = init.mat
+    if(r>1) {
+      sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mbmC(chain, floor(b/r))
     }
   }
-
-  # Overlapping Batch means
-  if(method == "obm")
-  {
-    obm.mat <- mobmC(chain, b)
-    sig.mat <- obm.mat
-    method.used <- "Overlapping Batch Means"
-    if(r > 1)
-    {
-      sig.mat <- (1/(1-c))*obm.mat - (c/(1-c))*mobmC(chain, floor(b/r))
-      method.used <- paste("Lugsail Overlapping Batch Means with r = ", r)
-      if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
-      {
-        sig.mat <- obm.mat
-        method.used <- "Overlapping Batch Means"
-        message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
-      }
+    
+  
+  ## Overlapping Batch Means
+  if(method == "obm") {
+    init.mat = mobmC(chain, b)
+    sig.mat = init.mat
+    if(r>1) {
+      sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mobmC(chain, floor(b/r))
     }
   }
-
-  # SVE with Bartlett window
-  if(method == "bartlett")
+    
+  
+  ## Bartlett or Tukey
+  if((method == "bartlett") || (method == "tukey"))
   {
-   chain <- scale(chain, center = mu.hat, scale = FALSE)
-   bar.mat <-  mSVEfft(A = chain, b = b, method = "bartlett")#msveC(chain, b, "bartlett")
-   sig.mat <- bar.mat
-   method.used <- "Bartlett Spectral Variance"
-   if(r > 1)
-   {
-    sig.mat <- (1/(1-c))*bar.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = "bartlett")
-    method.used <- paste("Lugsail Bartlett Spectral Variance with r = ", r)
-    if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
-    {
-      sig.mat <- bar.mat
-      method.used <- "Bartlett Spectral Variance"
-      message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
+    chain <- scale(chain, center = mu.hat, scale = FALSE)
+    init.mat <-  mSVEfft(A = chain, b = b, method = method)
+    sig.mat = init.mat
+    if(r>1) {
+      sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = method)
     }
-   }
   }
-
-  ## SVE with tukey window
-  if(method == "tukey")
+  
+  method.used = paste("Lugsail ", method, " with r = ", r)
+  if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
   {
-   chain <- scale(chain, center = mu.hat, scale = FALSE)
-   tuk.mat <- mSVEfft(A = chain, b = b, method = "tukey")
-   sig.mat <- tuk.mat
-   method.used <- "Tukey Spectral Variance"
-   if(r > 1)
-   {
-    sig.mat <- (1/(1-c))*tuk.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = "tukey")
-    method.used <- paste("Lugsail Tukey Spectral Variance with r = ", r)
-    if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
-    {
-      sig.mat <- tuk.mat
-      method.used <- "Tukey Spectral Variance"
-      message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
-    }
-   }
+    sig.mat <- init.mat
+    method.used <- method
+    message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
   }
-
+  
+  sig.eigen <- eigen(sig.mat, only.values = TRUE)$values
+  
   adjust.used <- FALSE  #whether an adjustment was made. None yet
+  sig.adj = NULL
   
   if(adjust) # if adjust is FALSE, may output non PD estimator
   {
-    sig.eigen <- eigen(sig.mat, only.values = TRUE)$values
     if(min(sig.eigen) <= 0)  #needs an adjustment. No need to adjust is not needed
     {
       adjust.used <- TRUE
       warning("Estimated matrix not positive definite. The chain might be highly correlated or very high dimensional. Consider increasing the sample size. Using the default batch means estimator as a substitute.")
-      sig.mat = mcse.multi(x, method = "bm", r = 1, size = size, g = g, adjust = FALSE, blather = FALSE)$cov
+      if(method == "bm")  {
+        sig.mat = init.mat
+      } else  {
+        sig.mat = mcse.multi(x, method = "bm", r = 1, size = size, g = g, adjust = FALSE, blather = FALSE)$cov
+      }
+      sig.adj = sig.mat
+      sig.eigen <- eigen(sig.mat, only.values = TRUE)$values
     }    
   } 
 
   if(blather)
   {
-    value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, 
-        "method" = method.used, "size" = b, "Adjustment-Used" = adjust.used, "message" = message)
+    value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, "eigen-values" = sig.eigen,
+        "method" = method.used, "size" = b, "Adjustment-Used" = adjust.used, "message" = message,
+        "cov.adj"=sig.adj)
   } else {
-    value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n)
+    value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, "eigen-values" = sig.eigen,
+                 "cov.adj"=sig.adj)
   }
   class(value) = "mcmcse"
   value
@@ -494,7 +434,6 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), l
 }
 
 
-
-
+is.mcmcse <- function(x) inherits(x, "mcmcse")
 
 

@@ -117,10 +117,6 @@ mcseR <- function(x, method = c("bm", "wbm", "bartlett", "tukey"), size = "sqroo
    sig.mat <- sig.sum/n
    c <- exp(log(p) + log(n-b) - log(n) - log(n - b - p +1) + log(qf(alpha, p, n - b - p + 1)))
   }
-
-
- # # c <- qchisq(alpha, p)/n
- #  c <- exp(log(p) + log(a-1) - log(n) - log(a-p) + log(qf(alpha, p, a-p)))
  
   dummy <- log(2) + (p/2)*log(pi*c) - log(p) - lgamma(p/2)
   log.det.sig <- sum(log(eigen(sig.mat, only.values = TRUE)$values))

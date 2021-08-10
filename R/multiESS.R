@@ -44,24 +44,11 @@
 #' out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
 #' multiESS(out)
 #' 
-#' library(mvtnorm)
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
-#' p <- 2
 #' n <- 1e3
-#' mu1 <- 2 
-#' mu2 <- 50
-#' A <- 1
-#' B <- 1
-#' rho <- 0.5
-#' sigma = matrix(c(A, rho, rho, B), nrow = 2)
-#' init = rmvnorm(1, mean = c(mu1, mu2), sigma = sigma) ## Starting from stationarity
-#' X <- matrix(0, nrow = n, ncol = p)
-#' X[1, ] = init
-#' ## Gibbs sampler to generate the Markov chain
-#' for (i in 2:n) {
-#'  X[i, 1] = rnorm(1, mu1 + (rho / b) * (X[i - 1, 2] - mu2), sqrt(a - (rho ^ 2) / b))
-#'  X[i, 2] = rnorm(1, mu2 + (rho / a) * (X[i, 1] - mu1), sqrt(b - (rho ^ 2) / a))
-#' }
+#' mu = c(2, 50)
+#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' X = multivariate_Gibbs_normal(n, mu, sigma)
 #' multiESS(X)
 #' 
 #' @export
@@ -89,12 +76,19 @@ multiESS <- function(x, covmat = NULL, g = NULL, ...)
 	## Setting dimensions on the mcmc output. 
 	n = dim(chain)[1]
 	p = dim(chain)[2]
+	
+	
 
 	if(is.matrix(covmat))
 	{
+	  if(is.mcmcse(covmat)) {
+	    eigs_cov = covmat$eigen-values
+	  } else  {
+	    eigs_cov = eigen(covmat, only.values = TRUE)$values
+	  }
 		var_mat <- cov(chain)
 		det.var.p <- prod(eigen(var_mat, only.values = TRUE)$values^(1/p))
-		det.covmat.p <- prod(eigen(covmat, only.values = TRUE)$values^(1/p))
+		det.covmat.p <- prod(eigs_cov^(1/p))
 		ess <- n*(det.var.p/det.covmat.p)
 	} else
 	{
@@ -102,7 +96,7 @@ multiESS <- function(x, covmat = NULL, g = NULL, ...)
 		var_mat <- cov(chain)
 
 		det.var.p <- prod(eigen(var_mat, only.values = TRUE)$values^(1/p))
-		det.covmat.p <- prod(eigen(covmat, only.values = TRUE)$values^(1/p))
+		det.covmat.p <- prod((covmat$eigen-values)^(1/p))
 		ess <- n*(det.var.p/det.covmat.p)
 
 	}

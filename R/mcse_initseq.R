@@ -57,24 +57,11 @@
 #' g <- function(x) return(c(x[1], x[2]^2))
 #' out.g.mcse <- mcse.initseq(x = dat, g = g)
 #' 
-#' library(mvtnorm)
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
-#' p <- 2
 #' n <- 1e3
-#' mu1 <- 2 
-#' mu2 <- 50
-#' A <- 1
-#' B <- 1
-#' rho <- 0.5
-#' sigma = matrix(c(A, rho, rho, B), nrow = 2)
-#' init = rmvnorm(1, mean = c(mu1, mu2), sigma = sigma) ## Starting from stationarity
-#' X <- matrix(0, nrow = n, ncol = p)
-#' X[1, ] = init
-#' ## Gibbs sampler to generate the Markov chain
-#' for (i in 2:n) {
-#'  X[i, 1] = rnorm(1, mu1 + (rho / b) * (X[i - 1, 2] - mu2), sqrt(a - (rho ^ 2) / b))
-#'  X[i, 2] = rnorm(1, mu2 + (rho / a) * (X[i, 1] - mu1), sqrt(b - (rho ^ 2) / a))
-#' }
+#' mu = c(2, 50)
+#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' X = multivariate_Gibbs_normal(n, mu, sigma)
 #' out.mcse <- mcse.initseq(x = X)
 #' out.mcse.adj <- mcse.initseq(x = X,adjust = TRUE)
 #' # If we are only estimating the mean of the first component,
@@ -128,18 +115,17 @@ mcse.initseq <- function(x, g = NULL, adjust = FALSE, blather = FALSE)
     sig.adj <- NULL
   }
 
-  
+  sig.eigen = eigen(sig, only.values = TRUE)$values
   if(blather)
   {
-    value = list("cov" = sig, "cov.adj"=sig.adj, "method" = "initial sequence", 
-              "est" = mu.hat, "nsim" = n, "adjust" = adjust)
+    value = list("cov" = sig, "cov.adj"=sig.adj, "method" = "initial sequence", "eigen-values" =                    sig.eigen, "est" = mu.hat, "nsim" = n, "Adjustment-Used" = adjust, "size" = NULL,
+                 message = "")
   } else{
-    value = list("cov" = sig, "cov.adj"=sig.adj, "nsim" = n, 
+    value = list("cov" = sig, "cov.adj"=sig.adj, "nsim" = n, "eigen-values" = sig.eigen,
               "est" = mu.hat)
   }
   class(value) = "mcmcse"
   value
-
 }
 
 
