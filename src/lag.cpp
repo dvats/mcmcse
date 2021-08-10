@@ -16,7 +16,7 @@ vec lag(vec s, int n, double b, String method)
   }
   else if(method == "tukey")
   {
-    w.head(b) = (1 + cos(PI * s/b))/2 ;
+    w.head(b) = (1 + cos(M_PI * s/b))/2 ;
   }
   else
   {
