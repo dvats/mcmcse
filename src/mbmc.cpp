@@ -49,12 +49,13 @@ mat mbmC(const arma::mat& chain, double b)
   }
   y_mean = y_mean/n;
 
+
 // make the matrix of mean vector
   for(int i = 0; i < a; i++)
   {
     mean_mat.row(i) = trans(y_mean);
   }
-
+  
   out += trans(block_means - mean_mat)*(block_means - mean_mat);
   return(out*b/(a-1));
 }

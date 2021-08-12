@@ -2,27 +2,53 @@
 #' Compute Monte Carlo standard errors for expectations.
 #'
 #' @param x a vector of values from a Markov chain.
-#' @param size the batch size. The default value is \dQuote{\code{sqroot}}, which uses the square root of the sample size. \dQuote{\code{cuberoot}} will cause the function to use the cube root of the sample size. A numeric value may be provided if neither \dQuote{\code{sqroot}} nor \dQuote{\code{cuberoot}} is satisfactory.
-#' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is \code{NULL}, which causes the identity function to be used.
-#' @param method the method used to compute the standard error. This is one of \dQuote{\code{bm}} (batch means, the default), \dQuote{\code{obm}} (overlapping batch means), \dQuote{\code{tukey}} (spectral variance method with a Tukey-Hanning window), or \dQuote{\code{bartlett}} (spectral variance method with a Bartlett window).
-#' @param warn a logical value indicating whether the function should issue a warning if the sample size is too small (less than 1,000).
+#' @param size represents the batch size in "bm" and the truncation point in "bartlett" and "tukey".
+#'   Default is `NULL` which implies that an optimal batch size is calculated using the 
+#'   `batchSize()` function. Can take character values of `sqroot` and `cuberoot` or any numeric
+#'   value between 1 and n/2. `sqroot` means size is floor(n^(1/2)) and "cuberoot" means size is
+#'   floor(n^(1/3)).
+#' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is
+#'   \code{NULL}, which causes the identity function to be used.
+#' @param method any of `bm`,`obm`,`bartlett`, `tukey`. `bm` represents batch means estimator,
+#'   `obm` represents overlapping batch means estimator with, `bartlett`and `tukey` represents the
+#'   modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.
+#' @param warn a logical value indicating whether the function should issue a warning if the sample
+#'   size is too small (less than 1,000).
+#' @param lug_params The lugsail parameters (c(r,c)) that converts a lag window into its lugsail
+#'   equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
+#'   but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
+#'   good choices. `r > 5` is not recommended. Non-integer values are ok. Default value of 
+#'   `c = 0.5` and needs to lie between (0,1).
+#' 
 #' @return \code{mcse} returns a list with two elements:
 #'         \item{est}{an estimate of \eqn{E(g(x))}.}
 #'         \item{se}{the Monte Carlo standard error.}
+#'         
 #' @references
-#' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo. In Wozniakowski, H. and Plaskota, L., editors, \emph{Monte Carlo and Quasi-Monte Carlo Methods 2010} (to appear). Springer-Verlag.
+#' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
+#' In Wozniakowski, H. and Plaskota, L., editors, \emph{Monte Carlo and Quasi-Monte Carlo Methods
+#' 2010} (to appear). Springer-Verlag.
 #'
-#' Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance estimators in Markov chain Monte Carlo. \emph{The Annals of Statistics}, \bold{38}, 1034--1070.
+#' Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance estimators in Markov
+#' chain Monte Carlo. \emph{The Annals of Statistics}, \bold{38}, 1034--1070.
 #'
-#' Flegal, J. M. and Jones, G. L. (2011) Implementing Markov chain Monte Carlo: Estimating with confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
+#' Flegal, J. M. and Jones, G. L. (2011) Implementing Markov chain Monte Carlo: Estimating with
+#' confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of
+#' Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
 #'
-#' Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of quantiles. \emph{University of California, Riverside, Technical Report}.
+#' Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of
+#' quantiles. \emph{University of California, Riverside, Technical Report}.
 #'
-#' Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--1547.
+#' Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov
+#' chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--154.
+#' 
 #' @seealso
 #' \code{\link{mcse.mat}}, which applies \code{mcse} to each column of a matrix or data frame.
+#' 
+#' \code{\link{mcse.multi}}, for a multivariate estimate of the Monte Carlo standard error.
 #'
 #' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
+#' 
 #' @examples
 #'
 #' # Create 10,000 iterations of an AR(1) Markov chain with rho = 0.9.
@@ -52,203 +78,52 @@
 #'
 #' @export
 
-mcse <- function(x, size = NULL, g = NULL, r = 3, method = "bm", warn = FALSE)
+mcse <- function(x, size = NULL, g = NULL, lug_params = c(3, 0.5), method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
 {
     x <- as.numeric(x)
-    if (! is.function(g))
-    g = function(x) return(x)
     n = length(x)
-
-    calls <- mcse.multi(x, method = method, r = r, size = size, g = NULL, adjust = FALSE, blather = FALSE)
+    method = match.arg(method)
+    calls <- mcse.multi(x, method = method, lug_params = lug_params, size = size, g = g, adjust = FALSE, blather = FALSE)
     se <- as.numeric(sqrt(calls$cov / n))
     mu.hat <- calls$est
-
- #      if(method == "lug")   # not releaved to the public. Inside option for developers
- #      {
- #        method = "bm"
- #        r <- 3
- #      }
-
- #      if(!is.numeric(r)) stop("r should be numeric")
- #      if(method != "bm" &&  method != "obm" && method != "bartlett" && method != "tukey")
- #      {
- #        stop("No such method available")
- #      }
-       
- #      if(r > 5) warning("We recommend using r <=5")
- #      if(r < 0) stop("r cannot be negative")
- #      # making matrix compatible and applying 
-
- #    if (n < 1000)
- #    {
- #        if (warn)
- #            warning("too few samples (less than 1,000)")
- #        if (n < 10)
- #            return(NA)
- #    }
- #    #method = match.arg(method, c("bm", "obm", "wbm", "lug", "tukey", "bartlett"))
-    
- #    if(var(x) == 0) # if zero variance series, then just calculate the sample variance
- #    {
- #        size <- 1
- #    }
- #    if(is.null(size))
- #      {
- #        b <- batchSize(x = x, method = method, g = g)  # optimal
- #      }
- #      else if(size == "sqroot")
- #      {
- #        b <- floor(sqrt(n))
- #      } 
- #      else if(size == "cuberoot") {
- #        b <- floor(n^(1/3))
- #      }
- #      else {
- #        if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) 
- #            stop("size is either too large, too small, or not a number")
-
- #        b <- floor(size)
- #      }
- #      a <- floor(n/b)
-
- #      if(b == 1 && r != 1)
- #      {
- #        r = 1
- #        message <- "r was set to 1 since b = 1. "
- #      }
-
- #    if(floor(b/r) < 1) r <- 1
- # ########################## 
- #    if (method == "bm")
- #    {
- #        y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
- #        mu.hat = mean(g(x)) 
- #        var.hat = b * sum((y - mu.hat)^2) / (a - 1)
-
- #        if(r != 1)
- #        {
- #            b1 <- floor(b/r)
- #            a1 <- floor(n / b1)
- #            y <- sapply(1:a1, function(k) return(mean(g(x[((k - 1) * b1 + 1):(k * b1)]))))
- #            var.hat1 = 2*var.hat - b1 * sum((y - mu.hat)^2) / (a1 - 1)  
- #            if(var.hat1 > 0)
- #            {
- #                var.hat <- var.hat1  
- #            }
- #        }
-
- #        se = sqrt(var.hat / n)
- #    }
-    # if (method == "wbm")
-    # {
-    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-    #     mu.hat = mean(g(x)) 
-    #     var.hat1 = b * sum((y - mu.hat)^2) / (a - 1)
-
-    #     b <- floor(b/2)
-    #     a = floor(n / b)
-    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-    #     var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
-    #     se = sqrt(var.hat / n)
-    # }
-    # if (method == "lug")
-    # {
-    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-    #     mu.hat = mean(g(x)) 
-    #     var.hat1 = b * sum((y - mu.hat)^2) / (a - 1)
-
-    #     b <- floor(b/3)
-    #     a = floor(n / b)
-    #     y = sapply(1:a, function(k) return(mean(g(x[((k - 1) * b + 1):(k * b)]))))
-    #     var.hat = 2*var.hat1 - b * sum((y - mu.hat)^2) / (a - 1)
-    #     se = sqrt(var.hat / n)
-    # }
-    # if (method == "obm")
-    # {
-    #     a = n - b + 1
-    #     y = sapply(1:a, function(k) return(mean(g(x[k:(k + b - 1)]))))
-    #     mu.hat = mean(g(x))
-    #     var.hat =  b * sum((y - mu.hat)^2) / n
-
-    #     if(r != 1)
-    #     {
-    #         b1 <- floor(b/r)
-    #         a1 = n - b1 + 1
-    #         y = sapply(1:a1, function(k) return(mean(g(x[k:(k + b1 - 1)]))))
-    #         mu.hat = mean(g(x))
-    #         var.hat1 = 2*var.hat - (b1 * sum((y - mu.hat)^2) / n)
-    #         if(var.hat1 > 0)
-    #         {
-    #             var.hat <- var.hat1  
-    #         }
-    #     }
-    #     se = sqrt(var.hat / n)
-    # } 
-    # if (method == "tukey")
-    # {
-    #     alpha = 1:b
-    #     alpha = (1 + cos(pi * alpha / b)) / 2 * (1 - alpha / n)
-    #     mu.hat = mean(g(x))
-    #     R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-    #     var.hat = R[1] + 2 * sum(alpha * R[-1])
-
-    #     if(r != 1)
-    #     {
-    #         b1 <- floor(b/r)
-    #         alpha = 1:b1
-    #         alpha = (1 + cos(pi * alpha / b1)) / 2 * (1 - alpha / n)
-    #         mu.hat = mean(g(x))
-    #         R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-    #         var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
-    #         if(var.hat1 > 0)
-    #         {
-    #             var.hat <- var.hat1  
-    #         }
-    #     }
-
-    #     se = sqrt(var.hat / n)
-    # }
-    # if(method == "bartlett")
-    # {
-    #     alpha = 1:b
-    #     alpha = (1 - abs(alpha) / b) * (1 - alpha / n)
-    #     mu.hat = mean(g(x))
-    #     R = sapply(0:b, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-    #     var.hat = R[1] + 2 * sum(alpha * R[-1])
-
-    #     if(r != 1)
-    #     {
-    #         b1 <- floor(b/r)
-    #         alpha = 1:b1
-    #         alpha = (1 - abs(alpha) / b1) * (1 - alpha / n)
-    #         mu.hat = mean(g(x))
-    #         R = sapply(0:b1, function(j) return(mean((g(x[1:(n - j)]) - mu.hat) * (g(x[(j + 1):n]) - mu.hat))))
-    #         var.hat1 = 2*var.hat - (R[1] + 2 * sum(alpha * R[-1]))
-    #         if(var.hat1 > 0)
-    #         {
-    #             var.hat <- var.hat1  
-    #         }
-    #     }
-
-    #     se = sqrt(var.hat / n)
-    # }
-    list(est = mu.hat, se = se)
+    value = list("est" = mu.hat, "se" = se, "nsim" = n)
+    value
 }
 
 #' Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.
 #'
-#' @param x a matrix or data frame with each row being a draw from the multivariate distribution of interest.
-#' @param size the batch size. The default value is \dQuote{\code{sqroot}}, which uses the square root of the sample size. \dQuote{\code{cuberoot}} will cause the function to use the cube root of the sample size. A numeric value may be provided if neither \dQuote{\code{sqroot}} nor \dQuote{\code{cuberoot}} is satisfactory.
-#' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is \code{NULL}, which causes the identity function to be used.
-#' @param method the method used to compute the standard error. This is one of \dQuote{\code{bm}} (batch means, the default), \dQuote{\code{obm}} (overlapping batch means), \dQuote{\code{tukey}} (spectral variance method with a Tukey-Hanning window), or \dQuote{\code{bartlett}} (spectral variance method with a Bartlett window).
-#' @return \code{mcse.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names of the matrix are the same as the column names of \code{x}. The column names of the matrix are \dQuote{\code{est}} and \dQuote{\code{se}}. The \eqn{j}th row of the matrix contains the result of applying \code{mcse} to the \eqn{j}th column of \code{x}.
+#' @param x a vector of values from a Markov chain.
+#' @param size represents the batch size in "bm" and the truncation point in "bartlett" and "tukey".
+#'   Default is `NULL` which implies that an optimal batch size is calculated using the 
+#'   `batchSize()` function. Can take character values of `sqroot` and `cuberoot` or any numeric
+#'   value between 1 and n/2. `sqroot` means size is floor(n^(1/2)) and "cuberoot" means size is
+#'   floor(n^(1/3)).
+#' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is
+#'   \code{NULL}, which causes the identity function to be used.
+#' @param method any of `bm`,`obm`,`bartlett`, `tukey`. `bm` represents batch means estimator,
+#'   `obm` represents overlapping batch means estimator with, `bartlett`and `tukey` represents the
+#'   modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.
+#' @param lug_params The lugsail parameters (c(r,c)) that converts a lag window into its lugsail
+#'   equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
+#'   but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
+#'   good choices. `r > 5` is not recommended. Non-integer values are ok. Default value of 
+#'   `c = 0.5` and needs to lie between (0,1).
+#' 
+#' @return \code{mcse.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names
+#'   of the matrix are the same as the column names of \code{x}. The column names of the matrix are
+#'   \dQuote{\code{est}} and \dQuote{\code{se}}. The \eqn{j}th row of the matrix contains the result
+#'   of applying \code{mcse} to the \eqn{j}th column of \code{x}.
+#'   
 #' @seealso
 #' \code{\link{mcse}}, which acts on a vector.
+#' 
+#' \code{\link{ mcse.multi}}, for a multivariate estimate of the Monte Carlo standard error.
 #'
 #' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
+#' 
 #' @export
 
-mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r = 3)
+mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), lug_params = c(3, 0.5))
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")
@@ -256,7 +131,7 @@ mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r = 3)
     vals = matrix(NA, num, 2)
     colnames(vals) = c("est", "se")
     rownames(vals) = colnames(x)
-    res = apply(x, 2, mcse, size = size, g = g, method = method, r = r)
+    res = apply(x, 2, mcse, size = size, g = g, method = method, lug_params = lug_params)
     for (i in 1:num)
         vals[i, ] = c(res[[i]]$est, res[[i]]$se)
     vals
@@ -266,23 +141,41 @@ mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r = 3)
 #'
 #' @param x a vector of values from a Markov chain.
 #' @param q the quantile of interest.
-#' @param size the batch size. The default value is \dQuote{\code{sqroot}}, which uses the square root of the sample size. A numeric value may be provided if \dQuote{\code{sqroot}} is not satisfactory.
-#' @param g a function such that the \eqn{q}th quantile of the univariate distribution function of \eqn{g(x)} is the quantity of interest. The default is \code{NULL}, which causes the identity function to be used.
-#' @param method the method used to compute the standard error. This is one of \dQuote{\code{bm}} (batch means, the default), \dQuote{\code{obm}} (overlapping batch means), or \dQuote{\code{sub}} (subsampling bootstrap).
-#' @param warn a logical value indicating whether the function should issue a warning if the sample size is too small (less than 1,000).
+#' @param size the batch size. The default value is \dQuote{\code{sqroot}}, which uses the square
+#'   root of the sample size. A numeric value may be provided if \dQuote{\code{sqroot}} is not
+#'   satisfactory.
+#' @param g a function such that the \eqn{q}th quantile of the univariate distribution function of
+#'   \eqn{g(x)} is the quantity of interest. The default is \code{NULL}, which causes the identity
+#'   function to be used.
+#' @param method the method used to compute the standard error. This is one of \dQuote{\code{bm}}
+#'   (batch means, the default), \dQuote{\code{obm}} (overlapping batch means), or
+#'   \dQuote{\code{sub}} (subsampling bootstrap).
+#' @param warn a logical value indicating whether the function should issue a warning if the sample
+#'   size is too small (less than 1,000).
+#'   
 #' @return \code{mcse.q} returns a list with two elements:
 #'         \item{est}{an estimate of the \eqn{q}th quantile of the univariate distribution function of \eqn{g(x)}.}
 #'         \item{se}{the Monte Carlo standard error.}
+#'         
 #' @references
-#' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo. In Wozniakowski, H. and Plaskota, L., editors, \emph{Monte Carlo and Quasi-Monte Carlo Methods 2010} (to appear). Springer-Verlag.
+#' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
+#' In Wozniakowski, H. and Plaskota, L., editors, \emph{Monte Carlo and Quasi-Monte Carlo Methods
+#' 2010} (to appear). Springer-Verlag.
 #'
-#' Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance estimators in Markov chain Monte Carlo. \emph{The Annals of Statistics}, \bold{38}, 1034--1070.
+#' Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance estimators in Markov
+#' chain Monte Carlo. \emph{The Annals of Statistics}, \bold{38}, 1034--1070.
 #'
-#' Flegal, J. M. and Jones, G. L. (2011) Implementing Markov chain Monte Carlo: Estimating with confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
+#' Flegal, J. M. and Jones, G. L. (2011) Implementing Markov chain Monte Carlo: Estimating with
+#' confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of
+#' Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
 #'
-#' Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of quantiles. \emph{University of California, Riverside, Technical Report}.
+#' Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of
+#' quantiles. \emph{University of California, Riverside, Technical Report}.
 #'
-#' Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--1547.
+#' Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov
+#' chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--154
+#' .
+#' 
 #' @seealso
 #' \code{\link{mcse.q.mat}}, which applies \code{mcse.q} to each column of a matrix or data frame.
 #'
@@ -316,11 +209,16 @@ mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r = 3)
 #'
 #' @export
 
-mcse.q = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"), warn = FALSE)
-{
-    if (! is.function(g))
-        g = function(x) return(x)
+quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) }
+
+mcse.q <- function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"), warn = FALSE) {
+    
+    method = match.arg(method)
+    if(is.function(g))
+        x = sapply(x, g)
+    
     n = length(x)
+    
     if (n < 1000)
     {
         if (warn)
@@ -328,73 +226,78 @@ mcse.q = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"
         if (n < 10)
             return(NA)
     }
-    if (size == "sqroot") 
-    {
-        b = floor(sqrt(n))
-        a = floor(n / b)
+    
+    if(is.null(size)) {
+        b <- batchSize(x = x, method = method)
+    } else if(size == "sqroot")  {
+        b <- floor(sqrt(n))
+    } else if(size == "cuberoot") {
+        b <- floor(n^(1/3))
+    } else  {
+        if (!is.numeric(size) || size < 1 || size >= n || floor(n/size) <=1) {
+            warning("size is either too large, too small, or not a number. Setting 'size' to n^(1/2)")
+            size = sqrt(n)
+        }
+        
+        b <- floor(size)
     }
-    else
-    {
-        if (! is.numeric(size) || size < 1 || size == Inf)
-            stop("'size' must be a finite numeric quantity larger than 1.")
-        b = floor(size)
-        a = floor(n / b)
+    
+    a <- floor(n/b)
+    
+    if (! is.numeric(q) || q <= 0 || q >= 1)    {
+        stop("'q' must be from (0, 1)")
     }
-    method = match.arg(method)
-    counting = function(var.vector, var.number)
-    {
-        return(length(var.vector[var.vector <= var.number]))
-    }
-    if (! is.numeric(q) || q <= 0 || q >= 1)
-        stop("'q' must be from (0, 1).")
-    quant = function(input) { quantile(input, prob = q, type = 1, names = FALSE) }
-    if (method == "bm")
-    {
-        xi.hat = quant(g(x))
-        y = sapply(1:a, function(k) return(counting(g(x[((k - 1) * b + 1):(k * b)]), xi.hat))) / b
-        mu.hat = mean(y)
-        var.hat = b * sum((y - mu.hat)^2) / (a - 1)
-        f.hat.junk = density(g(x), from = xi.hat, to = xi.hat, n = 1)
+    
+    xi.hat = quant(x, q)
+    
+    if(method == "bm")  {
+        var.hat = mcseqbm(x, b, xi.hat)
+        f.hat.junk = density(x, from = xi.hat, to = xi.hat, n = 1)
         f.hat = f.hat.junk$y
         se = sqrt(var.hat / n) / f.hat
-    }
-    else if (method == "obm")
-    {
-        xi.hat = quant(g(x))
-        a = n - b + 1
-        y = sapply(1:a, function(k) return(counting(g(x[k:(k + b - 1)]), xi.hat))) / b
-        mu.hat = mean(y)
-        var.hat = n * b * sum((y - mu.hat)^2) / (a - 1) / a
-        f.hat.junk = density(g(x), from = xi.hat, to = xi.hat, n = 1)
+    } else if(method == "obm")  {
+        var.hat = mcseqobm(x, b, xi.hat)
+        f.hat.junk = density(x, from = xi.hat, to = xi.hat, n = 1)
         f.hat = f.hat.junk$y
         se = sqrt(var.hat / n) / f.hat
-    } 
-    else # method == "sub"
-    {
-        xi.hat = quant(g(x))
-        a = n - b + 1
-        y = sapply(1:a, function(k) return(quant(g(x[k:(k + b - 1)]))))
-        mu.hat = mean(y)
-        var.hat = n * b * sum((y - mu.hat)^2) / (a - 1) / a
+    } else  {
+        var.hat = mcseqsub(x, b, q, quant)
         se = sqrt(var.hat / n)
+        
     }
-    list(est = xi.hat, se = se)      
+    
+    
+    value = list("est" = xi.hat, "se" = se, "nsim" = n)
+    value
 }
 
 #' Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples.
 #'
-#' @param x a matrix or data frame with each row being a draw from the multivariate distribution of interest.
+#' @param x a matrix or data frame with each row being a draw from the multivariate distribution of
+#'   interest.
 #' @param q the quantile of interest.
-#' @param size the batch size. The default value is \dQuote{\code{sqroot}}, which uses the square root of the sample size. \dQuote{\code{cuberoot}} will cause the function to use the cube root of the sample size. A numeric value may be provided if \dQuote{\code{sqroot}} is not satisfactory.
-#' @param g a function such that the \eqn{q}th quantile of the univariate distribution function of \eqn{g(x)} is the quantity of interest. The default is \code{NULL}, which causes the identity function to be used.
-#' @param method the method used to compute the standard error. This is one of \dQuote{\code{bm}} (batch means, the default), \dQuote{\code{obm}} (overlapping batch means), or \dQuote{\code{sub}} (subsampling bootstrap).
-#' @return \code{mcse.q.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names of the matrix are the same as the column names of \code{x}. The column names of the matrix are \dQuote{\code{est}} and \dQuote{\code{se}}. The \eqn{j}th row of the matrix contains the result of applying \code{mcse.q} to the \eqn{j}th column of \code{x}.
+#' @param size the batch size. The default value is \dQuote{\code{sqroot}}, which uses the square
+#'   root of the sample size. \dQuote{\code{cuberoot}} will cause the function to use the cube root
+#'   of the sample size. A numeric value may be provided if \dQuote{\code{sqroot}} is not
+#'   satisfactory.
+#' @param g a function such that the \eqn{q}th quantile of the univariate distribution function of
+#'   \eqn{g(x)} is the quantity of interest. The default is \code{NULL}, which causes the identity
+#'   function to be used.
+#' @param method the method used to compute the standard error. This is one of \dQuote{\code{bm}}
+#'   (batch means, the default), \dQuote{\code{obm}} (overlapping batch means), or
+#'   \dQuote{\code{sub}} (subsampling bootstrap).
+#'   
+#' @return \code{mcse.q.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row
+#'   names of the matrix are the same as the column names of \code{x}. The column names of the
+#'   matrix are \dQuote{\code{est}} and \dQuote{\code{se}}. The \eqn{j}th row of the matrix contains
+#'   the result of applying \code{mcse.q} to the \eqn{j}th column of \code{x}.
+#'   
 #' @seealso \code{\link{mcse.q}}, which acts on a vector.
 #'
 #' \code{\link{mcse}} and \code{\link{mcse.mat}}, which compute standard errors for expectations.
 #' @export
 
-mcse.q.mat = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "sub"))
+mcse.q.mat = function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"))
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")
@@ -411,11 +314,15 @@ mcse.q.mat = function(x, q, size = "sqroot", g = NULL, method = c("bm", "obm", "
 #' Create a plot that shows how Monte Carlo estimates change with increasing sample size.
 #'
 #' @param x a sample vector.
-#' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is \code{g = \link{mean}}.
-#' @param main an overall title for the plot. The default is \dQuote{\code{Estimates vs Sample Size}}.
+#' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is \code{g =
+#'   \link{mean}}.
+#' @param main an overall title for the plot. The default is \dQuote{\code{Estimates vs Sample
+#'   Size}}.
 #' @param add logical. If \code{TRUE}, add to a current plot.
 #' @param \dots additional arguments to the plotting function.
+#' 
 #' @return \code{NULL}
+#' 
 #' @examples
 #' \dontrun{
 #' estvssamp(x, main = expression(E(beta)))
@@ -438,66 +345,51 @@ estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE
         plot(n, est, main = main, type = "l", xlab = "Sample Size", ylab = "MC Estimate",...)
 }
 
-#' Estimate effective sample size (ESS) as described in Kass et al. (1998) and Robert and Casella (2004; p. 500).
+#' Univariate estimate effective sample size (ESS) as described in Gong and Felgal (2015).
 #'
-#' @details ESS is the size of an iid sample with the same variance as the current sample. ESS is given by \deqn{\mbox{ESS}=T/\eta,}{ESS = T / \eta,} where \deqn{\eta=1+2\sum \mbox{all lag autocorrelations}.}{\eta = 1 + 2 \sum all lag autocorrelations.}
+#'Estimate effective sample size (ESS) as described in Gong and Flegal (2015).
 #'
-#' @param x a vector of values from a Markov chain.
-#' @param imse logical. If \code{TRUE}, use an approach that is analogous to Geyer's initial monotone positive sequence estimator (IMSE), where correlations beyond a certain lag are removed to reduce noise.
-#' @param verbose logical. If \code{TRUE} and \code{imse = TRUE}, inform about the lag at which truncation occurs, and warn if the lag is probably too small. 
+#' @details 
+#' ESS is the size of an iid sample with the same variance as the current sample. ESS is given by
+#' \deqn{ESS = n \frac{\lambda^{2}}{\sigma^{2}}} where \eqn{\lambda^{2}} is the sample variance and
+#' \eqn{\sigma^{2}} is an estimate of the variance in the CLT. This is by default
+#' the lugsail batch means estimator, but the default can be changed with the `method` argument.
+#'
+#' @param x a matrix or data frame of Markov chain output. Number of rows is the Monte
+#'   Carlo sample size.
+#' @param ... arguments passed on to the mcse.mat function. For example method = "tukey" and size =
+#'   "cuberoot" can be used.
+#' @param g a function that represents features of interest. g is applied to each row of x and thus
+#'   g should take a vector input only. If g is NULL, g is set to be identity, which is estimation
+#'   of the mean of the target density.
+#'   
 #' @return The function returns the estimated effective sample size.
+#' 
 #' @references
-#' Kass, R. E., Carlin, B. P., Gelman, A., and Neal, R. (1998) Markov chain Monte Carlo in practice: A roundtable discussion. \emph{The American Statistician}, \bold{52}, 93--100.
-#'
-#' Robert, C. P. and Casella, G. (2004) \emph{Monte Carlo Statistical Methods}. New York: Springer.
-#'
-#' Geyer, C. J. (1992) Practical Markov chain Monte Carlo. \emph{Statistical Science}, \bold{7}, 473--483.
+#' Gong, L. and Flegal, J. M. (2015) A practical sequential stopping rule for high-dimensional
+#' Markov chain Monte Carlo Journal of Computational and Graphical Statistics.
+#' 
+#' @seealso 
+#' \code{\link{minESS}}, which calculates the minimum effective samples required for the problem.
+#' \code{\link{multiESS}}, which calculates multivariate effective sample size using a Markov chain
+#' and a function g.
+#' 
 #' @export
-
-# ess = function(x, imse = TRUE, verbose = FALSE)
-# {
-#     if (imse)
-#     {
-#         chain.acov = acf(x, type = "covariance", plot = FALSE)$acf
-#         len = length(chain.acov)
-#         gamma.acov = chain.acov[1:(len - 1)] + chain.acov[2:len]
-#         k = 1
-#         while (k < length(gamma.acov) && gamma.acov[k + 1] > 0 && gamma.acov[k] >= gamma.acov[k + 1])
-#             k = k + 1
-#         if (verbose)
-#             cat("truncated after ", k, " lags\n")
-#         if (k == length(gamma.acov) && verbose)
-#             warning("may need to compute more autocovariances/autocorrelations for ess")
-#         if (k == 1)
-#             time = 1
-#         else
-#         {
-#             chain.acor = acf(x, type = "correlation", plot = FALSE)$acf
-#             time = 1 + 2 * sum(chain.acor[2:k])
-#         }
-#     }
-#     else
-#     {
-#         chain.acor = acf(x, type = "correlation", plot = FALSE)$acf
-#         time = 1 + 2 * sum(chain.acor[-1])
-#     }
-#     length(x) / time
-# }
 
 ess <- function(x, g = NULL, ...)
 {
     chain <- as.matrix(x)
-
+    
     if (is.function(g)) 
         chain <- t(apply(x, 1, g))
-
+    
     n <- dim(chain)[1]
     p <- dim(chain)[2]
-
+    
     lambda <- apply(chain, 2, var)
-
+    
     sigma <- as.numeric((mcse.mat(chain,...)[,2])^2*n)
-
+    
     return(n*lambda/sigma)
 }
 
