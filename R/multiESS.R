@@ -82,23 +82,18 @@ multiESS <- function(x, covmat = NULL, g = NULL, ...)
   if(is.matrix(covmat))
   {
     if(is.mcmcse(covmat)) {
-      eigs_cov = covmat$eigen-values
+      eigs_cov = covmat$`eigen-values`
     } else  {
       eigs_cov = eigen(covmat, only.values = TRUE)$values
     }
-    var_mat <- cov(chain)
-    det.var.p <- prod(eigen(var_mat, only.values = TRUE)$values^(1/p))
-    det.covmat.p <- prod(eigs_cov^(1/p))
-    ess <- n*(det.var.p/det.covmat.p)
   } else
   {
     covmat <- mcse.multi(x, ...)
     var_mat <- cov(chain)
     
-    det.var.p <- prod(eigen(var_mat, only.values = TRUE)$values^(1/p))
-    det.covmat.p <- prod((covmat$`eigen-values`)^(1/p))
-    ess <- n*(det.var.p/det.covmat.p)
-    
+    log.det.var.p <- sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))
+    log.det.covmat.p <- sum(log(covmat$`eigen-values`))
+    ess <- n*exp((log.det.var.p - log.det.covmat.p)/p)
   }
   return(ess)
   

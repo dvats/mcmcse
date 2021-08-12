@@ -137,6 +137,8 @@ mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett"
     vals
 }
 
+quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) }
+
 #' Compute Monte Carlo standard errors for quantiles.
 #'
 #' @param x a vector of values from a Markov chain.
@@ -208,8 +210,6 @@ mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett"
 #' mcse(x, g = g, method = "tukey")
 #'
 #' @export
-
-quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) }
 
 mcse.q <- function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"), warn = FALSE) {
     
