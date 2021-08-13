@@ -4,7 +4,7 @@
 \alias{batchSize}
 \title{Batch size (truncation point) selection}
 \usage{
-batchSize(x, method = "bm", g = NULL)
+batchSize(x, method = "bm", g = NULL, fast = TRUE)
 }
 \arguments{
 \item{x}{A matrix or data frame of Markov chain output. Number of rows is the Monte
@@ -19,7 +19,8 @@ the Tukey-Hanning windows for the spectral variance estimators.}
 thus g should take a vector input only. If g is NULL, g is set to be identity, which
 is estimation of the mean of the target density.}
 
-\item{fast}{Boolean variable dictating whether to use the tail end of the Markov chain to estimate acf.}
+\item{fast}{Boolean variable dictating whether to use the tail end of the Markov chain to estimate
+acf.}
 }
 \value{
 A value of the optimal batch size is returned.

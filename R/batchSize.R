@@ -17,7 +17,7 @@
 #' @details Final update of batchSize using thresholding on aR coefficients and option to use only the tail of the chain for acf
 #' calculation.
 #' 
-#' @usage batchSize(x, method = "bm", g = NULL)
+#' @usage batchSize(x, method = "bm", g = NULL, fast = TRUE)
 #' 
 #' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
 #'   Carlo sample size.
@@ -28,7 +28,8 @@
 #' @param g A function that represents features of interest. g is applied to each row of x and
 #'   thus g should take a vector input only. If g is NULL, g is set to be identity, which
 #'   is estimation of the mean of the target density.
-#' @param fast Boolean variable dictating whether to use the tail end of the Markov chain to estimate acf.
+#' @param fast Boolean variable dictating whether to use the tail end of the Markov chain to estimate
+#' acf.
 #'   
 #' @return A value of the optimal batch size is returned.
 #' 
