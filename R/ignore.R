@@ -181,7 +181,7 @@ arp_approx <- function(x)
 ### Functions estimates the "optimal" batch size using the parametric
 ### method of Liu et.al
 #####################################################################
-batchSize <- function(x, method = "bm", g = NULL)
+batchSize_old <- function(x, method = "bm", g = NULL)
 {
   
   chain <- as.matrix(x)
