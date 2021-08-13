@@ -9,7 +9,7 @@ Author: James M. Flegal <jflegal@ucr.edu>,
 	Kushagra Gupta <kushagra.gpt99@gmail.com> and
 	Uttiya Maji.
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
-Imports: utils, ellipse, Rcpp (>= 0.12.10), fftwtools
+Imports: utils, ellipse, Rcpp (>= 0.12.10), fftwtools, testthat
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: mAr, knitr
 Description: Provides tools for computing Monte Carlo standard

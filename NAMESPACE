@@ -9,6 +9,7 @@ importFrom("stats", "ar", "cov2cor", "rnorm")
 import(ellipse)
 import(utils)
 import(fftwtools)
+import(testthat)
 
 export(mcse.multi)
 export(batchSize)
