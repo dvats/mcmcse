@@ -4,7 +4,7 @@
 \alias{multiESS}
 \title{Effective Sample Size of a multivariate Markov chain as described in Vats et al. (2015).}
 \usage{
-multiESS(x, covmat = NULL, g = NULL, ...).
+multiESS(x, covmat = NULL, g = NULL, ...)
 }
 \arguments{
 \item{x}{a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample

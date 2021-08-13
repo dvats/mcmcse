@@ -17,7 +17,6 @@
 #' @details Final update of batchSize using thresholding on aR coefficients and option to use only the tail of the chain for acf
 #' calculation.
 #' 
-#' @usage batchSize(x, method = "bm", g = NULL, fast = TRUE)
 #' 
 #' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
 #'   Carlo sample size.

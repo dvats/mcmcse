@@ -42,7 +42,6 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' or spectral variance methods (with different lag windows). The function also returns the Monte
 #' Carlo estimate.
 #' 
-#' @usage mcse.multi(x, method = "bm", r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 #' 
 #' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
 #' Carlo sample size.
