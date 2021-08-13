@@ -1,3 +1,25 @@
+#' MCMC on a bivariate normal distribution 
+#' 
+#' Function returns a Markov chain sampled using Gibbs sampling from a bivariate normal target
+#' 
+#' 
+#' @usage multivariate_Gibbs_normal(n, mu, sigma)
+#' 
+#' @param n Sample size of the Markov chain
+#' @param mu A 2 dimensional vectoe. Mean of the target normal distribution
+#' @param sigma 2 x 2 symmetric positive semi-definite matrix. The covariance matrix of the target normal distribution.
+#'   
+#' @return A Markov chain sampled from the taret normal distribution.
+#' 
+#' @export
+#' 
+#' @examples 
+#' n <- 1e3
+#' mu = c(2, 50)
+#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' X = multivariate_Gibbs_normal(n, mu, sigma)
+#' 
+
 multivariate_Gibbs_normal <- function(n, mu, sigma) {
   init <- matrix(rnorm(ncol(sigma)), nrow = 1, byrow = TRUE) %*% chol(sigma) + mu
   rho = sigma[1,2]
