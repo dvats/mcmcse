@@ -4,14 +4,14 @@ using namespace Rcpp;
 using namespace arma;
 
 
-uword counting(vec var_vector, double var_number) {
-  uword count = 0;
-  for(uword i = 0; i<var_vector.size(); i++) {
-    if(var_vector(i) <=  var_number)
-      count++;
-  }
-  return(count);
-}
+// uword counting(vec var_vector, double var_number) {
+//   uword count = 0;
+//   for(uword i = 0; i<var_vector.size(); i++) {
+//     if(var_vector(i) <=  var_number)
+//       count++;
+//   }
+//   return(count);
+// }
 
 // [[Rcpp::export]]
 double mcseqobm(const arma::vec& x, double b, double xi_hat) {
