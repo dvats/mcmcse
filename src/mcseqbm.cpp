@@ -3,7 +3,7 @@
 using namespace Rcpp;
 using namespace arma;
 
-
+// [[Rcpp::export]]
 uword counting(vec var_vector, double var_number) {
   uword count = 0;
   for(uword i = 0; i<var_vector.size(); i++) {
