@@ -4,7 +4,7 @@ using namespace Rcpp;
 using namespace arma;
 
 
-// uword counting(vec var_vector, double var_number) {
+// uword counting_sub(vec var_vector, double var_number) {
 //   uword count = 0;
 //   for(uword i = 0; i<var_vector.size(); i++) {
 //     if(var_vector(i) <=  var_number)
