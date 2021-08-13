@@ -23,5 +23,6 @@ URL: http://faculty.ucr.edu/~jflegal ,
         http://johnhughes.org,
 	http://home.iitk.ac.in/~dootika/
 VignetteBuilder: knitr
-Repository:CRAN
+Repository: CRAN
 Encoding: UTF-8
+RoxygenNote: 7.1.1
