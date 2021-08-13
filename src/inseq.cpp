@@ -1,25 +1,25 @@
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 using namespace Rcpp;
-using namespace arma;
+// using namespace arma;
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-List inseq(mat M, bool adjust=true)
+List inseq(arma::mat M, bool adjust=true)
 {
   int i, m, trun;
-  mat mu=mean(M);
+  arma::mat mu=mean(M);
   //center the rows
   M.each_row() -= mu;
   int n=M.n_rows, p=M.n_cols;
   //Dtm is the vector of det(Sig)'s
   NumericVector Dtm;
   //gam_0 and gam_1 are for gam_2m and gam_2m+1, resp.
-  mat gam0(p,p), gam1(p,p), Gam(p,p), Sig(p,p), Sig1(p,p), Gamadj(p,p), eigvec(p,p);
+  arma::mat gam0(p,p), gam1(p,p), Gam(p,p), Sig(p,p), Sig1(p,p), Gamadj(p,p), eigvec(p,p);
   //for adjustment, set initial increment in Gam=0
   Gamadj.zeros();
   //store the eigenvalues and eigenvectors of each Gam
-  vec eigval(p),eigvalneg(p);
+  arma::vec eigval(p),eigvalneg(p);
   double dtm;
   int sn= n/2; 
   for (m=0; m<n/2; m++)

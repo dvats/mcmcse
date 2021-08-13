@@ -1,27 +1,27 @@
 #include <RcppArmadillo.h>
 #include <math.h> 
 
-using namespace arma;
+// using namespace arma;
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-mat mobmC(const arma::mat& chain, double b)
+arma::mat mobmC(const arma::mat& chain, double b)
 {
   int n = chain.n_rows;
   int p = chain.n_cols;
   int a = n-b+1;
 
   // y_mean will store the overall mean vector
-  vec y_mean(p);
+  arma::vec y_mean(p);
 
 
   // out is the output matrix that returns the Sigma_hat
   // block_means stores the mean in a block of size b, overall a blocks
   // mean_mat is the matrix will each column being y_mean. This matrix is made for easy calculation
-  mat out(p,p);
-  mat block_means(a,p);
-  mat mean_mat(a,p);
+  arma::mat out(p,p);
+  arma::mat block_means(a,p);
+  arma::mat mean_mat(a,p);
 
   block_means.zeros();
   out.zeros();
@@ -30,7 +30,7 @@ mat mobmC(const arma::mat& chain, double b)
 
   // idx will be used to find block_means. Helps bypass a double loop
   IntegerVector foo = seq_len(a);
-  uvec idx = as<uvec>(foo) - 1;
+  arma::uvec idx = as<arma::uvec>(foo) - 1;
   // idx = idx*b;
 
  // Find Block means

@@ -1,12 +1,12 @@
 #include <iostream>
 #include <RcppArmadillo.h>
 using namespace Rcpp;
-using namespace arma;
+// using namespace arma;
 
 
-uword counting_obm(vec var_vector, double var_number) {
-  uword count = 0;
-  for(uword i = 0; i<var_vector.size(); i++) {
+arma::uword counting_obm(arma::vec var_vector, double var_number) {
+  arma::uword count = 0;
+  for(arma::uword i = 0; i<var_vector.size(); i++) {
     if(var_vector(i) <=  var_number)
       count++;
   }
@@ -16,11 +16,11 @@ uword counting_obm(vec var_vector, double var_number) {
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 double mcseqobm(const arma::vec& x, double b, double xi_hat) {
-  uword n = x.n_elem;
+  arma::uword n = x.n_elem;
   double a = n-b+1;
-  vec y(a);
-  for(uword k=1; k<=a; k++)  {
-    y(k-1) = counting_obm( x(span((k-1),(k + b - 2))), xi_hat);
+  arma::vec y(a);
+  for(arma::uword k=1; k<=a; k++)  {
+    y(k-1) = counting_obm( x(arma::span((k-1),(k + b - 2))), xi_hat);
   }
   y = y/b;
   double mu_hat = mean(y);

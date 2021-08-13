@@ -1,9 +1,9 @@
 #include <iostream>
 #include <RcppArmadillo.h>
 using namespace Rcpp;
-using namespace arma;
+// using namespace arma;
 
-List eureka(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold)  {
+List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coefs, arma::vec var, arma::vec a, double threshold)  {
 // Using the levinson algorithm to calculate AR coefficients and variance.
 // We have added a check which compares the coefficient to a threshold. If at any time a coefficient falls 
 // below the threshold, we don't compute coefficients beyond that order (i.e. we don't always complete the 
@@ -97,18 +97,18 @@ List eureka(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a
 }
 
 
-List ar_yw(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold, uword n)  {
+List ar_yw(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coefs, arma::vec var, arma::vec a, double threshold, arma::uword n)  {
 // Wrapper function to calculate AR coefficients and variance from the output of Levinson algorithm (eureka).
   List ans = eureka(order_max, r, g, coefs, var, a, threshold);
 
-  vec vars = ans["vars"];
-  mat coef_mat = ans["coefs"];
+  arma::vec vars = ans["vars"];
+  arma::mat coef_mat = ans["coefs"];
   int order = ans["order"];
-  vec coef_vec(order, fill::zeros);
+  arma::vec coef_vec(order, arma::fill::zeros);
   double var_pred = 0;
 
   if(order> 0)  {
-    coef_vec = coef_mat(order-1, span(0, order-1)).t();
+    coef_vec = coef_mat(order-1, arma::span(0, order-1)).t();
     var_pred = vars(order-1);
   }
   else{
@@ -122,12 +122,12 @@ List ar_yw(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a,
 
 }
 
-List arp_approx(const vec& xacf, int max_order, uword n, double threshold) {
+List arp_approx(const arma::vec& xacf, int max_order, arma::uword n, double threshold) {
 // Calculate Gamma and Sigma from AR approximation
-  List ar_fit = ar_yw(max_order, xacf, xacf, zeros<mat>(max_order, max_order),
-                       zeros<vec>(max_order), zeros<vec>(max_order), threshold, n);
+  List ar_fit = ar_yw(max_order, xacf, xacf, arma::zeros<arma::mat>(max_order, max_order),
+                      arma::zeros<arma::vec>(max_order), arma::zeros<arma::vec>(max_order), threshold, n);
 
-  vec coefs = ar_fit["coefs"];
+  arma::vec coefs = ar_fit["coefs"];
   double vars = ar_fit["vars"];
   int order = ar_fit["order"];
 
@@ -143,7 +143,7 @@ List arp_approx(const vec& xacf, int max_order, uword n, double threshold) {
       }
     }
 
-    Gamma = 2*(foo + (spec-xacf(0))/2 * dot(regspace(1, order), coefs)) / (1 - sum(coefs));
+    Gamma = 2*(foo + (spec-xacf(0))/2 * dot(arma::regspace(1, order), coefs)) / (1 - sum(coefs));
   }
   else
     Gamma = 0;
@@ -154,10 +154,10 @@ List arp_approx(const vec& xacf, int max_order, uword n, double threshold) {
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-double batchsize_cpp(uword n, int p, const mat& xacf_mat, int max_order, String method, double threshold = 0.01) {
+double batchsize_cpp(arma::uword n, int p, const arma::mat& xacf_mat, int max_order, String method, double threshold = 0.01) {
 // Calculates batchsize from Gamma and Sigma from AR approximation. Uses the "optimal" batchsize parametric 
 // method  from of Liu et.al.
-  mat ar_fit(2,p, fill::none);
+  arma::mat ar_fit(2,p, arma::fill::none);
   double num_sum = 0, denom_sum = 0, Gamma = 0, Sigma = 0;
   List arp_output = List::create(_["Gamma"] = 0, _["Sigma"] = 0);
 
