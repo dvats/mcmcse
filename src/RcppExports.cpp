@@ -4,9 +4,41 @@
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 
-using namespace arma;
 using namespace Rcpp;
 
+// eureka
+List eureka(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold);
+RcppExport SEXP _mcmcse_eureka(SEXP order_maxSEXP, SEXP rSEXP, SEXP gSEXP, SEXP coefsSEXP, SEXP varSEXP, SEXP aSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type order_max(order_maxSEXP);
+    Rcpp::traits::input_parameter< const vec& >::type r(rSEXP);
+    Rcpp::traits::input_parameter< const vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< mat >::type coefs(coefsSEXP);
+    Rcpp::traits::input_parameter< vec >::type var(varSEXP);
+    Rcpp::traits::input_parameter< vec >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(eureka(order_max, r, g, coefs, var, a, threshold));
+    return rcpp_result_gen;
+END_RCPP
+}
+// batchsize_cpp
+double batchsize_cpp(uword n, int p, const mat& xacf_mat, int max_order, String method, double threshold);
+RcppExport SEXP _mcmcse_batchsize_cpp(SEXP nSEXP, SEXP pSEXP, SEXP xacf_matSEXP, SEXP max_orderSEXP, SEXP methodSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< uword >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const mat& >::type xacf_mat(xacf_matSEXP);
+    Rcpp::traits::input_parameter< int >::type max_order(max_orderSEXP);
+    Rcpp::traits::input_parameter< String >::type method(methodSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(batchsize_cpp(n, p, xacf_mat, max_order, method, threshold));
+    return rcpp_result_gen;
+END_RCPP
+}
 // inseq
 List inseq(mat M, bool adjust);
 RcppExport SEXP _mcmcse_inseq(SEXP MSEXP, SEXP adjustSEXP) {
@@ -19,6 +51,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// lag
+vec lag(vec s, int n, double b, String method);
+RcppExport SEXP _mcmcse_lag(SEXP sSEXP, SEXP nSEXP, SEXP bSEXP, SEXP methodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< String >::type method(methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(lag(s, n, b, method));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mbmC
 mat mbmC(const arma::mat& chain, double b);
 RcppExport SEXP _mcmcse_mbmC(SEXP chainSEXP, SEXP bSEXP) {
@@ -28,6 +74,46 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type chain(chainSEXP);
     Rcpp::traits::input_parameter< double >::type b(bSEXP);
     rcpp_result_gen = Rcpp::wrap(mbmC(chain, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mcseqbm
+double mcseqbm(const arma::vec& x, double b, double xi_hat);
+RcppExport SEXP _mcmcse_mcseqbm(SEXP xSEXP, SEXP bSEXP, SEXP xi_hatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< double >::type xi_hat(xi_hatSEXP);
+    rcpp_result_gen = Rcpp::wrap(mcseqbm(x, b, xi_hat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mcseqobm
+double mcseqobm(const arma::vec& x, double b, double xi_hat);
+RcppExport SEXP _mcmcse_mcseqobm(SEXP xSEXP, SEXP bSEXP, SEXP xi_hatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< double >::type xi_hat(xi_hatSEXP);
+    rcpp_result_gen = Rcpp::wrap(mcseqobm(x, b, xi_hat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mcseqsub
+double mcseqsub(const arma::vec& x, double b, double q, Function f);
+RcppExport SEXP _mcmcse_mcseqsub(SEXP xSEXP, SEXP bSEXP, SEXP qSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< Function >::type f(fSEXP);
+    rcpp_result_gen = Rcpp::wrap(mcseqsub(x, b, q, f));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -53,20 +139,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type b(bSEXP);
     Rcpp::traits::input_parameter< String >::type method(methodSEXP);
     rcpp_result_gen = Rcpp::wrap(msveC(chain, b, method));
-    return rcpp_result_gen;
-END_RCPP
-}
-// lag
-vec lag(vec s, int n, double b, String method);
-RcppExport SEXP _mcmcse_lag(SEXP sSEXP, SEXP nSEXP, SEXP bSEXP, SEXP methodSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< vec >::type s(sSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP); 
-    Rcpp::traits::input_parameter< double >::type b(bSEXP);
-    Rcpp::traits::input_parameter< String >::type method(methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(lag(s, n, b, method));
     return rcpp_result_gen;
 END_RCPP
 }
