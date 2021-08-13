@@ -93,7 +93,7 @@ batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g 
   if(n < (p+1))
     stop("sample size is insufficient for a Markov chain of this dimension")
   
-  if(!is.matrix(chain) && !is.data.fradim(me(chain)))
+  if(!is.matrix(chain) && !is.data.frame(chain))
     stop("'x' must be a matrix or data frame.")
   
   order.max <- min(p, n - 1L, floor(10 * log10(n))) # Maximum order up to which AR is fit

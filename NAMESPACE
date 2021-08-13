@@ -4,7 +4,7 @@ useDynLib(mcmcse, .registration = TRUE)
 importFrom(Rcpp, evalCpp, sourceCpp)
 importFrom(graphics, plot, lines)
 importFrom(stats, qchisq, qf, cov, qqplot, qqline, acf, quantile, density, qqnorm, var)
-importFrom("stats", "ar", "cov2cor", "rnorm")
+importFrom("stats", "ar", "cov2cor", "rnorm", "na.pass", "qnorm")
 
 import(ellipse)
 import(utils)
