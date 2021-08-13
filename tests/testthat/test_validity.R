@@ -196,7 +196,7 @@ test_that("batchsize test", {
                                                                 fast = FALSE))
 })
 
-test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), lug_params = c(3,0.5), size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
   method = match.arg(method)
   
@@ -210,8 +210,7 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
     c <- 0.5
   }
   
-  r = lug_params[1]
-  c = lug_params[2]
+  c = 0.5
   
   if(!is.numeric(r)) stop("r should be numeric")
   if(!is.numeric(c)) stop("c should be numeric")
@@ -417,10 +416,10 @@ mtukey <- test_mcse_multi(out, method = "tukey")
 
 test_that("test if functions return correct values for mcse.multi", {
   
-  expect_equal(mcse.multi(out, lug_params = c(1,0.5), adjust = FALSE), mbatch)
-  expect_equal(mcse.multi(out, method = "obm", lug_params = c(1, 0.5), adjust = FALSE), mobm)
-  expect_equal(mcse.multi(out, method = "bartlett", lug_params = c(1,0.5), adjust = FALSE), mbart)
-  expect_equal(mcse.multi(out, method = "tukey", lug_params = c(1,0.5), adjust = FALSE), mtukey)
+  expect_equal(mcse.multi(out, r=1, adjust = FALSE), mbatch)
+  expect_equal(mcse.multi(out, method = "obm", r=1, adjust = FALSE), mobm)
+  expect_equal(mcse.multi(out, method = "bartlett", r=1, adjust = FALSE), mbart)
+  expect_equal(mcse.multi(out, method = "tukey", r=1, adjust = FALSE), mtukey)
   
 })
 

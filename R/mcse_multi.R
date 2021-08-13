@@ -42,7 +42,7 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' or spectral variance methods (with different lag windows). The function also returns the Monte
 #' Carlo estimate.
 #' 
-#' @usage mcse.multi(x, method = "bm", lug_params = c(3, 0.5), size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+#' @usage mcse.multi(x, method = "bm", r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 #' 
 #' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
 #' Carlo sample size.
@@ -50,11 +50,10 @@ mSVEfft <- function (A, b, method = "bartlett")
 #'   means estimator, `obm` represents the overlapping batch means estimator,
 #'   and `bartlett` and `tukey` represent the modified-Bartlett window and
 #'   the Tukey-Hanning windows for the spectral variance estimators.
-#' @param lug_params The lugsail parameters (c(r,c)) that converts a lag window into its lugsail
+#' @param r The lugsail parameters (r) that converts a lag window into its lugsail
 #'   equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
 #'   but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
-#'   good choices. `r > 5` is not recommended. Non-integer values are ok. Default value of 
-#'   `c = 0.5` and needs to lie between (0,1).
+#'   good choices. `r > 5` is not recommended.
 #' @param size Represents the batch size in "bm" and the truncation point in "bartlett" and
 #'  "tukey". Default is NULL which implies that an optimal batch size is calculated
 #'  using the batchSize() function. Can take character values of `sqroot` and
@@ -118,7 +117,7 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' g <- function(x) return(c(x[1], x[2]^2))
 #' mcse <- mcse.multi(x = X, g = g)
 
-mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), lug_params = c(3,0.5), size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
   method = match.arg(method)
   
@@ -131,10 +130,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), l
     r <- 3
     c <- 0.5
   }
-  
-  r = lug_params[1]
-  c = lug_params[2]
-  
+  c = 0.5  
   if(!is.numeric(r)) stop("r should be numeric")
   if(!is.numeric(c)) stop("c should be numeric")
   
@@ -267,7 +263,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), l
       if(method == "bm")  {
         sig.mat = init.mat
       } else  {
-        sig.mat = mcse.multi(x, method = "bm", lug_params = c(1, 0.5), size = size, g = g, adjust = FALSE, blather = FALSE)$cov
+        sig.mat = mcse.multi(x, method = "bm", r=1, size = size, g = g, adjust = FALSE, blather = FALSE)$cov
       }
       sig.adj = sig.mat
       sig.eigen <- eigen(sig.mat, only.values = TRUE)$values

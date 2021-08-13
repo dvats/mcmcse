@@ -14,11 +14,10 @@
 #'   modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.
 #' @param warn a logical value indicating whether the function should issue a warning if the sample
 #'   size is too small (less than 1,000).
-#' @param lug_params The lugsail parameters (c(r,c)) that converts a lag window into its lugsail
+#' @param r The lugsail parameters (r) that converts a lag window into its lugsail
 #'   equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
 #'   but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
-#'   good choices. `r > 5` is not recommended. Non-integer values are ok. Default value of 
-#'   `c = 0.5` and needs to lie between (0,1).
+#'   good choices. `r > 5` is not recommended.
 #' 
 #' @return \code{mcse} returns a list with two elements:
 #'         \item{est}{an estimate of \eqn{E(g(x))}.}
@@ -78,12 +77,12 @@
 #'
 #' @export
 
-mcse <- function(x, size = NULL, g = NULL, lug_params = c(3, 0.5), method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
+mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
 {
     x <- as.numeric(x)
     n = length(x)
     method = match.arg(method)
-    calls <- mcse.multi(x, method = method, lug_params = lug_params, size = size, g = g, adjust = FALSE, blather = FALSE)
+    calls <- mcse.multi(x, method = method, r=r, size = size, g = g, adjust = FALSE, blather = FALSE)
     se <- as.numeric(sqrt(calls$cov / n))
     mu.hat <- calls$est
     value = list("est" = mu.hat, "se" = se, "nsim" = n)
@@ -103,11 +102,10 @@ mcse <- function(x, size = NULL, g = NULL, lug_params = c(3, 0.5), method = c("b
 #' @param method any of `bm`,`obm`,`bartlett`, `tukey`. `bm` represents batch means estimator,
 #'   `obm` represents overlapping batch means estimator with, `bartlett`and `tukey` represents the
 #'   modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.
-#' @param lug_params The lugsail parameters (c(r,c)) that converts a lag window into its lugsail
+#' @param r The lugsail parameters (r) that converts a lag window into its lugsail
 #'   equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
 #'   but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
-#'   good choices. `r > 5` is not recommended. Non-integer values are ok. Default value of 
-#'   `c = 0.5` and needs to lie between (0,1).
+#'   good choices. `r > 5` is not recommended.
 #' 
 #' @return \code{mcse.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names
 #'   of the matrix are the same as the column names of \code{x}. The column names of the matrix are
@@ -123,7 +121,7 @@ mcse <- function(x, size = NULL, g = NULL, lug_params = c(3, 0.5), method = c("b
 #' 
 #' @export
 
-mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), lug_params = c(3, 0.5))
+mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r=3)
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")
@@ -131,7 +129,7 @@ mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett"
     vals = matrix(NA, num, 2)
     colnames(vals) = c("est", "se")
     rownames(vals) = colnames(x)
-    res = apply(x, 2, mcse, size = size, g = g, method = method, lug_params = lug_params)
+    res = apply(x, 2, mcse, size = size, g = g, method = method, r=r)
     for (i in 1:num)
         vals[i, ] = c(res[[i]]$est, res[[i]]$se)
     vals
