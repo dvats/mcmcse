@@ -1,7 +1,7 @@
 useDynLib(mcmcse, .registration = TRUE)
 ##useDynLib(mcmcse)
 ## exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp, sourceCpp)
+importFrom(Rcpp, evalCpp)
 importFrom(graphics, plot, lines)
 importFrom(stats, qchisq, qf, cov, qqplot, qqline, acf, quantile, density, qqnorm, var)
 importFrom("stats", "ar", "cov2cor", "rnorm")
