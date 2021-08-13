@@ -27,7 +27,7 @@
 #' n <- 1e3
 #' mu = c(2, 50)
 #' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' X = multivariate_Gibbs_normal(n, mu, sigma)
+#' X = BVN_Gibbs(n, mu, sigma)
 #' mcse.bm <- mcse.multi(x = X)
 #' qqTest(mcse.bm)
 #' mcse.isadj <- mcse.initseq(x = X, adjust = TRUE)

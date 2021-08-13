@@ -78,7 +78,7 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
 n <- 1e3
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-out = multivariate_Gibbs_normal(n, mu, sigma)
+out = BVN_Gibbs(n, mu, sigma)
 
 mcse(out[,1], method = "bartlett")
 

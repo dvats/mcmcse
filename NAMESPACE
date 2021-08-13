@@ -23,6 +23,6 @@ export(mcse.mat)
 export(mcse.q.mat)
 export(mcse.q)
 export(mcse)
-export(multivariate_Gibbs_normal)
+export(BVN_Gibbs)
 
 
