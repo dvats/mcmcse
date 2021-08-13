@@ -69,12 +69,11 @@
 
 batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g = NULL, fast = TRUE) {
   method = match.arg(method)
-  if(!is.numeric(x))
-    stop("'x' must be numeric") # the chain must be numeric
-  if(any(is.na(x)))
-    stop("NAs found")     # stop in NAs found
-  
-  chain <- as.matrix(x)
+
+  chain = as.matrix(x)
+  if(!is.matrix(chain) && !is.data.frame(chain))
+    stop("'x' must be a matrix or data frame.")
+
   p <- ncol(chain)
   n <- sum(!is.na(chain[,1])) # number of non-missing rows
 
