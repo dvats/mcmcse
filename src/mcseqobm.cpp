@@ -13,6 +13,7 @@ uword counting_obm(vec var_vector, double var_number) {
   return(count);
 }
 
+// [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 double mcseqobm(const arma::vec& x, double b, double xi_hat) {
   uword n = x.n_elem;

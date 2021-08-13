@@ -3,7 +3,6 @@
 using namespace Rcpp;
 using namespace arma;
 
-// [[Rcpp::export]]
 List eureka(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold)  {
 // Using the levinson algorithm to calculate AR coefficients and variance.
 // We have added a check which compares the coefficient to a threshold. If at any time a coefficient falls 
@@ -153,7 +152,7 @@ List arp_approx(const vec& xacf, int max_order, uword n, double threshold) {
   return(ans);
 }
 
-
+// [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 double batchsize_cpp(uword n, int p, const mat& xacf_mat, int max_order, String method, double threshold = 0.01) {
 // Calculates batchsize from Gamma and Sigma from AR approximation. Uses the "optimal" batchsize parametric 

@@ -6,23 +6,6 @@
 
 using namespace Rcpp;
 
-// eureka
-List eureka(int order_max, const vec& r, const vec& g, mat coefs, vec var, vec a, double threshold);
-RcppExport SEXP _mcmcse_eureka(SEXP order_maxSEXP, SEXP rSEXP, SEXP gSEXP, SEXP coefsSEXP, SEXP varSEXP, SEXP aSEXP, SEXP thresholdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type order_max(order_maxSEXP);
-    Rcpp::traits::input_parameter< const vec& >::type r(rSEXP);
-    Rcpp::traits::input_parameter< const vec& >::type g(gSEXP);
-    Rcpp::traits::input_parameter< mat >::type coefs(coefsSEXP);
-    Rcpp::traits::input_parameter< vec >::type var(varSEXP);
-    Rcpp::traits::input_parameter< vec >::type a(aSEXP);
-    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(eureka(order_max, r, g, coefs, var, a, threshold));
-    return rcpp_result_gen;
-END_RCPP
-}
 // batchsize_cpp
 double batchsize_cpp(uword n, int p, const mat& xacf_mat, int max_order, String method, double threshold);
 RcppExport SEXP _mcmcse_batchsize_cpp(SEXP nSEXP, SEXP pSEXP, SEXP xacf_matSEXP, SEXP max_orderSEXP, SEXP methodSEXP, SEXP thresholdSEXP) {

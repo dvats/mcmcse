@@ -13,6 +13,7 @@ using namespace arma;
 //   return(count);
 // }
 
+// [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 double mcseqsub(const arma::vec& x, double b, double q, Function f) {
   uword n = x.n_elem;
