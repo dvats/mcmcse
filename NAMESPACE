@@ -1,10 +1,10 @@
 useDynLib(mcmcse, .registration = TRUE)
 ##useDynLib(mcmcse)
 ## exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp)
+importFrom(Rcpp, evalCpp, sourceCpp)
 importFrom(graphics, plot, lines)
 importFrom(stats, qchisq, qf, cov, qqplot, qqline, acf, quantile, density, qqnorm, var)
-importFrom("stats", "ar", "cov2cor")
+importFrom("stats", "ar", "cov2cor", "rnorm")
 
 import(ellipse)
 import(utils)
@@ -23,5 +23,6 @@ export(mcse.mat)
 export(mcse.q.mat)
 export(mcse.q)
 export(mcse)
+export(multivariate_Gibbs_normal)
 
 
