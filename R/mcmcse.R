@@ -115,7 +115,7 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
 #' @seealso
 #' \code{\link{mcse}}, which acts on a vector.
 #' 
-#' \code{\link{ mcse.multi}}, for a multivariate estimate of the Monte Carlo standard error.
+#' \code{\link{mcse.multi}}, for a multivariate estimate of the Monte Carlo standard error.
 #'
 #' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
 #' 

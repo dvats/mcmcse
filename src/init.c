@@ -16,7 +16,7 @@ extern SEXP _mcmcse_lag(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _mcmcse_batchsize_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _mcmcse_mcseqbm(SEXP, SEXP, SEXP);
 extern SEXP _mcmcse_mcseqobm(SEXP, SEXP, SEXP);
-extern SEXP _mcmcse_mcseqsub(SEXP, SEXP, SEXP);
+extern SEXP _mcmcse_mcseqsub(SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_mcmcse_inseq", (DL_FUNC) &_mcmcse_inseq, 2},
@@ -27,7 +27,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_mcmcse_batchsize_cpp", (DL_FUNC) &_mcmcse_batchsize_cpp, 6},
     {"_mcmcse_mcseqbm", (DL_FUNC) &_mcmcse_mcseqbm, 3},
     {"_mcmcse_mcseqobm", (DL_FUNC) &_mcmcse_mcseqobm, 3},
-    {"_mcmcse_mcseqsub", (DL_FUNC) &_mcmcse_mcseqsub, 3},
+    {"_mcmcse_mcseqsub", (DL_FUNC) &_mcmcse_mcseqsub, 4},
     {NULL, NULL, 0}
 };
 

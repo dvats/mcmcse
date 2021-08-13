@@ -7,7 +7,7 @@
 #' 
 #' @usage minESS(p, alpha = .05, eps = .05, ess = NULL)
 #' 
-#' @param x Dimension of the estimation problem.
+#' @param p dimension of the estimation problem.
 #' @param alpha Confidence level.
 #' @param eps Tolerance level. The eps value is ignored is `ess` is not `NULL`.
 #' @param ess Estimated effective sample size. Usually the output value from `multiESS`.

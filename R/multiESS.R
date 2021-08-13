@@ -3,7 +3,7 @@
 #' Calculate the effective sample size of the Markov chain, using the multivariate dependence
 #' structure of the process.
 #' 
-#' @usage multiESS(x, covmat = NULL, g = NULL, ...).
+#' @usage multiESS(x, covmat = NULL, g = NULL).
 #' 
 #' @param x a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample
 #' size.
