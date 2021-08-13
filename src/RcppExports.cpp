@@ -5,6 +5,7 @@
 #include <Rcpp.h>
 
 using namespace Rcpp;
+using namespace arma;
 
 // batchsize_cpp
 double batchsize_cpp(uword n, int p, const mat& xacf_mat, int max_order, String method, double threshold);
