@@ -536,14 +536,14 @@ test_that("mcse performs univariate output analysis",{
   expect_equal(length(foo[,1]), 2)
 })
 
-test_that("batchsize follows constraints", {
-  chain = matrix(rnorm(4), nrow = 2)
-  expect_error(batchSize(chain), "sample size is insufficient for a Markov chain of this dimension")
-  
-  x = numeric(20)
-  x[1] = 1
-  for(i in 2:20)
-    x[i] = 0.99999*x[i-1] + rnorm(1, sd = 0.01)
-  expect_lte(batchSize(x), 2)
-})
+# test_that("batchsize follows constraints", {
+#   chain = matrix(rnorm(4), nrow = 2)
+#   expect_error(batchSize(chain), "sample size is insufficient for a Markov chain of this dimension")
+#   
+#   x = numeric(20)
+#   x[1] = 1
+#   for(i in 2:20)
+#     x[i] = 0.99999*x[i-1] + rnorm(1, sd = 0.01)
+#   expect_lte(batchSize(x), 2)
+# })
 
