@@ -18,6 +18,8 @@ the Tukey-Hanning windows for the spectral variance estimators.}
 \item{g}{A function that represents features of interest. g is applied to each row of x and
 thus g should take a vector input only. If g is NULL, g is set to be identity, which
 is estimation of the mean of the target density.}
+
+\item{fast}{Boolean variable dictating whether to use the tail end of the Markov chain to estimate acf.}
 }
 \value{
 A value of the optimal batch size is returned.

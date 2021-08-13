@@ -7,13 +7,13 @@
 minESS(p, alpha = .05, eps = .05, ess = NULL)
 }
 \arguments{
+\item{p}{dimension of the estimation problem.}
+
 \item{alpha}{Confidence level.}
 
 \item{eps}{Tolerance level. The eps value is ignored is `ess` is not `NULL`.}
 
 \item{ess}{Estimated effective sample size. Usually the output value from `multiESS`.}
-
-\item{x}{Dimension of the estimation problem.}
 }
 \value{
 By default function returns the minimum effective sample required for a given eps

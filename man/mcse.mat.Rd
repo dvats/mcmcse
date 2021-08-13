@@ -45,7 +45,7 @@ Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.
 \seealso{
 \code{\link{mcse}}, which acts on a vector.
 
-\code{\link{ mcse.multi}}, for a multivariate estimate of the Monte Carlo standard error.
+\code{\link{mcse.multi}}, for a multivariate estimate of the Monte Carlo standard error.
 
 \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles.
 }
