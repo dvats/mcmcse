@@ -75,11 +75,12 @@ To illustrate the use of our package, we consider sampling from a bivariate norm
 The function $BVN_Gibbs$ in the package draws samples from the above model. 
 
 <<var>>=
+library(mcmcse)
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
 
 # Monte Carlo sample size is N
-N <- 1e4
+N <- 5e3
 set.seed(100)
 chain <- BVN_Gibbs(N, mu, sigma)
 @
@@ -153,8 +154,6 @@ In this package, the functions \texttt{mcse}, \texttt{mcse.mat}, \texttt{mcse.mu
 Using the \texttt{mcmcse} package we can estimate $\Sigma$ in \eqref{eq:clt} with the \texttt{mcse.multi} and \texttt{mcse.initseq} function.
 
 <<mcse>>=
-#library(mcmcse)
-
 # Batch means estimator
 mcerror_bm <- mcse.multi(x = chain, method =  "bm", r = 1,
                          size = NULL, g = NULL, adjust = TRUE, 
@@ -348,7 +347,7 @@ multiESS(chain, covmat = mcerror_is$cov)
 @
 So no matter which estimator we choose for the Monte Carlo standard error, 28000 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
 
-\textbf{NOTE:} Ideally, we do not want to get more samples using the last iteration of the previous Markov chain. However, $BVN_Gibbs$ does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
+\textbf{NOTE:} Ideally, we want to get more samples using the last iteration of the previous Markov chain. However, $BVN_Gibbs$ does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
 
 \section{Graphical Diagnostics}
 

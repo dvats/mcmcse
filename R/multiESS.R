@@ -77,6 +77,7 @@ multiESS <- function(x, covmat = NULL, g = NULL, ...)
   } else
   {
     covmat <- mcse.multi(x, ...)
+    eigs_cov = eigen(covmat, only.values = TRUE)$values
   }
   var_mat <- cov(chain)
   
