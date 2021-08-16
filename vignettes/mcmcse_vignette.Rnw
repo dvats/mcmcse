@@ -160,7 +160,7 @@ mcerror_bm <- mcse.multi(x = chain, method =  "bm", r = 1,
                          blather = TRUE)
 
 # Overlapping batch means estimator
-mcerror_bm <- mcse.multi(x = chain, method =  "obm", r = 1,
+mcerror_obm <- mcse.multi(x = chain, method =  "obm", r = 1,
                          size = NULL, g = NULL, adjust = TRUE, 
                          blather = TRUE)
 
