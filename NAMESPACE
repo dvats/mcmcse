@@ -26,4 +26,4 @@ export(mcse)
 export(BVN_Gibbs)
 export(is.mcmcse)
 
-
+S3method(confRegion, mcmcse)
