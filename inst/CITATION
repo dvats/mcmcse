@@ -14,7 +14,7 @@ citEntry(entry = "Manual",
          address = "Riverside, CA, Denver, CO, and Kanpur, India",
          note = vers,
          textVersion =
-         paste("James M. Flegal, John Hughes, Dootika Vats, and Ning Dai. (",
+         paste("James M. Flegal, John Hughes, Dootika Vats, Ning Dai, Kushagra Gupta, and Uttiya Maji. (",
                year,
                "). mcmcse: Monte Carlo Standard Errors for MCMC. ",
                vers, ". Riverside, CA, Denver, CO, and Kanpur, India.", sep = ""))

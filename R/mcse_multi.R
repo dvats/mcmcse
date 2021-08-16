@@ -266,7 +266,24 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
   
 }
 
-
+#'
+#' Check if the class of the object is mcmcse
+#' 
+#' @param x The object that is checked to belong to the class mcmcse
+#' 
+#' @return Boolean variable indicating if the input belongs to the class mcmcse
+#' 
+#' @examples 
+#' 
+#' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
+#' n <- 1e3
+#' mu = c(2, 50)
+#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' X = BVN_Gibbs(n, mu, sigma)
+#' is.mcmcse(mcse.multi(X))
+#' 
+#' @export
+#' 
 is.mcmcse <- function(x) inherits(x, "mcmcse")
 
 

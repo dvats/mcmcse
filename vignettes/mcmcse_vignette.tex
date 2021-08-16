@@ -102,34 +102,42 @@ The package is predominantly useful after MCMC output has been obtained by the u
 \bigskip
 \section{An MCMC Example}
 
-To illustrate the use of our package, we present the following simple multivariate AR(1) process. The process is defined for $t = 1, 2, 3, \dots$ as,
-\[y_t = w + A y_{t-1} + \epsilon_t, \]
+To illustrate the use of our package, we consider sampling from a bivariate normal distribution using a Gibbs sampler. For $\omega_1, \omega_2 > 0$ and  $\rho$ such that $\rho^2 < \omega_1 \omega_2$, the target distribution is 
 
-where $w$ is a constant vector in $\mathbb{R}^p$, $y_t \in \mathbb{R}^p$, $A$ is a $p \times p$ matrix and $\epsilon_t \sim N_p(0, C)$. In our example, we let $A$ and $C$ be diagonal matrices. The invariant distrbution for this process is $F = N_p(0, V)$ where $V$ is a function of $A$ and $C$. 
+\[
+\left(\begin{array}{c}
+  X_1 \\ X_2
+\end{array} \right) \sim 
+ N \begin{pmatrix}
+\begin{pmatrix}
+\mu_{1}\\
+\mu_{2}
+\end{pmatrix}, 
+\begin{pmatrix}
+\omega_1 & \rho \\
+\rho & \omega_2
+\end{pmatrix}
+\end{pmatrix}
+\]
 
-The function \texttt{mAr.sim} in package \texttt{mAr} draws samples from the above model. We let $p = 3$.
+
+The function $BVN_Gibbs$ in the package draws samples from the above model. 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{library}\hlstd{(mAr)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: MASS}}\begin{alltt}
-\hlstd{p} \hlkwb{<-} \hlnum{3}
-\hlstd{A} \hlkwb{<-} \hlkwd{diag}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{.1}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.8}\hlstd{))}
-\hlstd{C} \hlkwb{<-} \hlkwd{diag}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{3}\hlstd{))}
+\hlstd{mu} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{50}\hlstd{)}
+\hlstd{sigma} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{nrow} \hlstd{=} \hlnum{2}\hlstd{)}
 
 \hlcom{# Monte Carlo sample size is N}
-\hlstd{N} \hlkwb{<-} \hlnum{1e5}
+\hlstd{N} \hlkwb{<-} \hlnum{1e4}
 \hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
-\hlstd{chain} \hlkwb{<-} \hlkwd{mAr.sim}\hlstd{(}\hlkwc{w} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,p),} \hlkwc{A} \hlstd{= A,} \hlkwc{C} \hlstd{= C,} \hlkwc{N} \hlstd{= N)}
+\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(N, mu, sigma)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-For using the \texttt{mcmcse} package the rows of the MCMC output should store each iteration of the algorithm and so the output should have $n$ rows and $p$ columns. We will denote each row $i$ of the output as $y_i = (y^{(1)}_i, y^{(2)}_i, y^{(3)}_i)$.
+For using the \texttt{mcmcse} package the rows of the MCMC output should store each iteration of the algorithm and so the output should have $n$ rows and $p$ columns. We will denote each row $i$ of the output as $y_i = (y^{(1)}_i, y^{(2)}_i)$.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -138,13 +146,13 @@ For using the \texttt{mcmcse} package the rows of the MCMC output should store e
 \hlkwd{head}\hlstd{(chain)}
 \end{alltt}
 \begin{verbatim}
-##           Y1       Y2        Y3
-## 1 -0.3101768 3.967189  8.421232
-## 2  5.2384324 6.391334 10.407224
-## 3  2.5886888 6.497850 11.156644
-## 4  3.8339966 4.992644 12.447253
-## 5 -0.2396186 4.900606 13.565273
-## 6  2.2108764 5.144180 13.927434
+##            Y1       Y2
+## [1,] 1.497808 49.86281
+## [2,] 1.863062 50.69951
+## [3,] 2.451055 50.50147
+## [4,] 1.746889 50.49225
+## [5,] 1.531428 49.45406
+## [6,] 1.804876 49.98581
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -152,7 +160,7 @@ For using the \texttt{mcmcse} package the rows of the MCMC output should store e
 \bigskip
 This vignette will discuss estimating two sets of features of interest of $F$.
 \begin{itemize}
-	\item $\text{E}_F y$: For estimating $\mu = \text{E}_Fy$, the estimator is the Monte Carlo sample mean
+\item $\text{E}_F y$: For estimating $\mu = \text{E}_Fy$, the estimator is the Monte Carlo sample mean
 \[ \mu_n = \dfrac{1}{n} \displaystyle \sum_{t=1}^{n} y_t.\]
 
 In \texttt{R}, $\mu_n$ is obtained using the usual \texttt{colMeans} function. If $p = 1$, then use \texttt{mean} instead of \texttt{colMeans}.
@@ -160,23 +168,23 @@ In \texttt{R}, $\mu_n$ is obtained using the usual \texttt{colMeans} function. I
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
- \hlkwd{colMeans}\hlstd{(chain)}
+\hlkwd{colMeans}\hlstd{(chain)}
 \end{alltt}
 \begin{verbatim}
-##        Y1        Y2        Y3 
-##  2.225577  4.012947 10.007805
+##        Y1        Y2 
+##  1.992741 49.993356
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-
-	\item $\text{E}_F \left(y^{(1)2} + y^{(2)2} + y^{(3)2} \right)$: When interested in estimating the sum of the second moments of each component of $y$,  define the function $g: \mathbb{R}^3 \to \mathbb{R}$ as $g((x_1,x_2,x_3)) = x_1^2 + x_2^2 + x_3^2$. This is defined in \texttt{R} by creating a function that implements the function $g$, row-wise.
+  
+\item $\text{E}_F \left(y^{(1)2} + y^{(2)2} \right)$: When interested in estimating the sum of the second moments of each component of $y$,  define the function $g: \mathbb{R}^2 \to \mathbb{R}$ as $g((x_1,x_2)) = x_1^2 + x_2^2$. This is defined in \texttt{R} by creating a function that implements the function $g$, row-wise.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{g} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)}
 \hlstd{\{}
-        \hlkwd{return}\hlstd{(}\hlkwd{sum}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{))}
+  \hlkwd{return}\hlstd{(}\hlkwd{sum}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{))}
 \hlstd{\}}
 \end{alltt}
 \end{kframe}
@@ -195,7 +203,7 @@ The Monte Carlo estimator for $g$ is
 \hlkwd{mean}\hlstd{(gofy)}
 \end{alltt}
 \begin{verbatim}
-## [1] 131.4661
+## [1] 2505.265
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -225,31 +233,32 @@ In this package, the functions \texttt{mcse}, \texttt{mcse.mat}, \texttt{mcse.mu
 \item \texttt{mcse.initseq}: asymptotically conservative estimates of $\Sigma$ using initial sequence estimators.
 \end{itemize}
 
-Using the \texttt{mcmcse} package we can estimate $\Sigma$ in \eqref{eq:clt} with the \texttt{mcse.multi} and \texttt{mcse.initseq} function. 
+Using the \texttt{mcmcse} package we can estimate $\Sigma$ in \eqref{eq:clt} with the \texttt{mcse.multi} and \texttt{mcse.initseq} function.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{library}\hlstd{(mcmcse)}
-\end{alltt}
+\hlcom{#library(mcmcse)}
 
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# mcmcse: Monte Carlo Standard Errors for MCMC\\\#\# Version 1.3-4 created on 2019-12-21.\\\#\# copyright (c) 2012, James M. Flegal, University of California, Riverside\\\#\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  John Hughes, University of Colorado, Denver\\\#\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  Dootika Vats, University of Warwick\\\#\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  Ning Dai, University of Minnesota\\\#\#\ \ For citation information, type citation("{}mcmcse"{}).\\\#\#\ \ Type help("{}mcmcse-package"{}) to get started.}}\begin{alltt}
 \hlcom{# Batch means estimator}
 \hlstd{mcerror_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"bm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
-        \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+                         \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+                         \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
 \hlcom{# Overlapping batch means estimator}
 \hlstd{mcerror_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"obm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
-        \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+                         \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+                         \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
 \hlcom{# Spectral variance estimator with Bartlett window}
 \hlstd{mcerror_bart} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"bartlett"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
-        \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+                           \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+                           \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
 \hlcom{# Spectral variance estimator with Tukey window}
 \hlstd{mcerror_tuk} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"tukey"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
-        \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+                          \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+                          \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
 \hlcom{# Initial sequence estimator, unadjusted}
 \hlstd{mcerror_is} \hlkwb{<-} \hlkwd{mcse.initseq}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,}
@@ -263,95 +272,36 @@ Using the \texttt{mcmcse} package we can estimate $\Sigma$ in \eqref{eq:clt} wit
 \end{knitrout}
 
 \begin{itemize}
-	\item \texttt{x} takes the $n \times p$ MCMC data. \texttt{x} can take only numeric entries in the form of a matrix or data frame. The rows of \texttt{x} are the iterations of the MCMC.
+\item \texttt{x} takes the $n \times p$ MCMC data. \texttt{x} can take only numeric entries in the form of a matrix or data frame. The rows of \texttt{x} are the iterations of the MCMC.
 
-	\item \texttt{method = bm, obm, bartlett, tukey} calculates the estimate using the batch means method and spectral variance methods with the modified-Bartlett and Tukey-Hanning windows.
-	
-	\item \texttt{r} is the lugsail parameter that indicates how much to "lift" the lag window (this also  applies to \texttt{bm} and \texttt{obm}). Higher values will increasingly remove underestimation of $\Sigma$ but may yield more variable estimators. Values more than 5 are not advised and negative values are not allowed. Reasonable choices are $r = 1, 2, 3$, where $r = 3$ yields the lugsail estimator, $r = 2$ is the flat-top estimator, and $r = 1$ is the vanilla estimator. 
+\item \texttt{method = bm, obm, bartlett, tukey} calculates the estimate using the batch means method and spectral variance methods with the modified-Bartlett and Tukey-Hanning windows.
 
-	\item \texttt{size} is the batch size for the \texttt{bm} method and the truncation point for \texttt{tukey} and \texttt{bartlett} methods. Default batch size is calulcated using the exported \texttt{batchSize} function. Other accepted values are \texttt{size = sqroot}, which sets the size as $\lfloor \sqrt{n} \rfloor$ and \texttt{size = cuberoot} which sets it at $\lfloor n^{1/3} \rfloor$. An integer value of \texttt{size} less than $n$ is also valid as long as $n/\texttt{size} > 1$.
-	
+\item \texttt{r} is the lugsail parameter that indicates how much to "lift" the lag window (this also  applies to \texttt{bm} and \texttt{obm}). Higher values will increasingly remove underestimation of $\Sigma$ but may yield more variable estimators. Values more than 5 are not advised and negative values are not allowed. Reasonable choices are $r = 1, 2, 3$, where $r = 3$ yields the lugsail estimator, $r = 2$ is the flat-top estimator, and $r = 1$ is the vanilla estimator. 
+
+\item \texttt{size} is the batch size for the \texttt{bm} method and the truncation point for \texttt{tukey} and \texttt{bartlett} methods. Default batch size is calulcated using the exported \texttt{batchSize} function. Other accepted values are \texttt{size = sqroot}, which sets the size as $\lfloor \sqrt{n} \rfloor$ and \texttt{size = cuberoot} which sets it at $\lfloor n^{1/3} \rfloor$. An integer value of \texttt{size} less than $n$ is also valid as long as $n/\texttt{size} > 1$.
+
 For reference on \texttt{bm} (batch means estimators) see \cite{jones2006fixed} and \cite{vats:fleg:jones:2017b}.
 
 For reference on \texttt{bartlett} and \texttt{tukey} (spectral variance estimators)see \cite{flegal2010batch} and \cite{vats2015strong}.
 
 For reference on lugsail estimation see \cite{liu:fleg:2018} and \cite{vats:fleg:2018}.
 
-	\item \texttt{g} is a function that is applied to each row of \texttt{x} and represents the features of interest of the process. Since here we are interested in only means, \texttt{g} is \texttt{NULL}. \texttt{g} will be explained in later examples.
-	
-	\item \texttt{adjust} is a logical argument indicating whether the resulting matrix should be adjusted in order to retain positive-definiteness. By default this is set to be \texttt{TRUE}.
-	
-	\item \texttt{blather} when TRUE outputs under the hood information about the estimation process. The default is set to \texttt{FALSE} since most users should be interested in only \texttt{cov} and \texttt{est}.
-	
+\item \texttt{g} is a function that is applied to each row of \texttt{x} and represents the features of interest of the process. Since here we are interested in only means, \texttt{g} is \texttt{NULL}. \texttt{g} will be explained in later examples.
+
+\item \texttt{adjust} is a logical argument indicating whether the resulting matrix should be adjusted in order to retain positive-definiteness. By default this is set to be \texttt{TRUE}.
+
+\item \texttt{blather} when TRUE outputs under the hood information about the estimation process. The default is set to \texttt{FALSE} since most users should be interested in only \texttt{cov} and \texttt{est}.
+
 For reference on \texttt{mcse.initseq} (initial sequence estimators) see \cite{dai2017multivariate}.
 \end{itemize}
 
-\texttt{mcse.multi} and \texttt{mcse.initseq} return a list with multiple components. When \texttt{blather = FALSE} \texttt{cov} stores the estimate of $\Sigma$ obtained using the method chosen, \texttt{est} stores the estimate of the mean of $g$ applied on the Markov chain. When \texttt{blather = TRUE} the following are returned in addition to the above two: \texttt{nsim}  stores the arguments used to calculate $\Sigma$.  \texttt{size} which indicates the size of batches/truncation, \texttt{method} used. \texttt{mcse.initseq} also returns \texttt{cov.adj}, and whether an adjusted estimator was used (\texttt{adjust}).
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{mcerror_bm}\hlopt{$}\hlstd{cov}
-\end{alltt}
-\begin{verbatim}
-##            [,1]        [,2]        [,3]
-## [1,]  2.6008515 -0.18030089  0.17474396
-## [2,] -0.1803009  7.84219221  0.07412673
-## [3,]  0.1747440  0.07412673 47.87634711
-\end{verbatim}
-\begin{alltt}
-\hlstd{mcerror_bart}\hlopt{$}\hlstd{cov}
-\end{alltt}
-\begin{verbatim}
-##            [,1]       [,2]       [,3]
-## [1,]  2.6026895 -0.1815027  0.1688387
-## [2,] -0.1815027  7.8446983  0.0830542
-## [3,]  0.1688387  0.0830542 47.9195206
-\end{verbatim}
-\begin{alltt}
-\hlstd{mcerror_tuk}\hlopt{$}\hlstd{cov}
-\end{alltt}
-\begin{verbatim}
-##            [,1]         [,2]         [,3]
-## [1,]  2.6218068 -0.197829185  0.167027884
-## [2,] -0.1978292  7.907577433 -0.006610122
-## [3,]  0.1670279 -0.006610122 49.188066347
-\end{verbatim}
-\begin{alltt}
-\hlstd{mcerror_is}\hlopt{$}\hlstd{cov}
-\end{alltt}
-\begin{verbatim}
-##            [,1]        [,2]        [,3]
-## [1,]  2.5029696 -0.10902926  0.11007175
-## [2,] -0.1090293  8.18913933  0.02202062
-## [3,]  0.1100717  0.02202062 50.96199582
-\end{verbatim}
-\begin{alltt}
-\hlstd{mcerror_isadj}\hlopt{$}\hlstd{cov.adj}
-\end{alltt}
-\begin{verbatim}
-##             [,1]         [,2]         [,3]
-## [1,]  2.58127094 -0.060426547  0.083477237
-## [2,] -0.06042655  8.242248961 -0.002410464
-## [3,]  0.08347724 -0.002410464 51.034334815
-\end{verbatim}
-\begin{alltt}
-\hlkwd{rbind}\hlstd{(mcerror_bm}\hlopt{$}\hlstd{est, mcerror_bart}\hlopt{$}\hlstd{est, mcerror_tuk}\hlopt{$}\hlstd{est,}
-      \hlstd{mcerror_is}\hlopt{$}\hlstd{est, mcerror_isadj}\hlopt{$}\hlstd{est)}
-\end{alltt}
-\begin{verbatim}
-##            Y1       Y2       Y3
-## [1,] 2.225577 4.012947 10.00781
-## [2,] 2.225577 4.012947 10.00781
-## [3,] 2.225577 4.012947 10.00781
-## [4,] 2.225577 4.012947 10.00781
-## [5,] 2.225577 4.012947 10.00781
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\texttt{mcse.multi} and \texttt{mcse.initseq} return an S3 class with multiple components. When \texttt{blather = FALSE} \texttt{cov} stores the estimate of $\Sigma$ obtained using the method chosen, \texttt{est} stores the estimate of the mean of $g$ applied on the Markov chain. In addition, \texttt{nsim} stores the no of Markov chain samples, \texttt{eigen-values} stores the eigen values of the estimated $\Sigma$ and \texttt{cov.adj} stores the adjusted covariance matrix if \texttt{adjust = TRUE} (see \texttt{mcse.multi} for more details). When \texttt{blather = TRUE} the following are returned in addition to the above: \texttt{size} which indicates the size of batches/truncation, \texttt{method} used, \texttt{Adjustment-used} indicating whether an adjusted estimator was used (\texttt{adjust}) and \texttt{message} containing additional information about the estimation process (like the numerical adjustments possibly made to keep the estimate mathematically consistent).
 
 
-
+  
+\bigskip  
+  
 \textbf{Note: } The Monte Carlo estimates of $\mu$ are not affected by the choice of the method.
 
 \bigskip
@@ -363,6 +313,7 @@ For reference on \texttt{mcse.initseq} (initial sequence estimators) see \cite{d
 \bigskip
 If the diagonals of $\Sigma$ are $\sigma_{ii}^2$, the function \texttt{mcse} and \texttt{mcse.mat} returns $\sigma_{ii}/\sqrt{n}$. \texttt{mcse} does it for one component and \texttt{mcse.mat} does it for all diagonals.
 
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -370,24 +321,26 @@ If the diagonals of $\Sigma$ are $\sigma_{ii}^2$, the function \texttt{mcse} and
 \end{alltt}
 \begin{verbatim}
 ## $est
-## [1] 2.225577
+## [1] 1.992741
 ## 
 ## $se
-## [1] 0.005022668
+## [1] 0.01222737
+## 
+## $nsim
+## [1] 10000
 \end{verbatim}
 \begin{alltt}
 \hlkwd{mcse.mat}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=} \hlstr{"bm"}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-##          est          se
-## Y1  2.225577 0.005022668
-## Y2  4.012947 0.008626225
-## Y3 10.007805 0.021942791
+##          est         se
+## Y1  1.992741 0.01222737
+## Y2 49.993356 0.01233545
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-
-
+  
+  
 In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use the \texttt{R} function \texttt{g} we had defined before. Recall that \texttt{g} should be a function that takes vector inputs.
 
 \begin{knitrout}
@@ -398,9 +351,9 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \begin{verbatim}
 ## function(x)
 ## {
-## 	return(sum(x^2))
+##   return(sum(x^2))
 ## }
-## <bytecode: 0x7fea3190cee8>
+## <bytecode: 0x0000020256a3ef28>
 \end{verbatim}
 \begin{alltt}
 \hlstd{mcerror_g_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
@@ -410,7 +363,7 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \end{alltt}
 \begin{verbatim}
 ##         [,1]
-## [1,] 19733.3
+## [1,] 16154.2
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Initial Sequence error is larger than batch means, as expected.}
@@ -418,7 +371,7 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \end{alltt}
 \begin{verbatim}
 ##          [,1]
-## [1,] 21293.28
+## [1,] 16746.87
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Returned value is asymptotic variance. }
@@ -426,15 +379,15 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \hlkwd{sqrt}\hlstd{(mcerror_g_bm}\hlopt{$}\hlstd{cov}\hlopt{/}\hlstd{N)}
 \end{alltt}
 \begin{verbatim}
-##           [,1]
-## [1,] 0.4442217
+##          [,1]
+## [1,] 1.270992
 \end{verbatim}
 \begin{alltt}
 \hlkwd{sqrt}\hlstd{(mcerror_g_is}\hlopt{$}\hlstd{cov}\hlopt{/}\hlstd{N)}
 \end{alltt}
 \begin{verbatim}
-##           [,1]
-## [1,] 0.4614465
+##          [,1]
+## [1,] 1.294097
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -456,9 +409,9 @@ Using the function \texttt{confRegion} in the package, the user can create joint
 \end{knitrout}
 
 \begin{itemize}
-	\item \texttt{which} should be a vector of size 2 that indicates the two components for which the confidence ellipse is to be constructed.
+\item \texttt{which} should be a vector of size 2 that indicates the two components for which the confidence ellipse is to be constructed.
 
-	\item \texttt{level} is the confidence level of the confidence region. The default is .95
+\item \texttt{level} is the confidence level of the confidence region. The default is .95
 \end{itemize}
 
 \bigskip
@@ -480,20 +433,21 @@ To determine the effect of the confidence level, we draw two regions with differ
 \includegraphics[width=\maxwidth,height=8cm]{figure/comp_region-1} 
 
 \end{knitrout}
-
+  
 \section{Effective Sample Size}
 Reporting $p \times p$ covariance matrix estimates is impractical and uninterpretable. The motivation of estimating Monte Carlo standard error is to ensure that said error is small. This is essentially the idea behind estimating effective sample size and ensuring that the estimated effective sample size is larger than a prespecified lower bound.
 
 Before sampling the Markov chain, the user is advised to used the function \texttt{minESS} to ascertain what is the minimum effective sample size needed for stable analysis. See \cite{vats:fleg:jones:2017b} for theoretical details.
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# For mu}
-\hlkwd{minESS}\hlstd{(}\hlkwc{p} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{.05}\hlstd{,} \hlkwc{eps} \hlstd{=} \hlnum{.05}\hlstd{)}
+\hlkwd{minESS}\hlstd{(}\hlkwc{p} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{.05}\hlstd{,} \hlkwc{eps} \hlstd{=} \hlnum{.05}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
 ## minESS 
-##   8123
+##   7529
 \end{verbatim}
 \begin{alltt}
 \hlcom{#For mu_g}
@@ -507,9 +461,9 @@ Before sampling the Markov chain, the user is advised to used the function \text
 \end{knitrout}
 
 \begin{itemize}
-	\item \texttt{p} is the dimension of the estimation problem.
-	\item \texttt{alpha} is the confidence level
-	\item \texttt{eps} is the tolerance level. Default is .05. Reasonable levels are anywhere from .01 to .05. The smaller the tolerance, the larger the minimum effective samples. \texttt{eps} represents a tolerance level relative to the variability in the target distribution. It is akin to the idea of margin-of-error.
+\item \texttt{p} is the dimension of the estimation problem.
+\item \texttt{alpha} is the confidence level
+\item \texttt{eps} is the tolerance level. Default is .05. Reasonable levels are anywhere from .01 to .05. The smaller the tolerance, the larger the minimum effective samples. \texttt{eps} represents a tolerance level relative to the variability in the target distribution. It is akin to the idea of margin-of-error.
 \end{itemize}
 
 \texttt{minESS} is independent of the Markov chain or process, and is only a function of the  $p$, $\alpha$, and $\epsilon$. The user should find \texttt{minESS} and then sample their process until the required minimum samples are achieved. 
@@ -519,11 +473,11 @@ Alternatively, we often don't have to luxury of obtaining a lot of samples, and 
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# For mu}
-\hlkwd{minESS}\hlstd{(}\hlkwc{p} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{.05}\hlstd{,} \hlkwc{ess} \hlstd{=} \hlnum{1000}\hlstd{)}
+\hlkwd{minESS}\hlstd{(}\hlkwc{p} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{.05}\hlstd{,} \hlkwc{ess} \hlstd{=} \hlnum{1000}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-##   Epsilon 
-## 0.1425016
+##  Epsilon 
+## 0.137196
 \end{verbatim}
 \begin{alltt}
 \hlcom{#For mu_g}
@@ -536,7 +490,7 @@ Alternatively, we often don't have to luxury of obtaining a lot of samples, and 
 \end{kframe}
 \end{knitrout}
 
-Thus, if you obtained a sample with estimates effective sample size equaling 1000 for estimating $\mu_g$ and $\mu_{n,g}$, then the precision level of your estimate is $\epsilon = .143$ and $\epsilon = .124$, respectively.
+Thus, if you obtained a sample with estimates effective sample size equaling 1000 for estimating $\mu_g$ and $\mu_{n,g}$, then the precision level of your estimate is $\epsilon = .137$ and $\epsilon = .124$, respectively.
 \texttt{multiESS} and \texttt{ess} are two functions that calculate the effective sample size of a correlated sample. \texttt{ess} calculations are based on \cite{gong2015practical} and is component-wise, and \texttt{multiESS} utilizes the multivariate nature of the problem.
 
 %<<ess>>=
@@ -551,14 +505,14 @@ Since \texttt{ess} produces a different estimate for each component, conservativ
 \hlkwd{multiESS}\hlstd{(chain)}
 \end{alltt}
 \begin{verbatim}
-## [1] 31630.92
+## [1] 8616.161
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Using spectral variance estimators}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_bart}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 31231.11
+## [1] 8616.161
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Using initial sequence estimators}
@@ -566,7 +520,7 @@ Since \texttt{ess} produces a different estimate for each component, conservativ
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_is}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 30544.9
+## [1] 8534.395
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -577,34 +531,33 @@ Since the effective sample size is less than the minimum effective samples, we s
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
-\hlstd{chain} \hlkwb{<-} \hlkwd{mAr.sim}\hlstd{(}\hlkwc{w} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,p),} \hlkwc{A} \hlstd{= A,} \hlkwc{C} \hlstd{= C,} \hlkwc{N} \hlstd{=} \hlnum{28000}\hlstd{)}
+\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(}\hlnum{28000}\hlstd{, mu, sigma)}
 
 \hlcom{# larger than 8123}
 \hlkwd{multiESS}\hlstd{(chain)}
 \end{alltt}
 \begin{verbatim}
-## [1] 8952.358
+## [1] 24453.04
 \end{verbatim}
 \begin{alltt}
 \hlcom{# larger than 8123}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_bart}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 8769.534
+## [1] 24453.04
 \end{verbatim}
 \begin{alltt}
 \hlcom{# larger than 8123}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_is}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 8576.849
+## [1] 24220.99
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 So no matter which estimator we choose for the Monte Carlo standard error, 28000 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
 
-\textbf{NOTE:} Ideally, we do not want to get more samples using the last iteration of the previous Markov chain. However, \texttt{mAr.sim} does not allow user specified starting values, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. When making \texttt{R} packages that simulate a Markov chain, it is often very useful to allow user specific starting values for this reason.
-
+\textbf{NOTE:} Ideally, we do not want to get more samples using the last iteration of the previous Markov chain. However, $BVN_Gibbs$ does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
 
 \section{Graphical Diagnostics}
 
@@ -627,6 +580,7 @@ We generate a new Markov chain with $p = 50$.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
+\hlkwd{library}\hlstd{(mAr)}
 \hlstd{p} \hlkwb{<-} \hlnum{50}
 \hlstd{A} \hlkwb{<-} \hlkwd{diag}\hlstd{(}\hlkwd{seq}\hlstd{(}\hlnum{.1}\hlstd{,} \hlnum{.9}\hlstd{,} \hlkwc{length} \hlstd{= p))}
 \hlstd{C} \hlkwb{<-} \hlkwd{diag}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{, p))}
@@ -656,7 +610,7 @@ For this new Markov chain, we find an estimate of $\Sigma$ to use for the \textt
 
 \end{knitrout}
 
-Thus, we see here that the chain has not quite reached asymptopia.
+Thus, we see here that the chain has reached not reached asymptopia. 
 \bibliographystyle{apalike}
 \bibliography{mcse}
 

@@ -77,12 +77,12 @@ multiESS <- function(x, covmat = NULL, g = NULL, ...)
   } else
   {
     covmat <- mcse.multi(x, ...)
-    var_mat <- cov(chain)
-    
-    log.det.var.p <- sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))
-    log.det.covmat.p <- sum(log(covmat$`eigen-values`))
-    ess <- n*exp((log.det.var.p - log.det.covmat.p)/p)
   }
+  var_mat <- cov(chain)
+  
+  log.det.var.p <- sum(log(eigen(var_mat, symmetric = TRUE, only.values = TRUE)$values))
+  log.det.covmat.p <- sum(log(eigs_cov))
+  ess <- n*exp((log.det.var.p - log.det.covmat.p)/p)
   return(ess)
   
 }

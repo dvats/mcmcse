@@ -28,9 +28,9 @@ qqTest <- function(mcse.obj)
   n <- mcse.obj$nsim
   p <- length(mcse.obj$est)
   
-  if(sum(names(mcse.obj) == "adjust"))
+  if(sum(names(mcse.obj) == "Adjustment-Used"))
   {
-    if(mcse.obj$adjust)
+    if(mcse.obj$`Adjustment-Used`)
     {
       covmat <- mcse.obj$cov.adj
     }else{

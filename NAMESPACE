@@ -25,5 +25,6 @@ export(mcse.q.mat)
 export(mcse.q)
 export(mcse)
 export(BVN_Gibbs)
+export(is.mcmcse)
 
 
