@@ -76,7 +76,7 @@
 \usepackage{amsfonts, framed}
 \usepackage[small,compact]{titlesec} 
 \title{An Introduction to Estimating Monte Carlo Standard Errors with R Package \texttt{mcmcse} }
-\author{Dootika Vats}
+\author{Dootika Vats, Kushagra Gupta}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
@@ -89,7 +89,7 @@
 \section{Introduction}
 The R package \texttt{mcmcse} provides estimates of Monte Carlo standard errors for Markov chain Monte Carlo (MCMC) when estimating means or quantiles of functions of the MCMC output. In addition to MCMC output, the package can be used for time series and other correlated processes. 
 
-The package is predominantly useful after MCMC output has been obtained by the user. In addition to estimating the Monte Carlo standard errors, the package also provides univariate and multivariate estimates of effective sample size and tools to determine whether enough Monte Carlo samples have been obtained. There are also some graphical tools to ascertain the behavior of the Monte Carlo estimates.
+The package is predominantly useful after MCMC output has been obtained by the user. In addition to estimating the Monte Carlo standard errors, the package also provides univariate and multivariate estimates of effective sample size and tools to determine whether enough Monte Carlo samples have been obtained. The package also samples a stationary Markov chain from a bivariate normal. There are also some graphical tools to ascertain the behavior of the Monte Carlo estimates.
 
 
 %<<noname,echo=FALSE>>=
@@ -117,11 +117,18 @@ To illustrate the use of our package, we consider sampling from a bivariate norm
 \omega_1 & \rho \\
 \rho & \omega_2
 \end{pmatrix}
-\end{pmatrix}
+\end{pmatrix} \; .
 \]
 
+The Gibbs sampler updates the Markov chain by using the following full conditional distributions transition equations -
+\[
+X_{1} \mid X_{2} \sim  N\left(\mu_{1} + \dfrac{\rho}{\omega_2}\left(X_{2} - \mu_{2}\right) , \omega_1 - \dfrac{\rho^{2}}{\omega_2}\right) \; .
+\]
+\[
+X_{2} \mid X_{1} \sim  N\left(\mu_{2} + \dfrac{\rho}{\omega_1}\left(X_{1} - \mu_{1}\right) , \omega_2 - \dfrac{\rho^{2}}{\omega_1}\right) \; .
+\]
 
-The function $BVN_Gibbs$ in the package draws samples from the above model. 
+The function \texttt{BVN\_Gibbs} in the package draws samples from the above model. 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -178,7 +185,7 @@ In \texttt{R}, $\mu_n$ is obtained using the usual \texttt{colMeans} function. I
 \end{kframe}
 \end{knitrout}
   
-\item $\text{E}_F \left(y^{(1)2} + y^{(2)2} \right)$: When interested in estimating the sum of the second moments of each component of $y$,  define the function $g: \mathbb{R}^2 \to \mathbb{R}$ as $g((x_1,x_2)) = x_1^2 + x_2^2$. This is defined in \texttt{R} by creating a function that implements the function $g$, row-wise.
+\item $\text{E}_F \left(y^{(1)2} + y^{(2)2} \right)$: When interested in estimating the sum of the second moments of each component of $y$,  define the function $g: \mathbb{R}^2 \to \mathbb{R}$ as $g(x_1,x_2) = x_1^2 + x_2^2$. This is defined in \texttt{R} by creating a function that implements the function $g$, row-wise.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -295,7 +302,7 @@ For reference on \texttt{mcse.initseq} (initial sequence estimators) see \cite{d
 \end{itemize}
 
 
-\texttt{mcse.multi} and \texttt{mcse.initseq} return an S3 class with multiple components. When \texttt{blather = FALSE} \texttt{cov} stores the estimate of $\Sigma$ obtained using the method chosen, \texttt{est} stores the estimate of the mean of $g$ applied on the Markov chain. In addition, \texttt{nsim} stores the no of Markov chain samples, \texttt{eigen-values} stores the eigen values of the estimated $\Sigma$ and \texttt{cov.adj} stores the adjusted covariance matrix if \texttt{adjust = TRUE} (see \texttt{mcse.multi} for more details). When \texttt{blather = TRUE} the following are returned in addition to the above: \texttt{size} which indicates the size of batches/truncation, \texttt{method} used, \texttt{Adjustment-used} indicating whether an adjusted estimator was used (\texttt{adjust}) and \texttt{message} containing additional information about the estimation process (like the numerical adjustments possibly made to keep the estimate mathematically consistent).
+\texttt{mcse.multi} and \texttt{mcse.initseq} return an S3 class with multiple components. When \texttt{blather = FALSE} \texttt{cov} stores the estimate of $\Sigma$ obtained using the method chosen, \texttt{est} stores the estimate of the mean of $g$ applied on the Markov chain. In addition, \texttt{nsim} stores the no. of Markov chain samples, \texttt{eigen-values} stores the eigen values of the estimated $\Sigma$ and \texttt{cov.adj} stores the adjusted covariance matrix if \texttt{adjust = TRUE} (see \texttt{mcse.multi} for more details). When \texttt{blather = TRUE} the following are returned in addition to the above: \texttt{size} which indicates the size of batches/truncation, \texttt{method} used, \texttt{Adjustment-used} indicating whether an adjusted estimator was used (\texttt{adjust}) and \texttt{message} containing additional information about the estimation process (like the numerical adjustments possibly made to keep the estimate mathematically consistent).
 
 
   
@@ -352,7 +359,7 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 ## {
 ##   return(sum(x^2))
 ## }
-## <bytecode: 0x0000021ea5e4eb88>
+## <bytecode: 0x0000021ea05fe868>
 \end{verbatim}
 \begin{alltt}
 \hlstd{mcerror_g_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
@@ -436,7 +443,7 @@ To determine the effect of the confidence level, we draw two regions with differ
 \section{Effective Sample Size}
 Reporting $p \times p$ covariance matrix estimates is impractical and uninterpretable. The motivation of estimating Monte Carlo standard error is to ensure that said error is small. This is essentially the idea behind estimating effective sample size and ensuring that the estimated effective sample size is larger than a prespecified lower bound.
 
-Before sampling the Markov chain, the user is advised to used the function \texttt{minESS} to ascertain what is the minimum effective sample size needed for stable analysis. See \cite{vats:fleg:jones:2017b} for theoretical details.
+Before sampling the Markov chain, the user is advised to use the function \texttt{minESS} to ascertain what is the minimum effective sample size needed for stable analysis. See \cite{vats:fleg:jones:2017b} for theoretical details.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -467,7 +474,7 @@ Before sampling the Markov chain, the user is advised to used the function \text
 
 \texttt{minESS} is independent of the Markov chain or process, and is only a function of the  $p$, $\alpha$, and $\epsilon$. The user should find \texttt{minESS} and then sample their process until the required minimum samples are achieved. 
 
-Alternatively, we often don't have to luxury of obtaining a lot of samples, and reaching a minimum effective sample size os not possible. In such a scneario, it is useful to know the $\epsilon$ tolerance level the number of estimated effective samples correspond to. So if we can only obtain 1000 effective samples,
+Alternatively, we often don't have the luxury of obtaining a lot of samples, and reaching a minimum effective sample size is not possible. In such a scenario, it is useful to know the $\epsilon$ tolerance level the number of estimated effective samples correspond to. So if we can only obtain 1000 effective samples,
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -554,9 +561,11 @@ Since the effective sample size is less than the minimum effective samples, we s
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-So no matter which estimator we choose for the Monte Carlo standard error, 28000 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
+So no matter which estimator we choose for the Monte Carlo standard error, 9200 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
 
-\textbf{NOTE:} Ideally, we want to get more samples using the last iteration of the previous Markov chain. However, $BVN_Gibbs$ does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
+\bigskip
+
+\textbf{NOTE:} Ideally, we want to get more samples using the last iteration of the previous Markov chain. However, \texttt{BVN\_Gibbs} does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
 
 \section{Graphical Diagnostics}
 
