@@ -32,6 +32,7 @@ confRegion <- function(mcse.obj, which = c(1,2), level = .95) {
   UseMethod('confRegion')
 }
 
+#' @export
 confRegion.mcmcse <- function(mcse.obj, which = c(1,2), level = .95)
 {
   mat <- mcse.obj$cov
@@ -46,6 +47,7 @@ confRegion.mcmcse <- function(mcse.obj, which = c(1,2), level = .95)
   
 }
 
+#' @export
 confRegion.default <- function(mcse.obj, which = c(1,2), level = .95)
 {
   mat <- mcse.obj$cov
