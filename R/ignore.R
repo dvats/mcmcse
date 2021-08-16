@@ -214,3 +214,54 @@ batchSize_old <- function(x, method = "bm", g = NULL)
 }
 
 
+qqTest <- function(x) {
+  UseMethod('qqTest')
+}
+
+qqTest.mcmcse <- function(mcse.obj)
+{
+  mu <- mcse.obj$est
+  n <- mcse.obj$nsim
+  p <- length(mcse.obj$est)
+  
+  if(sum(names(mcse.obj) == "Adjustment-Used"))
+  {
+    if(mcse.obj$`Adjustment-Used`)
+    {
+      covmat <- mcse.obj$cov.adj
+    }else{
+      covmat <- mcse.obj$cov
+    }
+  }else{
+    covmat <- mcse.obj$cov
+  }
+  decomp  <- svd(covmat)
+  inv.root <- decomp$v %*% diag( (decomp$d^(-1/2)), p) %*% t(decomp$u)
+  qqnorm(inv.root%*%mu)
+  qqline(inv.root%*%mu)
+}
+
+qqTest.default <- function(mcse.obj)
+{
+  mu <- mcse.obj$est
+  n <- mcse.obj$nsim
+  p <- length(mcse.obj$est)
+  
+  if(sum(names(mcse.obj) == "Adjustment-Used"))
+  {
+    if(mcse.obj$`Adjustment-Used`)
+    {
+      covmat <- mcse.obj$cov.adj
+    }else{
+      covmat <- mcse.obj$cov
+    }
+  }else{
+    covmat <- mcse.obj$cov
+  }
+  decomp  <- svd(covmat)
+  inv.root <- decomp$v %*% diag( (decomp$d^(-1/2)), p) %*% t(decomp$u)
+  qqnorm(inv.root%*%mu)
+  qqline(inv.root%*%mu)
+}
+
+

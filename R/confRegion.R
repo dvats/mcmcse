@@ -28,7 +28,25 @@ library(ellipse)
 #' plot(confRegion(mcerror), type = 'l')
 #' 
 
-confRegion <- function(mcse.obj, which = c(1,2), level = .95)
+confRegion <- function(mcse.obj, which = c(1,2), level = .95) {
+  UseMethod('confRegion')
+}
+
+confRegion.mcmcse <- function(mcse.obj, which = c(1,2), level = .95)
+{
+  mat <- mcse.obj$cov
+  n <- mcse.obj$nsim
+  p <- 2
+  
+  crit <- qchisq(level, df = p)/n
+  
+  mu <- mcse.obj$est
+  
+  return(ellipse(mat, centre = mu[which], t = sqrt(crit), which = which))       
+  
+}
+
+confRegion.default <- function(mcse.obj, which = c(1,2), level = .95)
 {
   mat <- mcse.obj$cov
   n <- mcse.obj$nsim

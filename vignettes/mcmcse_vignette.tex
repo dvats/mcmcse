@@ -359,7 +359,7 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 ## {
 ##   return(sum(x^2))
 ## }
-## <bytecode: 0x0000021ea05fe868>
+## <bytecode: 0x0000021ea5864140>
 \end{verbatim}
 \begin{alltt}
 \hlstd{mcerror_g_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
@@ -581,44 +581,6 @@ The function \texttt{estvssamp} plots the Monte Carlo estimates versus the sampl
 
 \end{knitrout}
 
-Additionally, if $p$ is not too small, due to the central limit theorem in \eqref{eq:clt} and an estimate of $\Sigma$ using the \texttt{mcse.multi} function, a QQ plot of the standardized estimates gives an idea of whether asymptopia has been achieved.
-
-We generate a new Markov chain with $p = 50$.
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(mAr)}
-\hlstd{p} \hlkwb{<-} \hlnum{50}
-\hlstd{A} \hlkwb{<-} \hlkwd{diag}\hlstd{(}\hlkwd{seq}\hlstd{(}\hlnum{.1}\hlstd{,} \hlnum{.9}\hlstd{,} \hlkwc{length} \hlstd{= p))}
-\hlstd{C} \hlkwb{<-} \hlkwd{diag}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{, p))}
-
-\hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
-\hlstd{chain} \hlkwb{<-} \hlkwd{mAr.sim}\hlstd{(}\hlkwc{w} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,p),} \hlkwc{A} \hlstd{= A,} \hlkwc{C} \hlstd{= C,} \hlkwc{N} \hlstd{=} \hlnum{10000}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
-
-For this new Markov chain, we find an estimate of $\Sigma$ to use for the \texttt{qqTest} function.
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{mcerror_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(chain,} \hlkwc{method} \hlstd{=} \hlstr{"bm"}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
-\hlstd{mcerror_isadj} \hlkwb{<-} \hlkwd{mcse.initseq}\hlstd{(chain,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
-\hlkwd{qqTest}\hlstd{(mcerror_bm)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=8cm]{figure/qq-1} 
-\begin{kframe}\begin{alltt}
-\hlkwd{qqTest}\hlstd{(mcerror_isadj)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=8cm]{figure/qq-2} 
-
-\end{knitrout}
-
-Thus, we see here that the chain has reached not reached asymptopia. 
 \bibliographystyle{apalike}
 \bibliography{mcse}
 

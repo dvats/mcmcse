@@ -366,30 +366,6 @@ The function \texttt{estvssamp} plots the Monte Carlo estimates versus the sampl
 estvssamp(chain[,1])
 @
 
-Additionally, if $p$ is not too small, due to the central limit theorem in \eqref{eq:clt} and an estimate of $\Sigma$ using the \texttt{mcse.multi} function, a QQ plot of the standardized estimates gives an idea of whether asymptopia has been achieved.
-
-We generate a new Markov chain with $p = 50$.
-
-<<qqbig, warning = FALSE>>=
-library(mAr)
-p <- 50
-A <- diag(seq(.1, .9, length = p))
-C <- diag(rep(2, p))
-
-set.seed(100)
-chain <- mAr.sim(w = rep(2,p), A = A, C = C, N = 10000)
-@
-
-For this new Markov chain, we find an estimate of $\Sigma$ to use for the \texttt{qqTest} function.
-
-<<qq, out.width = '8cm', warning = FALSE>>=
-mcerror_bm <- mcse.multi(chain, method = "bm", blather = TRUE)
-mcerror_isadj <- mcse.initseq(chain, adjust = TRUE, blather = TRUE)
-qqTest(mcerror_bm)
-qqTest(mcerror_isadj)
-@
-
-Thus, we see here that the chain has reached not reached asymptopia. 
 \bibliographystyle{apalike}
 \bibliography{mcse}
 
