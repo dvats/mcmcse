@@ -82,7 +82,7 @@ X_{2} \mid X_{1} \sim  N\left(\mu_{2} + \dfrac{\rho}{\omega_1}\left(X_{1} - \mu_
 The function \texttt{BVN\_Gibbs} in the package draws samples from the above model. 
 
 <<var>>=
-#library(mcmcse)
+library(mcmcse)
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
 
