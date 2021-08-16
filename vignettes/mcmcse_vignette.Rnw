@@ -75,7 +75,7 @@ To illustrate the use of our package, we consider sampling from a bivariate norm
 The function $BVN_Gibbs$ in the package draws samples from the above model. 
 
 <<var>>=
-library(mcmcse)
+#library(mcmcse)
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
 
@@ -330,19 +330,19 @@ multiESS(chain, covmat = mcerror_bart$cov)
 multiESS(chain, covmat = mcerror_is$cov)
 @
 
-Since the effective sample size is less than the minimum effective samples, we should simulate more. Looking at the ratio of the Monte Carlo samples size of $10^4$ and multiESS, we might need around $28,000$ Monte Carlo samples. 
+Since the effective sample size is less than the minimum effective samples, we should simulate more. Looking at the formula of ESS, we might need around $9,200$ Monte Carlo samples. 
 
 <<moresamples>>=
 set.seed(100)
-chain <- BVN_Gibbs(28000, mu, sigma)
+chain <- BVN_Gibbs(9200, mu, sigma)
 
-# larger than 8123
+# larger than 7529
 multiESS(chain)
 
-# larger than 8123
+# larger than 7529
 multiESS(chain, covmat = mcerror_bart$cov)
 
-# larger than 8123
+# larger than 7529
 multiESS(chain, covmat = mcerror_is$cov)
 @
 So no matter which estimator we choose for the Monte Carlo standard error, 28000 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.

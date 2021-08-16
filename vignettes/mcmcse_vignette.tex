@@ -126,11 +126,12 @@ The function $BVN_Gibbs$ in the package draws samples from the above model.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
+\hlcom{#library(mcmcse)}
 \hlstd{mu} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{50}\hlstd{)}
 \hlstd{sigma} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{nrow} \hlstd{=} \hlnum{2}\hlstd{)}
 
 \hlcom{# Monte Carlo sample size is N}
-\hlstd{N} \hlkwb{<-} \hlnum{1e4}
+\hlstd{N} \hlkwb{<-} \hlnum{5e3}
 \hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
 \hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(N, mu, sigma)}
 \end{alltt}
@@ -172,7 +173,7 @@ In \texttt{R}, $\mu_n$ is obtained using the usual \texttt{colMeans} function. I
 \end{alltt}
 \begin{verbatim}
 ##        Y1        Y2 
-##  1.992741 49.993356
+##  2.006982 50.006033
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -203,7 +204,7 @@ The Monte Carlo estimator for $g$ is
 \hlkwd{mean}\hlstd{(gofy)}
 \end{alltt}
 \begin{verbatim}
-## [1] 2505.265
+## [1] 2506.55
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -238,15 +239,13 @@ Using the \texttt{mcmcse} package we can estimate $\Sigma$ in \eqref{eq:clt} wit
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlcom{#library(mcmcse)}
-
 \hlcom{# Batch means estimator}
 \hlstd{mcerror_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"bm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
                          \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
                          \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
 \hlcom{# Overlapping batch means estimator}
-\hlstd{mcerror_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"obm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
+\hlstd{mcerror_obm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"obm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
                          \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
                          \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
@@ -321,21 +320,21 @@ If the diagonals of $\Sigma$ are $\sigma_{ii}^2$, the function \texttt{mcse} and
 \end{alltt}
 \begin{verbatim}
 ## $est
-## [1] 1.992741
+## [1] 2.006982
 ## 
 ## $se
-## [1] 0.01222737
+## [1] 0.01792272
 ## 
 ## $nsim
-## [1] 10000
+## [1] 5000
 \end{verbatim}
 \begin{alltt}
 \hlkwd{mcse.mat}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=} \hlstr{"bm"}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
 ##          est         se
-## Y1  1.992741 0.01222737
-## Y2 49.993356 0.01233545
+## Y1  2.006982 0.01792272
+## Y2 50.006033 0.01814934
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -353,7 +352,7 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 ## {
 ##   return(sum(x^2))
 ## }
-## <bytecode: 0x0000020256a3ef28>
+## <bytecode: 0x0000021ea5e4eb88>
 \end{verbatim}
 \begin{alltt}
 \hlstd{mcerror_g_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
@@ -362,8 +361,8 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \hlstd{mcerror_g_bm}\hlopt{$}\hlstd{cov}
 \end{alltt}
 \begin{verbatim}
-##         [,1]
-## [1,] 16154.2
+##          [,1]
+## [1,] 17464.29
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Initial Sequence error is larger than batch means, as expected.}
@@ -371,7 +370,7 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \end{alltt}
 \begin{verbatim}
 ##          [,1]
-## [1,] 16746.87
+## [1,] 16091.86
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Returned value is asymptotic variance. }
@@ -380,14 +379,14 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 \end{alltt}
 \begin{verbatim}
 ##          [,1]
-## [1,] 1.270992
+## [1,] 1.868919
 \end{verbatim}
 \begin{alltt}
 \hlkwd{sqrt}\hlstd{(mcerror_g_is}\hlopt{$}\hlstd{cov}\hlopt{/}\hlstd{N)}
 \end{alltt}
 \begin{verbatim}
 ##          [,1]
-## [1,] 1.294097
+## [1,] 1.793982
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -505,14 +504,14 @@ Since \texttt{ess} produces a different estimate for each component, conservativ
 \hlkwd{multiESS}\hlstd{(chain)}
 \end{alltt}
 \begin{verbatim}
-## [1] 8616.161
+## [1] 4024.471
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Using spectral variance estimators}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_bart}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 8616.161
+## [1] 4377.303
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Using initial sequence estimators}
@@ -520,44 +519,44 @@ Since \texttt{ess} produces a different estimate for each component, conservativ
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_is}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 8534.395
+## [1] 4263.715
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-Since the effective sample size is less than the minimum effective samples, we should simulate more. Looking at the ratio of the Monte Carlo samples size of $10^4$ and multiESS, we might need around $28,000$ Monte Carlo samples. 
+Since the effective sample size is less than the minimum effective samples, we should simulate more. Looking at the formula of ESS, we might need around $9,200$ Monte Carlo samples. 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
-\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(}\hlnum{28000}\hlstd{, mu, sigma)}
+\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(}\hlnum{9200}\hlstd{, mu, sigma)}
 
-\hlcom{# larger than 8123}
+\hlcom{# larger than 7529}
 \hlkwd{multiESS}\hlstd{(chain)}
 \end{alltt}
 \begin{verbatim}
-## [1] 24453.04
+## [1] 7544.004
 \end{verbatim}
 \begin{alltt}
-\hlcom{# larger than 8123}
+\hlcom{# larger than 7529}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_bart}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 24453.04
+## [1] 8137.827
 \end{verbatim}
 \begin{alltt}
-\hlcom{# larger than 8123}
+\hlcom{# larger than 7529}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_is}\hlopt{$}\hlstd{cov)}
 \end{alltt}
 \begin{verbatim}
-## [1] 24220.99
+## [1] 7926.657
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 So no matter which estimator we choose for the Monte Carlo standard error, 28000 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
 
-\textbf{NOTE:} Ideally, we do not want to get more samples using the last iteration of the previous Markov chain. However, $BVN_Gibbs$ does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
+\textbf{NOTE:} Ideally, we want to get more samples using the last iteration of the previous Markov chain. However, $BVN_Gibbs$ does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
 
 \section{Graphical Diagnostics}
 
