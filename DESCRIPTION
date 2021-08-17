@@ -1,6 +1,6 @@
 Package: mcmcse
-Version: 1.4-3
-Date: 2021-07-23
+Version: 1.5-0
+Date: 2021-08-23
 Title: Monte Carlo Standard Errors for MCMC
 Author: James M. Flegal <jflegal@ucr.edu>, 
 	John Hughes <j.hughes@ucdenver.edu>, 
@@ -11,7 +11,7 @@ Author: James M. Flegal <jflegal@ucr.edu>,
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 Imports: utils, ellipse, Rcpp (>= 0.12.10), fftwtools, testthat
 LinkingTo: Rcpp, RcppArmadillo
-Suggests: mAr, knitr
+Suggests: knitr
 Description: Provides tools for computing Monte Carlo standard
         errors (MCSE) in Markov chain Monte Carlo (MCMC) settings. MCSE
         computation for expectation and quantile estimators is
@@ -19,9 +19,6 @@ Description: Provides tools for computing Monte Carlo standard
 	functions for computing effective sample size and for plotting
 	Monte Carlo estimates versus sample size.
 License: GPL (>= 2)
-URL: http://faculty.ucr.edu/~jflegal ,
-        http://johnhughes.org,
-	http://home.iitk.ac.in/~dootika/
 VignetteBuilder: knitr
 Repository: CRAN
 Encoding: UTF-8
