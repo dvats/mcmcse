@@ -22,7 +22,6 @@ the initial sequence estimator. The default is \code{FALSE}.}
 }
 \value{
 A list is returned with the following components,
-\describe{
  \item{cov}{a covariance matrix estimate using intial sequence method}.
  \item{cov.adj}{a covariance matrix estimate using adjusted initial sequence method if the
  input \code{adjust=TRUE}.}
@@ -32,7 +31,6 @@ A list is returned with the following components,
   \item{nsim}{number of rows of the input x. Only if \code{blather = TRUE}.}
   \item{Adjustment_Used}{logical of whether an adjustment was made to the initial sequence estimator.
   Only if \code{blather = TRUE}.}
-}
 }
 \description{
 Function returns the estimate of the covariance matrix in the Markov Chain central limit theorem

@@ -4,15 +4,8 @@
 \alias{mcse.multi}
 \title{Multivariate Monte Carlo standard errors for expectations.}
 \usage{
-mcse.multi(
-  x,
-  method = c("bm", "obm", "bartlett", "tukey", "lug"),
-  r = 3,
-  size = NULL,
-  g = NULL,
-  adjust = TRUE,
-  blather = FALSE
-)
+mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3, size = NULL, g = NULL, adjust = TRUE, blather = 
+FALSE)
 }
 \arguments{
 \item{x}{A matrix or data frame of Markov chain output. Number of rows is the Monte
@@ -44,7 +37,6 @@ is estimation of the mean of the target density.}
 }
 \value{
 A list is returned with the following components,
-\describe{
  \item{cov}{a covariance matrix estimate.}
  \item{est}{estimate of g(x).}
  \item{nsim}{number of rows of the input x.}
@@ -52,7 +44,6 @@ A list is returned with the following components,
  \item{method}{method used to calculate matrix cov.}
  \item{size}{value of size used to calculate cov.}
  \item{Adjustment_Used}{whether an adjustment was used to calculate cov.}
-}
 }
 \description{
 Function returns the estimate of the covariance matrix in the Markov Chain CLT using batch means

@@ -4,14 +4,7 @@
 \alias{mcse.q}
 \title{Compute Monte Carlo standard errors for quantiles.}
 \usage{
-mcse.q(
-  x,
-  q,
-  size = NULL,
-  g = NULL,
-  method = c("bm", "obm", "sub"),
-  warn = FALSE
-)
+mcse.q(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"), warn = FALSE)
 }
 \arguments{
 \item{x}{a vector of values from a Markov chain.}

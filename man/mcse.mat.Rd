@@ -4,18 +4,12 @@
 \alias{mcse.mat}
 \title{Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.}
 \usage{
-mcse.mat(
-  x,
-  size = NULL,
-  g = NULL,
-  method = c("bm", "obm", "bartlett", "tukey"),
-  r = 3
-)
+mcse.mat(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r = 3)
 }
 \arguments{
 \item{x}{a matrix of values from a Markov chain of size n x p.}
 
-\item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\cod
+\item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\code
 {tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
   value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is

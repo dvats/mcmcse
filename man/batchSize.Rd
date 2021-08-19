@@ -4,12 +4,7 @@
 \alias{batchSize}
 \title{Batch size (truncation point) selection}
 \usage{
-batchSize(
-  x,
-  method = c("bm", "obm", "bartlett", "tukey", "sub"),
-  g = NULL,
-  fast = TRUE
-)
+batchSize(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g = NULL, fast = TRUE)
 }
 \arguments{
 \item{x}{A matrix or data frame of Markov chain output. Number of rows is the Monte
