@@ -9,8 +9,8 @@ mcse(x, size = NULL, g = NULL, r = 3, method = c("bm", "obm", "bartlett", "tukey
 \arguments{
 \item{x}{a vector of values from a Markov chain of length n.}
 
-\item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\code
-{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
+\item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
+\dQuote{\code{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
   value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
   floor(n^(1/3)).}
