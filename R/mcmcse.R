@@ -24,6 +24,8 @@
 #'         \item{est}{an estimate of \eqn{E(g(x))}.}
 #'         \item{se}{the Monte Carlo standard error.}
 #'         \item{nsim}{The number of samples in the input Markov chain.}
+#' 
+#' @usage mcse(x, size = NULL, g = NULL, r = 3, method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
 #'         
 #' @references
 #' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
@@ -110,6 +112,8 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
 #'   of the matrix are the same as the column names of \code{x}. The column names of the matrix are
 #'   \dQuote{\code{est}} and \dQuote{\code{se}}. The \eqn{j}th row of the matrix contains the result
 #'   of applying \code{mcse} to the \eqn{j}th column of \code{x}.
+#' 
+#' @usage mcse.mat(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r = 3)
 #'   
 #' @seealso
 #' \code{\link{mcse}}, which acts on a vector.
@@ -156,6 +160,8 @@ quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) 
 #'         \item{est}{an estimate of the \eqn{q}th quantile of the univariate distribution function of \eqn{g(x)}.}
 #'         \item{se}{the Monte Carlo standard error.}
 #'         \item{nsim}{The number of samples in the input Markov chain.}
+#' 
+#' @usage mcse.q(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"), warn = FALSE)
 #'         
 #' @references
 #' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.

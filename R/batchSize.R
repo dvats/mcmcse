@@ -35,6 +35,8 @@
 #'   
 #' @return A value of the optimal batch size (truncation) is returned.
 #' 
+#' @usage batchSize(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g = NULL, fast = TRUE)
+#' 
 #' @references 
 #' Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, Methodology and
 #' Computing in Applied Probability .

@@ -24,18 +24,18 @@ License: \tab GPL (>= 2)\cr
 
 }
 \author{
-James M. Flegal <jflegal@ucr.edu>,  
-John Hughes <j.hughes@ucdenver.edu>,   
-Dootika Vats <dootika@iitk.ac.in>,   
-Ning Dai <daixx224@umn.edu>,  
-Kushagra Gupta <kushagra.gpt99@gmail.com>, and  
+James M. Flegal <jflegal@ucr.edu>,\cr  
+John Hughes <j.hughes@ucdenver.edu>,\cr   
+Dootika Vats <dootika@iitk.ac.in>,\cr   
+Ning Dai <daixx224@umn.edu>,\cr  
+Kushagra Gupta <kushagra.gpt99@gmail.com>, and\cr  
 Uttiya Maji  
 
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
 \references{
 
-  Dai, N and Jones, G.L. (2017+)  Multivariate initial sequence estimators in Markov chain Monte Carlo, \emph{ Journal of Multivariate Analysis}.
+  Dai, N and Jones, G.L. (2017)  Multivariate initial sequence estimators in Markov chain Monte Carlo, \emph{ Journal of Multivariate Analysis}.
   
   Flegal, J. M. (2012) Applicability of subsampling
   bootstrap methods in Markov chain Monte Carlo. In
@@ -65,7 +65,7 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
   Carlo. \emph{Journal of the American Statistical
   Association}, \bold{101}, 1537--1547.
 
-  Liu, Y., Vats, D., and Flegal, J. M. Batch size selection for variance estimators in MCMC, \emph{arXiv preprint arXiv:1804.05975  (2019)}.
+  Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and Computing in Applied Probability}.
 
   Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
 

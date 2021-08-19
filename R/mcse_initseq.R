@@ -19,7 +19,6 @@
 #' @param blather if \code{TRUE}, outputs under the hood information about the function.
 #' 
 #' @return A list is returned with the following components,
-#' \describe{
 #'  \item{cov}{a covariance matrix estimate using intial sequence method}.
 #'  \item{cov.adj}{a covariance matrix estimate using adjusted initial sequence method if the
 #'  input \code{adjust=TRUE}.}
@@ -29,7 +28,6 @@
 #'   \item{nsim}{number of rows of the input x. Only if \code{blather = TRUE}.}
 #'   \item{Adjustment_Used}{logical of whether an adjustment was made to the initial sequence estimator.
 #'   Only if \code{blather = TRUE}.}
-#' }
 #' 
 #' @references 
 #' Dai, N and Jones, G.L. (2017) Multivariate initial sequence estimators in Markov chain Monte
