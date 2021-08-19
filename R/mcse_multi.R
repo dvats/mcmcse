@@ -194,7 +194,8 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
   ## Setting matrix sizes to avoid dynamic memory 
   sig.mat = matrix(0, nrow = p, ncol = p)
   
-  b = floor(max(b, 2*r))
+  if(b < (2*r))
+    r = 1       # estimated batch size is low, lugsail not required
   
   message <- ""   # will store some info for blather
   
