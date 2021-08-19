@@ -1,8 +1,8 @@
 
-#' Compute Monte Carlo standard errors for expectations.
+#' Compute Monte Carlo standard errors for expectations. 
 #'
 #' @param x a vector of values from a Markov chain of length n.
-#' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\cod
+#' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\code
 #' {tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
 #'   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
 #'   value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
@@ -90,7 +90,7 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
 #' Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.
 #'
 #' @param x a matrix of values from a Markov chain of size n x p.
-#' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\cod
+#' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\code
 #' {tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
 #'   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
 #'   value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is

@@ -209,7 +209,7 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
     r <- 3
     c <- 0.5
   }
-  
+  r=1
   c = 0.5
   
   if(!is.numeric(r)) stop("r should be numeric")
@@ -287,7 +287,7 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
   b = floor(max(b, 2*r))
   
   message <- ""   # will store some info for blather
-  
+
   ## Setting matrix sizes to avoid dynamic memory 
   sig.mat = matrix(0, nrow = p, ncol = p)
   sig.sum = matrix(0, nrow = p, ncol = p)
