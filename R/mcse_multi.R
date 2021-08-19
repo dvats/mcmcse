@@ -73,8 +73,8 @@ mSVEfft <- function (A, b, method = "bartlett")
 #'  \item{size}{value of size used to calculate cov.}
 #'  \item{Adjustment_Used}{whether an adjustment was used to calculate cov.}
 #' 
-#' @usage mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3, size = NULL, g = NULL, adjust = TRUE, blather = 
-#' FALSE)
+#' @usage mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3,  
+#'                   size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 #' @references 
 #'  Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
 #'  Monte Carlo, Biometrika.

@@ -4,8 +4,8 @@
 \alias{mcse.multi}
 \title{Multivariate Monte Carlo standard errors for expectations.}
 \usage{
-mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3, size = NULL, g = NULL, adjust = TRUE, blather = 
-FALSE)
+mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3,  
+                  size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 }
 \arguments{
 \item{x}{A matrix or data frame of Markov chain output. Number of rows is the Monte

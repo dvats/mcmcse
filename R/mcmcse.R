@@ -25,7 +25,8 @@
 #'         \item{se}{the Monte Carlo standard error.}
 #'         \item{nsim}{The number of samples in the input Markov chain.}
 #' 
-#' @usage mcse(x, size = NULL, g = NULL, r = 3, method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
+#' @usage mcse(x, size = NULL, g = NULL, r = 3, 
+#'             method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
 #'         
 #' @references
 #' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
