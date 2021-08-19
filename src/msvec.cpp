@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <math.h> 
 
-using namespace arma;
+// using namespace arma;
 using namespace Rcpp;
 
 // returns the lag window value for the corresponding window
@@ -13,21 +13,21 @@ double lag(int s, double b, String method)
   }
   else
   {
-    return((1 + cos(PI * s/b))/2 );
+    return((1 + cos(M_PI * s/b))/2 );
   }
 }
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-mat msveC(const arma::mat& chain, double b, String method = "bartlett")
+arma::mat msveC(const arma::mat& chain, double b, String method = "bartlett")
 {
   int n = chain.n_rows;
   int p = chain.n_cols;
 
   // t_chain improves performance a little
-  mat t_chain = trans(chain);
-  mat out(p,p);
-  mat dummy(p,p);
+  arma::mat t_chain = trans(chain);
+  arma::mat out(p,p);
+  arma::mat dummy(p,p);
   dummy.zeros();
   out.zeros();
 

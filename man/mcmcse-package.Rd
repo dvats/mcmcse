@@ -17,24 +17,25 @@ versus sample size.
 \tabular{ll}{
 Package: \tab mcmcse\cr
 Type: \tab Package\cr
-Version: \tab 1.4-3\cr
-Date: \tab 2020-06-20\cr
+Version: \tab 1.5-0\cr
+Date: \tab 2021-08-23\cr
 License: \tab GPL (>= 2)\cr
 }
 
 }
 \author{
-James M. Flegal <jflegal@ucr.edu>,\\
-John Hughes <j.hughes@ucdenver.edu> \\
-Dootika Vats <dootika@iitk.ac.in> \\
-Ning Dai <daixx224@umn.edu> and\\
-Uttiya Maji \\ 
+James M. Flegal <jflegal@ucr.edu>,\cr  
+John Hughes <j.hughes@ucdenver.edu>,\cr   
+Dootika Vats <dootika@iitk.ac.in>,\cr   
+Ning Dai <daixx224@umn.edu>,\cr  
+Kushagra Gupta <kushagra.gpt99@gmail.com>, and\cr  
+Uttiya Maji  
 
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
 \references{
 
-  Dai, N and Jones, G.L. (2017+)  Multivariate initial sequence estimators in Markov chain Monte Carlo, \emph{ Journal of Multivariate Analysis}.
+  Dai, N and Jones, G.L. (2017)  Multivariate initial sequence estimators in Markov chain Monte Carlo, \emph{ Journal of Multivariate Analysis}.
   
   Flegal, J. M. (2012) Applicability of subsampling
   bootstrap methods in Markov chain Monte Carlo. In
@@ -64,7 +65,7 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
   Carlo. \emph{Journal of the American Statistical
   Association}, \bold{101}, 1537--1547.
 
-  Liu, Y., Vats, D., and Flegal, J. M. Batch size selection for variance estimators in MCMC, \emph{arXiv preprint arXiv:1804.05975  (2019)}.
+  Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and Computing in Applied Probability}.
 
   Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
 
@@ -74,20 +75,14 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
 
 \examples{
-library(mAr)
-p <- 3
 n <- 1e3
-omega <- 5*diag(1,p)
+mu = c(2, 50)
+sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+out = BVN_Gibbs(n, mu, sigma)
 
-## Making correlation matrix var(1) model
-set.seed(100)
-foo <- matrix(rnorm(p^2), nrow = p)
-foo <- foo \%*\% t(foo)
-phi <- foo / (max(eigen(foo)$values) + 1)
-  
-out <- as.matrix(mAr.sim(rep(0,p), phi, omega, N = n))
-
-mcse(out[,1], method = "bartlett")
+multiESS(out)
+ess(out)
+mcse.mat(out)
 
 mcse.bm <- mcse.multi(x = out)
 mcse.tuk <- mcse.multi(x = out, method = "tukey")
