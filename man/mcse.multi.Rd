@@ -18,40 +18,40 @@ mcse.multi(
 \item{x}{A matrix or data frame of Markov chain output. Number of rows is the Monte
 Carlo sample size.}
 
-\item{method}{Any of `bm`,`obm`,`bartlett`,`tukey`. `bm` represents batch
-means estimator, `obm` represents the overlapping batch means estimator,
-and `bartlett` and `tukey` represent the modified-Bartlett window and
-the Tukey-Hanning windows for the spectral variance estimators.}
+\item{method}{Any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}},\dQuote{\code{tukey}}. \dQuote{\code{bm}}
+represents batch means estimator, \dQuote{\code{obm}} represents the overlapping batch means estimator,
+  and \dQuote{\code{bartlett}} and \dQuote{\code{tukey}} represent the modified-Bartlett window and
+  the Tukey-Hanning windows for the spectral variance estimators.}
 
-\item{r}{The lugsail parameters (r) that converts a lag window into its lugsail
-equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
-but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
-good choices. `r > 5` is not recommended.}
+\item{r}{The lugsail parameters (\code{r}) that converts a lag window into its lugsail
+equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
+but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
+good choices. \code{r > 5} is not recommended.}
 
-\item{size}{Represents the batch size in "bm" and the truncation point in "bartlett" and
-"tukey". Default is NULL which implies that an optimal batch size is calculated
-using the batchSize() function. Can take character values of `sqroot` and
-`cuberoot` or any numeric value between 1 and n/2. `sqroot` means
-size is floor(n^(1/2)) and "cuberoot" means size is floor(n^(1/3)).}
+\item{size}{Represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and
+\dQuote{\code{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated
+using the \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and
+\dQuote{\code{cuberoot}} or any numeric value between 1 and n/2. \dQuote{\code{sqroot}} means
+size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is floor(n^(1/3)).}
 
-\item{g}{A function that represents features of interest. g is applied to each row of x and
-thus g should take a vector input only. If g is NULL, g is set to be identity, which
+\item{g}{A function that represents features of interest. \code{g} is applied to each row of \code{x} and
+thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 is estimation of the mean of the target density.}
 
-\item{adjust}{Defaults to `TRUE`. logical for whether the matrix should automatically be ad-
-justed if unstable.}
+\item{adjust}{Defaults to \code{TRUE}. logical for whether the matrix should automatically be adjusted if unstable.}
 
-\item{blather}{If `TRUE`, returns under-the-hood workings of the package.}
+\item{blather}{If \code{TRUE}, returns under-the-hood workings of the package.}
 }
 \value{
 A list is returned with the following components,
 \describe{
- \item{`cov`}{a covariance matrix estimate.}
- \item{`est`}{estimate of g(x).}
- \item{`nsim`}{number of rows of the input x.}
- \item{`method`}{method used to calculate matrix cov.}
- \item{`size`}{value of size used to calculate cov.}
- \item{`adjust.used`}{whether an adjustment was used to calculate cov.}
+ \item{cov}{a covariance matrix estimate.}
+ \item{est}{estimate of g(x).}
+ \item{nsim}{number of rows of the input x.}
+ \item{eigen_values}{eigen values of the estimate cov.}
+ \item{method}{method used to calculate matrix cov.}
+ \item{size}{value of size used to calculate cov.}
+ \item{Adjustment_Used}{whether an adjustment was used to calculate cov.}
 }
 }
 \description{
@@ -64,18 +64,23 @@ Carlo estimate.
 n <- 1e3
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-X = BVN_Gibbs(n, mu, sigma)
-mcse.bm <- mcse.multi(x = X)
-mcse.tuk <- mcse.multi(x = X, method = "tukey")
+out = BVN_Gibbs(n, mu, sigma)
+
+mcse.bm <- mcse.multi(x = out)
+mcse.tuk <- mcse.multi(x = out, method = "tukey")
+
 # If we are only estimating the mean of the first component,
 # and the second moment of the second component
+
 g <- function(x) return(c(x[1], x[2]^2))
-mcse <- mcse.multi(x = X, g = g)
+mcse <- mcse.multi(x = out, g = g)
 }
 \references{
 Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
  Monte Carlo, Biometrika.
- Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral   #'  variance estimators for Markov chain Monte Carlo, Bernoulli.
+
+ Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain
+ Monte Carlo, Bernoulli.
 }
 \seealso{
 \code{\link{batchSize}}, which computes an optimal batch size. \code{\link{mcse.initseq}}, which computes

@@ -11,25 +11,27 @@ mcse.initseq(x, g = NULL, adjust = FALSE, blather = FALSE)
 \item{x}{A matrix or data frame of Markov chain output. Number of rows is the Monte
 Carlo sample size.}
 
-\item{g}{A function that represents features of interest. g is applied to each row of x and
-thus g should take a vector input only. If g is `NULL`, g is set to be identity, which
+\item{g}{A function that represents features of interest. \code{g} is applied to each row of x and
+thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 is estimation of the mean of the target density.}
 
-\item{adjust}{Logical; if `TRUE`, an adjustment is made to increase slightly the eigenvalues of
-the initial sequence estimator. The default is `FALSE`.}
+\item{adjust}{Logical; if \code{TRUE}, an adjustment is made to increase slightly the eigenvalues of
+the initial sequence estimator. The default is \code{FALSE}.}
 
-\item{blather}{if `TRUE`, outputs under the hood information about the function.}
+\item{blather}{if \code{TRUE}, outputs under the hood information about the function.}
 }
 \value{
 A list is returned with the following components,
 \describe{
- \item{`cov`}{a covariance matrix estimate using intial sequence method}
- \item{`cov.adj`}{a covariance matrix estimate using adjusted initial sequence method if the
- input `adjust=TRUE.`}
-  \item{`est`}{estimate of g(x).}
-  \item{`nsim`}{number of rows of the input x. Only if `blather = TRUE`.}
-  \item{`adjust`}{logical of whether an adjustment was made to the initial sequence estimator.
-  Only if `blather = TRUE`.}
+ \item{cov}{a covariance matrix estimate using intial sequence method}.
+ \item{cov.adj}{a covariance matrix estimate using adjusted initial sequence method if the
+ input \code{adjust=TRUE}.}
+ \item{eigen_values}{eigen values of the estimate cov.}
+  \item{method}{method used to calculate matrix cov.}
+  \item{est}{estimate of g(x).}
+  \item{nsim}{number of rows of the input x. Only if \code{blather = TRUE}.}
+  \item{Adjustment_Used}{logical of whether an adjustment was made to the initial sequence estimator.
+  Only if \code{blather = TRUE}.}
 }
 }
 \description{
@@ -43,23 +45,24 @@ estimate of the Monte Carlo standard error.
 n <- 1e3
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-X = BVN_Gibbs(n, mu, sigma)
-out.mcse <- mcse.initseq(x = X)
-out.mcse.adj <- mcse.initseq(x = X,adjust = TRUE)
+out = BVN_Gibbs(n, mu, sigma)
+
+out.mcse <- mcse.initseq(x = out)
+out.mcse.adj <- mcse.initseq(x = out, adjust = TRUE)
+
 # If we are only estimating the mean of the first component,
 # and the second moment of the second component
 g <- function(x) return(c(x[1], x[2]^2))
-out.g.mcse <- mcse.initseq(x = X, g = g)
+out.g.mcse <- mcse.initseq(x = out, g = g)
 
 }
 \references{
-Dai, N and Jones, G.L. (2017+) Multivariate initial sequence estimators in Markov chain Monte
+Dai, N and Jones, G.L. (2017) Multivariate initial sequence estimators in Markov chain Monte
 Carlo, Journal of Multivariate Analysis.
 }
 \seealso{
-`initseq{mcmc}`, which is a different univariate initial sequence estimator.
-\code{\link{mcse}}, which acts on a vector. \code{\link{mcse.mat}}, which applies `mcse` to each
+\code{\link{mcse}}, which acts on a vector. \code{\link{mcse.mat}}, which applies \code{mcse} to each
 column of a matrix or data frame. \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which
-compute standard errors for quantiles. mcse.multi, which estimates the covariance matrix in the
+compute standard errors for quantiles. \code{mcse.multi}, which estimates the covariance matrix in the
 Markov Chain CLT using batch means or spectral variance methods.
 }

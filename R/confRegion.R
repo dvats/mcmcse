@@ -6,9 +6,9 @@ library(ellipse)
 #' 
 #' @usage confRegion(mcse.obj, which = c(1,2), level = .95)
 #' 
-#' @param mcse.obj The list returned by the mcse.multi or mcse.initseq command.
+#' @param mcse.obj The list returned by the mcse.multi or mcse.initseq command. or an mcmcse class object.
 #' @param which Integer vector of length 2 indicating the component for which to make the confidence
-#' ellipse. Chooses the first two by #'  default.
+#' ellipse. Chooses the first two by default.
 #' @param level confidence level for the ellipse.
 #' 
 #' @return Returns a matrix of x and y coordinates for the ellipse. Use plot function on the matrix
@@ -22,8 +22,8 @@ library(ellipse)
 #' n <- 1e3
 #' mu = c(2, 50)
 #' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' X = BVN_Gibbs(n, mu, sigma)
-#' mcerror <- mcse.multi(X, blather = TRUE)
+#' out = BVN_Gibbs(n, mu, sigma)
+#' mcerror <- mcse.multi(out, blather = TRUE)
 #' ## Plotting the ellipse
 #' plot(confRegion(mcerror), type = 'l')
 #' 

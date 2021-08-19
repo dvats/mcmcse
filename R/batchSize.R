@@ -14,27 +14,30 @@
 #' 
 #' Function returns the optimal batch size (or truncation point) for a given chain and method.
 #' 
+#' @details batchSize fits a stationary autoregressive process to approximate the marginals of the Markov chain, selecting the order of
+#' the process as the one with the maximum AIC among the models with coefficients greater than a threshold.
+#' 
 #' @details Final update of batchSize using thresholding on aR coefficients and option to use only the tail of the chain for acf
 #' calculation.
 #' 
 #' 
 #' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
 #'   Carlo sample size.
-#' @param method Any of `bm`,`obm`,`bartlett`,`tukey`. `bm` represents batch
-#'   means estimator, `obm` represents the overlapping batch means estimator,
-#'   and `bartlett` and `tukey` represent the modified-Bartlett window and
+#' @param method Any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}},\dQuote{\code{tukey}}. \dQuote{\code{bm}}
+#'   represents batch means estimator, \dQuote{\code{obm}} represents the overlapping batch means estimator,
+#'   and \dQuote{\code{bartlett}} and \dQuote{\code{tukey}} represent the modified-Bartlett window and
 #'   the Tukey-Hanning windows for the spectral variance estimators.
-#' @param g A function that represents features of interest. g is applied to each row of x and
-#'   thus g should take a vector input only. If g is NULL, g is set to be identity, which
+#' @param g A function that represents features of interest. \code{g} is applied to each row of x and
+#'   thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 #'   is estimation of the mean of the target density.
-#' @param fast Boolean variable dictating whether to use the tail end of the Markov chain to estimate
+#' @param fast Boolean variable for fast estimation using a subset of the Markov chain.
 #' acf.
 #'   
-#' @return A value of the optimal batch size is returned.
+#' @return A value of the optimal batch size (truncation) is returned.
 #' 
 #' @references 
-#' Liu, Y., Vats, D., and Flegal, J. M. Batch size selection for variance estimators in MCMC, arXiv
-#' preprint arXiv:1804.05975 (2019).
+#' Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, Methodology and
+#' Computing in Applied Probability .
 #' 
 #' @seealso \code{\link{mcse.multi}}, which calls on batchSize. \code{\link{mcse}}, which calls on batchSize.
 #' 
@@ -46,10 +49,10 @@
 #' n <- 1e3
 #' mu = c(2, 50)
 #' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' X = BVN_Gibbs(n, mu, sigma)
-#' batchSize(X)
-#' batchSize(X, method = "obm")
-#' batchSize(X, method = "bartlett")
+#' out = BVN_Gibbs(n, mu, sigma)
+#' batchSize(out)
+#' batchSize(out, method = "obm")
+#' batchSize(out, method = "bartlett")
 #' 
 
 

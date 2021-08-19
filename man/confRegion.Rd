@@ -7,10 +7,10 @@
 confRegion(mcse.obj, which = c(1,2), level = .95)
 }
 \arguments{
-\item{mcse.obj}{The list returned by the mcse.multi or mcse.initseq command.}
+\item{mcse.obj}{The list returned by the mcse.multi or mcse.initseq command. or an mcmcse class object.}
 
 \item{which}{Integer vector of length 2 indicating the component for which to make the confidence
-ellipse. Chooses the first two by #'  default.}
+ellipse. Chooses the first two by default.}
 
 \item{level}{confidence level for the ellipse.}
 }
@@ -28,8 +28,8 @@ Function uses the ellipse package.
 n <- 1e3
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-X = BVN_Gibbs(n, mu, sigma)
-mcerror <- mcse.multi(X, blather = TRUE)
+out = BVN_Gibbs(n, mu, sigma)
+mcerror <- mcse.multi(out, blather = TRUE)
 ## Plotting the ellipse
 plot(confRegion(mcerror), type = 'l')
 

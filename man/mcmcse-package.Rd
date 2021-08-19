@@ -17,19 +17,19 @@ versus sample size.
 \tabular{ll}{
 Package: \tab mcmcse\cr
 Type: \tab Package\cr
-Version: \tab 1.4-3\cr
-Date: \tab 2020-06-20\cr
+Version: \tab 1.5-0\cr
+Date: \tab 2021-08-23\cr
 License: \tab GPL (>= 2)\cr
 }
 
 }
 \author{
-James M. Flegal <jflegal@ucr.edu>,\\
-John Hughes <j.hughes@ucdenver.edu> \\
-Dootika Vats <dootika@iitk.ac.in> \\
-Ning Dai <daixx224@umn.edu> \\
-Kushagra Gupta <kushagra.gpt99@gmail.com> and\\
-Uttiya Maji \\ 
+James M. Flegal <jflegal@ucr.edu>,  
+John Hughes <j.hughes@ucdenver.edu>,   
+Dootika Vats <dootika@iitk.ac.in>,   
+Ning Dai <daixx224@umn.edu>,  
+Kushagra Gupta <kushagra.gpt99@gmail.com>, and  
+Uttiya Maji  
 
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
@@ -80,7 +80,9 @@ mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
 out = BVN_Gibbs(n, mu, sigma)
 
-mcse(out[,1], method = "bartlett")
+multiESS(out)
+ess(out)
+mcse.mat(out)
 
 mcse.bm <- mcse.multi(x = out)
 mcse.tuk <- mcse.multi(x = out, method = "tukey")

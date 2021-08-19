@@ -14,49 +14,46 @@ mcse(
 )
 }
 \arguments{
-\item{x}{a vector of values from a Markov chain.}
+\item{x}{a vector of values from a Markov chain of length n.}
 
-\item{size}{represents the batch size in "bm" and the truncation point in "bartlett" and "tukey".
-Default is `NULL` which implies that an optimal batch size is calculated using the 
-`batchSize()` function. Can take character values of `sqroot` and `cuberoot` or any numeric
-value between 1 and n/2. `sqroot` means size is floor(n^(1/2)) and "cuberoot" means size is
-floor(n^(1/3)).}
+\item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\cod
+{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
+  \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
+  value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
+  floor(n^(1/3)).}
 
 \item{g}{a function such that \eqn{E(g(x))} is the quantity of interest. The default is
 \code{NULL}, which causes the identity function to be used.}
 
-\item{r}{The lugsail parameters (r) that converts a lag window into its lugsail
-equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
-but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
-good choices. `r > 5` is not recommended.}
+\item{r}{The lugsail parameters (\code{r}) that converts a lag window into its lugsail
+equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
+but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
+good choices. \code{r > 5} is not recommended.}
 
-\item{method}{any of `bm`,`obm`,`bartlett`, `tukey`. `bm` represents batch means estimator,
-`obm` represents overlapping batch means estimator with, `bartlett`and `tukey` represents the
-modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.}
+\item{method}{any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}}, \dQuote{\code{tukey}}. \dQuote{\code{bm}}
+represents batch means estimator, \dQuote{\code{obm}} represents overlapping batch means estimator with, \dQuote{\code{bartlett}}
+and \dQuote{\code{tukey}} represents the modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.}
 
 \item{warn}{a logical value indicating whether the function should issue a warning if the sample
 size is too small (less than 1,000).}
 }
 \value{
-\code{mcse} returns a list with two elements:
+\code{mcse} returns a list with three elements:
         \item{est}{an estimate of \eqn{E(g(x))}.}
         \item{se}{the Monte Carlo standard error.}
+        \item{nsim}{The number of samples in the input Markov chain.}
 }
 \description{
 Compute Monte Carlo standard errors for expectations.
 }
 \examples{
 
-# Create 10,000 iterations of an AR(1) Markov chain with rho = 0.9.
-
-n = 10000
-x = double(n)
-x[1] = 2
-for (i in 1:(n - 1))
-    x[i + 1] = 0.9 * x[i] + rnorm(1)
-
-# Estimate the mean, 0.1 quantile, and 0.9 quantile with MCSEs using batch means.
-
+## Bivariate Normal with mean (mu1, mu2) and covariance sigma
+n <- 1e3
+mu = c(2, 50)
+sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+out = BVN_Gibbs(n, mu, sigma)
+x = out[,1]
 mcse(x)
 mcse.q(x, 0.1)
 mcse.q(x, 0.9)

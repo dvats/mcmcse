@@ -13,25 +13,25 @@ mcse.mat(
 )
 }
 \arguments{
-\item{x}{a vector of values from a Markov chain.}
+\item{x}{a matrix of values from a Markov chain of size n x p.}
 
-\item{size}{represents the batch size in "bm" and the truncation point in "bartlett" and "tukey".
-Default is `NULL` which implies that an optimal batch size is calculated using the 
-`batchSize()` function. Can take character values of `sqroot` and `cuberoot` or any numeric
-value between 1 and n/2. `sqroot` means size is floor(n^(1/2)) and "cuberoot" means size is
-floor(n^(1/3)).}
+\item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and \dQuote{\cod
+{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
+  \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
+  value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
+  floor(n^(1/3)).}
 
 \item{g}{a function such that \eqn{E(g(x))} is the quantity of interest. The default is
 \code{NULL}, which causes the identity function to be used.}
 
-\item{method}{any of `bm`,`obm`,`bartlett`, `tukey`. `bm` represents batch means estimator,
-`obm` represents overlapping batch means estimator with, `bartlett`and `tukey` represents the
-modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.}
+\item{method}{any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}}, \dQuote{\code{tukey}}. \dQuote{\code{bm}}
+represents batch means estimator, \dQuote{\code{obm}} represents overlapping batch means estimator with, \dQuote{\code{bartlett}}
+and \dQuote{\code{tukey}} represents the modified-Bartlett window and the Tukey-Hanning windows for spectral variance estimators.}
 
-\item{r}{The lugsail parameters (r) that converts a lag window into its lugsail
-equivalent. Larger values of `r` will typically imply less underestimation of ''cov'',
-but higher variability of the estimator. Default is `r = 3` and `r = 1,2` are
-good choices. `r > 5` is not recommended.}
+\item{r}{The lugsail parameters (\code{r}) that converts a lag window into its lugsail
+equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
+but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
+good choices. \code{r > 5} is not recommended.}
 }
 \value{
 \code{mcse.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names

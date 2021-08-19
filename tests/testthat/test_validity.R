@@ -284,7 +284,7 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
   ## Overall means of the mcmc output
   mu.hat <- colMeans(chain)  # this is based on the full output. not n = a*b
   
-  b = max(b, 2*r)
+  b = floor(max(b, 2*r))
   
   message <- ""   # will store some info for blather
   
@@ -398,8 +398,7 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
   
   sig.eigen = eigen(sig.mat, only.values = TRUE)$values
 
-  value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, "eigen-values" = sig.eigen,
-               "cov.adj" = NULL)
+  value = list("cov" = sig.mat, "est" = mu.hat, "nsim" = n, "eigen_values" = sig.eigen)
   class(value) = "mcmcse"
   value
 }

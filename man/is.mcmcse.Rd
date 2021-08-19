@@ -21,7 +21,7 @@ Check if the class of the object is mcmcse
 n <- 1e3
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-X = BVN_Gibbs(n, mu, sigma)
-is.mcmcse(mcse.multi(X))
+out = BVN_Gibbs(n, mu, sigma)
+is.mcmcse(mcse.multi(out))
 
 }

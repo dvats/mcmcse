@@ -89,7 +89,7 @@
 \section{Introduction}
 The R package \texttt{mcmcse} provides estimates of Monte Carlo standard errors for Markov chain Monte Carlo (MCMC) when estimating means or quantiles of functions of the MCMC output. In addition to MCMC output, the package can be used for time series and other correlated processes. 
 
-The package is predominantly useful after MCMC output has been obtained by the user. In addition to estimating the Monte Carlo standard errors, the package also provides univariate and multivariate estimates of effective sample size and tools to determine whether enough Monte Carlo samples have been obtained. The package also samples a stationary Markov chain from a bivariate normal. There are also some graphical tools to ascertain the behavior of the Monte Carlo estimates.
+The package is predominantly useful after MCMC output has been obtained by the user. In addition to estimating the Monte Carlo standard errors, the package also provides univariate and multivariate estimates of effective sample size and tools to determine whether enough Monte Carlo samples have been obtained. The package also samples a stationary Markov chain from a bivariate normal target. There are also some graphical tools to ascertain the behavior of the Monte Carlo estimates.
 
 
 %<<noname,echo=FALSE>>=
@@ -120,9 +120,9 @@ To illustrate the use of our package, we consider sampling from a bivariate norm
 \end{pmatrix} \; .
 \]
 
-The Gibbs sampler updates the Markov chain by using the following full conditional distributions transition equations -
+The Gibbs sampler updates the Markov chain by using the following full conditional distributions transition equations:
 \[
-X_{1} \mid X_{2} \sim  N\left(\mu_{1} + \dfrac{\rho}{\omega_2}\left(X_{2} - \mu_{2}\right) , \omega_1 - \dfrac{\rho^{2}}{\omega_2}\right) \; .
+X_{1} \mid X_{2} \sim  N\left(\mu_{1} + \dfrac{\rho}{\omega_2}\left(X_{2} - \mu_{2}\right) , \omega_1 - \dfrac{\rho^{2}}{\omega_2}\right) \; ,
 \]
 \[
 X_{2} \mid X_{1} \sim  N\left(\mu_{2} + \dfrac{\rho}{\omega_1}\left(X_{1} - \mu_{1}\right) , \omega_2 - \dfrac{\rho^{2}}{\omega_1}\right) \; .
@@ -133,36 +133,40 @@ The function \texttt{BVN\_Gibbs} in the package draws samples from the above mod
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlcom{#library(mcmcse)}
+\hlkwd{library}\hlstd{(mcmcse)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# mcmcse: Monte Carlo Standard Errors for MCMC\\\#\# Version 1.4-1 created on 2020-01-29.\\\#\# copyright (c) 2012, James M. Flegal, University of California, Riverside\\\#\# \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ John Hughes, University of Colorado, Denver\\\#\# \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Dootika Vats, University of Warwick\\\#\# \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Ning Dai, University of Minnesota\\\#\# \ For citation information, type citation("{}mcmcse"{}).\\\#\# \ Type help("{}mcmcse-package"{}) to get started.}}\begin{alltt}
 \hlstd{mu} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{50}\hlstd{)}
 \hlstd{sigma} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{nrow} \hlstd{=} \hlnum{2}\hlstd{)}
 
 \hlcom{# Monte Carlo sample size is N}
 \hlstd{N} \hlkwb{<-} \hlnum{5e3}
 \hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
-\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(N, mu, sigma)}
+\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(}\hlkwc{n} \hlstd{= N,} \hlkwc{mu} \hlstd{= mu,} \hlkwc{sigma} \hlstd{= sigma)}
 \end{alltt}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in BVN\_Gibbs(n = N, mu = mu, sigma = sigma): could not find function "{}BVN\_Gibbs"{}}}\end{kframe}
 \end{knitrout}
 
 For using the \texttt{mcmcse} package the rows of the MCMC output should store each iteration of the algorithm and so the output should have $n$ rows and $p$ columns. We will denote each row $i$ of the output as $y_i = (y^{(1)}_i, y^{(2)}_i)$.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in colnames(chain) <- c("{}Y1"{}, "{}Y2"{}): object 'chain' not found}}\end{kframe}
+\end{knitrout}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{#Rows has observations (samples) and each comlumn is a component. }
 \hlkwd{head}\hlstd{(chain)}
 \end{alltt}
-\begin{verbatim}
-##            Y1       Y2
-## [1,] 1.497808 49.86281
-## [2,] 1.863062 50.69951
-## [3,] 2.451055 50.50147
-## [4,] 1.746889 50.49225
-## [5,] 1.531428 49.45406
-## [6,] 1.804876 49.98581
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in head(chain): object 'chain' not found}}\end{kframe}
 \end{knitrout}
 
 \bigskip
@@ -178,11 +182,9 @@ In \texttt{R}, $\mu_n$ is obtained using the usual \texttt{colMeans} function. I
 \begin{alltt}
 \hlkwd{colMeans}\hlstd{(chain)}
 \end{alltt}
-\begin{verbatim}
-##        Y1        Y2 
-##  2.006982 50.006033
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(x): object 'chain' not found}}\end{kframe}
 \end{knitrout}
   
 \item $\text{E}_F \left(y^{(1)2} + y^{(2)2} \right)$: When interested in estimating the sum of the second moments of each component of $y$,  define the function $g: \mathbb{R}^2 \to \mathbb{R}$ as $g(x_1,x_2) = x_1^2 + x_2^2$. This is defined in \texttt{R} by creating a function that implements the function $g$, row-wise.
@@ -206,31 +208,35 @@ The Monte Carlo estimator for $g$ is
 \begin{alltt}
 \hlcom{# Apply the function g to each row}
 \hlstd{gofy} \hlkwb{<-} \hlkwd{apply}\hlstd{(chain,} \hlnum{1}\hlstd{, g)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in apply(chain, 1, g): object 'chain' not found}}\begin{alltt}
 \hlcom{# Monte Carlo estimate}
 \hlkwd{mean}\hlstd{(gofy)}
 \end{alltt}
-\begin{verbatim}
-## [1] 2506.55
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in mean(gofy): object 'gofy' not found}}\end{kframe}
 \end{knitrout}
 \end{itemize}
 
 Thus, to obtain Monte Carlo estimates from MCMC output, the base package is sufficient (generally). However, Monte Carlo estimates must be reported with Monte Carlo standard error. That is, if the following central limit theorems hold
 \begin{equation}
 \label{eq:clt}
-\sqrt{n}(\mu_n - \mu) \overset{d}{\to} N_p(0, \Sigma)\,,
+\sqrt{n}(\mu_n - \text{E}_F y) \overset{d}{\to} N_p(0, \Sigma)\,,
 \end{equation}
 and
 
 \begin{equation}
 \label{eq:g_clt}
-\sqrt{n}(\mu_{g,n} - \mu) \overset{d}{\to} N_p(0, \Sigma_g)\,,
+\sqrt{n}(\mu_{g,n} - \text{E}_F [||y||^2]) \overset{d}{\to} N_p(0, \Sigma_g)\,,
 \end{equation}
 
 then estimates of $\Sigma$ and $\Sigma_g$ must be reported, directly or indirectly. Since the samples obtained are correlated, these quantities require more sophisticated tools than usual sample estimators.
 (Note that a Markov chain CLT is not always guaranteed to hold. In fact, it depends on the rate of convergence of the Markov chain. Most of the functions in this package assume that a Markov chain CLT holds. Such an assumption is also made when using many of the convergence diagnostics).
+
+\bigskip
 
 \section{Estimating Monte Carlo Standard Error}
 In this package, the functions \texttt{mcse}, \texttt{mcse.mat}, \texttt{mcse.multi}, and \texttt{mcse.initseq} estimate the Monte Carlo standard error of $\mu_n$ (or $\mu_{g,n}$).
@@ -250,31 +256,48 @@ Using the \texttt{mcmcse} package we can estimate $\Sigma$ in \eqref{eq:clt} wit
 \hlstd{mcerror_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"bm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
                          \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
                          \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Overlapping batch means estimator}
 \hlstd{mcerror_obm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"obm"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
                          \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
                          \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Spectral variance estimator with Bartlett window}
 \hlstd{mcerror_bart} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"bartlett"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
                            \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
                            \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Spectral variance estimator with Tukey window}
 \hlstd{mcerror_tuk} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=}  \hlstr{"tukey"}\hlstd{,} \hlkwc{r} \hlstd{=} \hlnum{1}\hlstd{,}
                           \hlkwc{size} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,}
                           \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Initial sequence estimator, unadjusted}
 \hlstd{mcerror_is} \hlkwb{<-} \hlkwd{mcse.initseq}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,}
                            \hlkwc{adjust} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Initial sequence estimator, adjusted}
 \hlstd{mcerror_isadj} \hlkwb{<-} \hlkwd{mcse.initseq}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{,}
                               \hlkwc{adjust} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \end{alltt}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\end{kframe}
 \end{knitrout}
 
 \begin{itemize}
@@ -302,7 +325,7 @@ For reference on \texttt{mcse.initseq} (initial sequence estimators) see \cite{d
 \end{itemize}
 
 
-\texttt{mcse.multi} and \texttt{mcse.initseq} return an S3 class with multiple components. When \texttt{blather = FALSE} \texttt{cov} stores the estimate of $\Sigma$ obtained using the method chosen, \texttt{est} stores the estimate of the mean of $g$ applied on the Markov chain. In addition, \texttt{nsim} stores the no. of Markov chain samples, \texttt{eigen-values} stores the eigen values of the estimated $\Sigma$ and \texttt{cov.adj} stores the adjusted covariance matrix if \texttt{adjust = TRUE} (see \texttt{mcse.multi} for more details). When \texttt{blather = TRUE} the following are returned in addition to the above: \texttt{size} which indicates the size of batches/truncation, \texttt{method} used, \texttt{Adjustment-used} indicating whether an adjusted estimator was used (\texttt{adjust}) and \texttt{message} containing additional information about the estimation process (like the numerical adjustments possibly made to keep the estimate mathematically consistent).
+\texttt{mcse.multi} and \texttt{mcse.initseq} return an S3 class with multiple components. When \texttt{blather = FALSE}, \texttt{cov} stores the estimate of $\Sigma$ obtained using the method chosen, \texttt{est} stores the estimate of the mean of $g$ applied on the Markov chain. In addition, \texttt{nsim} stores the no. of Markov chain samples, \texttt{eigen_values} stores the eigen values of the estimated $\Sigma$ and \texttt{cov.adj} stores the adjusted covariance matrix if \texttt{adjust = TRUE} (see \texttt{mcse.multi} for more details). When \texttt{blather = TRUE} the following are returned in addition to the above: \texttt{size} which indicates the size of batches/truncation, \texttt{method} used, \texttt{Adjustment-used} indicating whether an adjusted estimator was used (\texttt{adjust}) and \texttt{message} containing additional information about the estimation process (like the numerical adjustments possibly made to keep the estimate mathematically consistent).
 
 
   
@@ -311,7 +334,7 @@ For reference on \texttt{mcse.initseq} (initial sequence estimators) see \cite{d
 \textbf{Note: } The Monte Carlo estimates of $\mu$ are not affected by the choice of the method.
 
 \bigskip
-\textbf{Note: } for consistent estimation, the batch means estimators are significantly faster to calculate than the spectral variance estimators. The user is advised to use the default \texttt{method = ``bm''} for large input matrices.
+\textbf{Note: } For consistent estimation, the batch means estimators are significantly faster to calculate than the spectral variance estimators. The user is advised to use the default \texttt{method = "bm"} for large input matrices.
 
 \bigskip
 \textbf{Note: }\texttt{cov} returns an estimate of $\Sigma$ and not $\Sigma/n$. 
@@ -325,25 +348,14 @@ If the diagonals of $\Sigma$ are $\sigma_{ii}^2$, the function \texttt{mcse} and
 \begin{alltt}
 \hlkwd{mcse}\hlstd{(}\hlkwc{x} \hlstd{= chain[,}\hlnum{1}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"bm"}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{)}
 \end{alltt}
-\begin{verbatim}
-## $est
-## [1] 2.006982
-## 
-## $se
-## [1] 0.01792272
-## 
-## $nsim
-## [1] 5000
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in mcse(x = chain[, 1], method = "{}bm"{}, g = NULL): object 'chain' not found}}\begin{alltt}
 \hlkwd{mcse.mat}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{method} \hlstd{=} \hlstr{"bm"}\hlstd{,} \hlkwc{g} \hlstd{=} \hlkwa{NULL}\hlstd{)}
 \end{alltt}
-\begin{verbatim}
-##          est         se
-## Y1  2.006982 0.01792272
-## Y2 50.006033 0.01814934
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in mcse.mat(x = chain, method = "{}bm"{}, g = NULL): object 'chain' not found}}\end{kframe}
 \end{knitrout}
   
   
@@ -359,43 +371,41 @@ In order to estimate $\mu_{n,g}$ and $\Sigma_g$ as in \eqref{eq:g_clt}, we use t
 ## {
 ##   return(sum(x^2))
 ## }
-## <bytecode: 0x0000021ea5864140>
 \end{verbatim}
 \begin{alltt}
 \hlstd{mcerror_g_bm} \hlkwb{<-} \hlkwd{mcse.multi}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
-\hlstd{mcerror_g_is} \hlkwb{<-} \hlkwd{mcse.initseq}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
+\hlstd{mcerror_g_is} \hlkwb{<-} \hlkwd{mcse.initseq}\hlstd{(}\hlkwc{x} \hlstd{= chain,} \hlkwc{g} \hlstd{= g,} \hlkwc{blather} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlstd{mcerror_g_bm}\hlopt{$}\hlstd{cov}
 \end{alltt}
-\begin{verbatim}
-##          [,1]
-## [1,] 17464.29
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'mcerror\_g\_bm' not found}}\begin{alltt}
 \hlcom{# Initial Sequence error is larger than batch means, as expected.}
 \hlstd{mcerror_g_is}\hlopt{$}\hlstd{cov}
 \end{alltt}
-\begin{verbatim}
-##          [,1]
-## [1,] 16091.86
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'mcerror\_g\_is' not found}}\begin{alltt}
 \hlcom{# Returned value is asymptotic variance. }
 \hlcom{# So we calculate the standard error here.}
 \hlkwd{sqrt}\hlstd{(mcerror_g_bm}\hlopt{$}\hlstd{cov}\hlopt{/}\hlstd{N)}
 \end{alltt}
-\begin{verbatim}
-##          [,1]
-## [1,] 1.868919
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'mcerror\_g\_bm' not found}}\begin{alltt}
 \hlkwd{sqrt}\hlstd{(mcerror_g_is}\hlopt{$}\hlstd{cov}\hlopt{/}\hlstd{N)}
 \end{alltt}
-\begin{verbatim}
-##          [,1]
-## [1,] 1.793982
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'mcerror\_g\_is' not found}}\end{kframe}
 \end{knitrout}
 
 \bigskip
@@ -407,11 +417,15 @@ Using the function \texttt{confRegion} in the package, the user can create joint
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(}\hlkwd{confRegion}\hlstd{(mcerror_bm,} \hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{level} \hlstd{=} \hlnum{.90}\hlstd{),} \hlkwc{type} \hlstd{=} \hlstr{'l'}\hlstd{,} \hlkwc{asp} \hlstd{=} \hlnum{1}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in confRegion(mcerror\_bm, which = c(1, 2), level = 0.9): object 'mcerror\_bm' not found}}\begin{alltt}
 \hlkwd{lines}\hlstd{(}\hlkwd{confRegion}\hlstd{(mcerror_bart,} \hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{level} \hlstd{=} \hlnum{.90}\hlstd{),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
 \end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth,height=8cm]{figure/confRegion-1} 
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in confRegion(mcerror\_bart, which = c(1, 2), level = 0.9): object 'mcerror\_bart' not found}}\end{kframe}
 \end{knitrout}
 
 \begin{itemize}
@@ -421,23 +435,27 @@ Using the function \texttt{confRegion} in the package, the user can create joint
 \end{itemize}
 
 \bigskip
-\textbf{NOTE: }The argument  \texttt{confRegion} calls on the function \texttt{ellipse} in package \texttt{ellipse} to draw the ellipse.
+\textbf{NOTE: } \texttt{confRegion} calls on the function \texttt{ellipse} in package \texttt{ellipse} to draw the ellipse.
 
 \bigskip
 \textbf{NOTE: } Since the confidence region is created for two parameters only, the size of the ellipse is determined by setting $p = 2$ irrespective of the original dimension of the problem.
 
 \bigskip
-To determine the effect of the confidence level, we draw two regions with difference confidence levels. We use \texttt{mcse.initseq} this time.
+To determine the effect of the confidence level, we draw two regions with different confidence levels. We use \texttt{mcse.initseq} this time.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(}\hlkwd{confRegion}\hlstd{(mcerror_is,} \hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{level} \hlstd{=} \hlnum{.95}\hlstd{),} \hlkwc{type} \hlstd{=} \hlstr{'l'}\hlstd{,} \hlkwc{asp} \hlstd{=} \hlnum{1}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in confRegion(mcerror\_is, which = c(1, 2), level = 0.95): object 'mcerror\_is' not found}}\begin{alltt}
 \hlkwd{lines}\hlstd{(}\hlkwd{confRegion}\hlstd{(mcerror_is,} \hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{level} \hlstd{=} \hlnum{.90}\hlstd{),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
 \end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth,height=8cm]{figure/comp_region-1} 
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in confRegion(mcerror\_is, which = c(1, 2), level = 0.9): object 'mcerror\_is' not found}}\end{kframe}
 \end{knitrout}
   
 \section{Effective Sample Size}
@@ -472,7 +490,7 @@ Before sampling the Markov chain, the user is advised to use the function \textt
 \item \texttt{eps} is the tolerance level. Default is .05. Reasonable levels are anywhere from .01 to .05. The smaller the tolerance, the larger the minimum effective samples. \texttt{eps} represents a tolerance level relative to the variability in the target distribution. It is akin to the idea of margin-of-error.
 \end{itemize}
 
-\texttt{minESS} is independent of the Markov chain or process, and is only a function of the  $p$, $\alpha$, and $\epsilon$. The user should find \texttt{minESS} and then sample their process until the required minimum samples are achieved. 
+\texttt{minESS} is independent of the Markov chain or process, and is only a function of $p$, $\alpha$, and $\epsilon$. The user should find \texttt{minESS} and then sample their process until the required minimum samples are achieved. 
 
 Alternatively, we often don't have the luxury of obtaining a lot of samples, and reaching a minimum effective sample size is not possible. In such a scenario, it is useful to know the $\epsilon$ tolerance level the number of estimated effective samples correspond to. So if we can only obtain 1000 effective samples,
 \begin{knitrout}
@@ -496,7 +514,7 @@ Alternatively, we often don't have the luxury of obtaining a lot of samples, and
 \end{kframe}
 \end{knitrout}
 
-Thus, if you obtained a sample with estimates effective sample size equaling 1000 for estimating $\mu_g$ and $\mu_{n,g}$, then the precision level of your estimate is $\epsilon = .137$ and $\epsilon = .124$, respectively.
+Thus, if you obtained a sample with estimated effective sample size equaling 1000 for estimating $\mu_g$ and $\mu_{n,g}$, then the precision level of your estimate is $\epsilon = .137$ and $\epsilon = .124$, respectively.
 \texttt{multiESS} and \texttt{ess} are two functions that calculate the effective sample size of a correlated sample. \texttt{ess} calculations are based on \cite{gong2015practical} and is component-wise, and \texttt{multiESS} utilizes the multivariate nature of the problem.
 
 %<<ess>>=
@@ -510,62 +528,61 @@ Since \texttt{ess} produces a different estimate for each component, conservativ
 \begin{alltt}
 \hlkwd{multiESS}\hlstd{(chain)}
 \end{alltt}
-\begin{verbatim}
-## [1] 4024.471
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Using spectral variance estimators}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_bart}\hlopt{$}\hlstd{cov)}
 \end{alltt}
-\begin{verbatim}
-## [1] 4377.303
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# Using initial sequence estimators}
 \hlcom{# Since this is a conservative estimator, ess will be smaller}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_is}\hlopt{$}\hlstd{cov)}
 \end{alltt}
-\begin{verbatim}
-## [1] 4263.715
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\end{kframe}
 \end{knitrout}
 
-Since the effective sample size is less than the minimum effective samples, we should simulate more. Looking at the formula of ESS, we might need around $9,200$ Monte Carlo samples. 
+Since the effective sample size is less than the minimum effective samples, we should simulate more. Looking at the formula of ESS, we might need around $10,000$ Monte Carlo samples. 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{set.seed}\hlstd{(}\hlnum{100}\hlstd{)}
-\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(}\hlnum{9200}\hlstd{, mu, sigma)}
+\hlstd{chain} \hlkwb{<-} \hlkwd{BVN_Gibbs}\hlstd{(}\hlnum{1e4}\hlstd{, mu, sigma)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in BVN\_Gibbs(10000, mu, sigma): could not find function "{}BVN\_Gibbs"{}}}\begin{alltt}
 \hlcom{# larger than 7529}
 \hlkwd{multiESS}\hlstd{(chain)}
 \end{alltt}
-\begin{verbatim}
-## [1] 7544.004
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# larger than 7529}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_bart}\hlopt{$}\hlstd{cov)}
 \end{alltt}
-\begin{verbatim}
-## [1] 8137.827
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\begin{alltt}
 \hlcom{# larger than 7529}
 \hlkwd{multiESS}\hlstd{(chain,} \hlkwc{covmat} \hlstd{= mcerror_is}\hlopt{$}\hlstd{cov)}
 \end{alltt}
-\begin{verbatim}
-## [1] 7926.657
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.matrix(x): object 'chain' not found}}\end{kframe}
 \end{knitrout}
-So no matter which estimator we choose for the Monte Carlo standard error, 9200 Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
+So no matter which estimator we choose for the Monte Carlo standard error, $10,000$ Monte Carlo samples are sufficient to have $\epsilon = .05$ relative tolerance.
 
 \bigskip
 
 \textbf{NOTE:} Ideally, we want to get more samples using the last iteration of the previous Markov chain. However, \texttt{BVN\_Gibbs} does not allow user specified starting values and starts from stationarity itself, so to demonstrate the use of \texttt{minESS} and \texttt{multiESS}, we get a new sample altogether. 
+
+\bigskip
 
 \section{Graphical Diagnostics}
 
@@ -576,9 +593,9 @@ The function \texttt{estvssamp} plots the Monte Carlo estimates versus the sampl
 \begin{alltt}
 \hlkwd{estvssamp}\hlstd{(chain[,}\hlnum{1}\hlstd{])}
 \end{alltt}
-\end{kframe}
-\includegraphics[width=8cm]{figure/estvssamp-1} 
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in estvssamp(chain[, 1]): object 'chain' not found}}\end{kframe}
 \end{knitrout}
 
 \bibliographystyle{apalike}

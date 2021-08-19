@@ -7,17 +7,17 @@
 BVN_Gibbs(n, mu, sigma)
 }
 \arguments{
-\item{n}{Sample size of the Markov chain}
+\item{n}{Sample size of the Markov chain.}
 
-\item{mu}{A 2 dimensional vectoe. Mean of the target normal distribution}
+\item{mu}{A 2 dimensional vector. Mean of the target normal distribution.}
 
 \item{sigma}{2 x 2 symmetric positive semi-definite matrix. The covariance matrix of the target normal distribution.}
 }
 \value{
-A Markov chain sampled from the taret normal distribution.
+An n x 2 matrix of the Gibbs samples.
 }
 \description{
-Function returns a Markov chain sampled using Gibbs sampling from a bivariate normal target
+Function returns Gibbs samples from a bivariate normal target density.
 }
 \examples{
 n <- 1e3

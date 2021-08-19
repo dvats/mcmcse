@@ -34,22 +34,22 @@ function to be used.}
 size is too small (less than 1,000).}
 }
 \value{
-\code{mcse.q} returns a list with two elements:
+\code{mcse.q} returns a list with three elements:
         \item{est}{an estimate of the \eqn{q}th quantile of the univariate distribution function of \eqn{g(x)}.}
         \item{se}{the Monte Carlo standard error.}
+        \item{nsim}{The number of samples in the input Markov chain.}
 }
 \description{
 Compute Monte Carlo standard errors for quantiles.
 }
 \examples{
 
-# Create 10,000 iterations of an AR(1) Markov chain with rho = 0.9.
-
-n = 10000
-x = double(n)
-x[1] = 2
-for (i in 1:(n - 1))
-    x[i + 1] = 0.9 * x[i] + rnorm(1)
+## Bivariate Normal with mean (mu1, mu2) and covariance sigma
+n <- 1e3
+mu = c(2, 50)
+sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+out = BVN_Gibbs(n, mu, sigma)
+x = out[,1]
 
 # Estimate the mean, 0.1 quantile, and 0.9 quantile with MCSEs using batch means.
 

@@ -11,13 +11,13 @@ minESS(p, alpha = .05, eps = .05, ess = NULL)
 
 \item{alpha}{Confidence level.}
 
-\item{eps}{Tolerance level. The eps value is ignored is `ess` is not `NULL`.}
+\item{eps}{Tolerance level. The eps value is ignored is \code{ess} is not \code{NULL}.}
 
-\item{ess}{Estimated effective sample size. Usually the output value from `multiESS`.}
+\item{ess}{Estimated effective sample size. Usually the output value from \code{multiESS}.}
 }
 \value{
 By default function returns the minimum effective sample required for a given eps
-tolerance. If `ess`is specified, then the value returned is the `eps` corresponding to that `ess`.
+tolerance. If \code{ess} is specified, then the value returned is the \code{eps} corresponding to that \code{ess}.
 }
 \description{
 The function calculates the minimum effective sample size required for a specified relative
@@ -25,9 +25,9 @@ tolerance level. This function can also calculate the relative precision in esti
 estimated effective sample size.
 }
 \details{
-The minimum effective samples required when estimating a vector of length `p`, with \eqn{100(
+The minimum effective samples required when estimating a vector of length \code{p}, with \eqn{100(
 1-\alpha)\%} confidence and tolerance of \eqn{\epsilon} is \deqn{mESS \geq \frac{2^{2/p} \pi}{(p
-\Gamma(p/2))^{2/p}} \frac{\chi^{2}_{1-\alpha,p}}{\epsilon^{2}}}.
+\Gamma(p/2))^{2/p}} \frac{\chi^{2}_{1-\alpha,p}}{\epsilon^{2}}.}
 The above equality can also be used to get \eqn{\epsilon} from an already obtained estimate of
 mESS.
 }
@@ -38,8 +38,9 @@ minESS(p = 5)
 \references{
 Gong, L., and Flegal, J. M. A practical sequential stopping rule for high-dimensional Markov chain
 Monte Carlo. Journal of Computational and Graphical Statistics (to appear).
-Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte
-Carlo, arXiv preprint arXiv:1512.07713 (2015).
+
+Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
+ Monte Carlo, Biometrika.
 }
 \seealso{
 \code{\link{multiESS}}, which calculates multivariate effective sample size using a

@@ -10,14 +10,14 @@ multiESS(x, covmat = NULL, g = NULL, ...)
 \item{x}{a matrix or data frame of Markov chain output. Number of rows is the Monte Carlo sample
 size.}
 
-\item{covmat}{optional matrix estimate obtained using mcse.multi or `mcse.initseq`.}
+\item{covmat}{optional matrix estimate obtained using \code{mcse.multi} or \code{mcse.initseq}.}
 
-\item{g}{a function that represents features of interest. g is applied to each row of x and
-thus g should take a vector input only. If g is `NULL`, g is set to be identity, which
+\item{g}{a function that represents features of interest. \code{g} is applied to each row of \code{x} and
+thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 is estimation of the mean of the target density.}
 
-\item{...}{arguments for `mcse.multi` function. Don't use this if a suitable matrix estimate
-from `mcse.multi` or `mcse.initseq` is already obtained.}
+\item{...}{arguments for \code{mcse.multi} function. Don't use this if a suitable matrix estimate
+from \code{mcse.multi} or \code{mcse.initseq} is already obtained.}
 }
 \value{
 The function returns the estimated effective sample size.
@@ -29,8 +29,8 @@ structure of the process.
 \details{
 Effective sample size is the size of an iid sample with the same variance as the current sample.
 ESS is given by \deqn{ESS = n\frac{|\Lambda|^{1/p}}{|\Sigma|^{1/p}},} where \eqn{\Lambda} is the
-sample covariance matrix for g and \eqn{\Sigma} is an estimate of the Monte Carlo standard
-error for g.
+sample covariance matrix for \code{g} and \eqn{\Sigma} is an estimate of the Monte Carlo standard
+error for \code{g}.
 }
 \examples{
 
@@ -43,8 +43,8 @@ multiESS(X)
 
 }
 \references{
-Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte
-Carlo, arXiv preprint arXiv:1512.07713 (2015).
+Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
+ Monte Carlo, Biometrika.
 }
 \seealso{
 \code{\link{minESS}}, which calculates the minimum effective samples required for the
