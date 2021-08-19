@@ -227,7 +227,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
       sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = method)
     }
   }
-  
+  adjust.used = FALSE
   method.used = paste("Lugsail ", method, " with r = ", r)
   if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
   {
