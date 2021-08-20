@@ -284,9 +284,12 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
   ## Overall means of the mcmc output
   mu.hat <- colMeans(chain)  # this is based on the full output. not n = a*b
   
-  b = floor(max(b, 2*r))
-  
   message <- ""   # will store some info for blather
+  
+  if(b < (2*r)) {
+    r = 1       
+    message = paste(message, "estimated batch size is low, lugsail not required")
+  }
 
   ## Setting matrix sizes to avoid dynamic memory 
   sig.mat = matrix(0, nrow = p, ncol = p)
