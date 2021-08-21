@@ -201,48 +201,53 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
     message = paste(message, "estimated batch size is low, lugsail not required")
   }
     
-  
-  
-  
-  ## Batch Means
-  if(method == "bm")  {
-    init.mat = mbmC(chain, b)
+  if(b == 1)  {
+    init.mat = var(chain)
     sig.mat = init.mat
-    if(r>1) {
-      sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mbmC(chain, floor(b/r))
+  }
+  else  {
+    ## Batch Means
+    if(method == "bm")  {
+      init.mat = mbmC(chain, b)
+      sig.mat = init.mat
+      if(r>1) {
+        sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mbmC(chain, floor(b/r))
+      }
+    }
+    
+    
+    ## Overlapping Batch Means
+    if(method == "obm") {
+      init.mat = mobmC(chain, b)
+      sig.mat = init.mat
+      if(r>1) {
+        sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mobmC(chain, floor(b/r))
+      }
+    }
+    
+    
+    ## Bartlett or Tukey
+    if((method == "bartlett") || (method == "tukey"))
+    {
+      chain <- scale(chain, center = mu.hat, scale = FALSE)
+      init.mat <-  mSVEfft(A = chain, b = b, method = method)
+      sig.mat = init.mat
+      if(r>1) {
+        sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = method)
+      }
+    }
+    adjust.used = FALSE
+    method.used = paste("Lugsail ", method, " with r = ", r)
+    if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
+    {
+      sig.mat <- init.mat
+      method.used <- method
+      message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
+      adjust.used <- TRUE  #whether an adjustment was made
     }
   }
   
   
-  ## Overlapping Batch Means
-  if(method == "obm") {
-    init.mat = mobmC(chain, b)
-    sig.mat = init.mat
-    if(r>1) {
-      sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mobmC(chain, floor(b/r))
-    }
-  }
-  
-  
-  ## Bartlett or Tukey
-  if((method == "bartlett") || (method == "tukey"))
-  {
-    chain <- scale(chain, center = mu.hat, scale = FALSE)
-    init.mat <-  mSVEfft(A = chain, b = b, method = method)
-    sig.mat = init.mat
-    if(r>1) {
-      sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = method)
-    }
-  }
-  adjust.used = FALSE
-  method.used = paste("Lugsail ", method, " with r = ", r)
-  if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
-  {
-    sig.mat <- init.mat
-    method.used <- method
-    message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
-    adjust.used <- TRUE  #whether an adjustment was made
-  }
   
   sig.eigen <- eigen(sig.mat, only.values = TRUE)$values
   

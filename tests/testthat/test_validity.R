@@ -301,58 +301,64 @@ test_mcse_multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug
     stop("No such method available")
   }
   
-  if(method == "bm")
-  {
-    a = floor(n/b)
-    y.bar <- matrix(0,nrow = a, ncol = p)
-    y.bar <- apply(chain, 2, function(x) sapply(1:a, function(k) mean(x[((k-1)*b+1):(k*b)])))
-    for(i in 1:a)
+  if(b == 1)
+    sig.mat = var(chain)
+  else  {
+    if(method == "bm")
     {
-      sig.sum = sig.sum + tcrossprod(y.bar[i,] - mu.hat)
+      a = floor(n/b)
+      y.bar <- matrix(0,nrow = a, ncol = p)
+      y.bar <- apply(chain, 2, function(x) sapply(1:a, function(k) mean(x[((k-1)*b+1):(k*b)])))
+      for(i in 1:a)
+      {
+        sig.sum = sig.sum + tcrossprod(y.bar[i,] - mu.hat)
+      }
+      
+      sig.mat <- b*sig.sum/(a-1)
     }
     
-    sig.mat <- b*sig.sum/(a-1)
-  }
-  
-  
-  if(method == "obm")
-  {
-    a = n-b+1
-    y.bar <- matrix(0,nrow = a, ncol = p)
-    y.bar <- apply(chain, 2, function(x) sapply(1:a, function(k) mean(x[((k-1)*b+1):(k*b)])))
-    y.bar <- apply(chain, 2, function(x) sapply(1:a, function(k) mean(x[k:(k+b-1)])))
-    for(i in 1:a)
+    
+    if(method == "obm")
     {
-      sig.sum = sig.sum + tcrossprod(y.bar[i,] - mu.hat)
+      a = n-b+1
+      y.bar <- matrix(0,nrow = a, ncol = p)
+      y.bar <- apply(chain, 2, function(x) sapply(1:a, function(k) mean(x[((k-1)*b+1):(k*b)])))
+      y.bar <- apply(chain, 2, function(x) sapply(1:a, function(k) mean(x[k:(k+b-1)])))
+      for(i in 1:a)
+      {
+        sig.sum = sig.sum + tcrossprod(y.bar[i,] - mu.hat)
+      }
+      
+      sig.mat <- b*sig.sum/n
+      
     }
     
-    sig.mat <- b*sig.sum/n
+    ## Modified Bartlett Window
     
+    if(method == "bartlett")
+    {
+      chain <- scale(chain, center = mu.hat, scale = FALSE)
+      dummy <- lapply(1:(b-1), function(j) (1 - j/b)*(  t(chain[1:(n-j), ])%*%chain[(j+1):n, ] 
+                                                        + t(chain[(1+j):(n), ])%*%chain[1:(n-j), ]  ) )
+      
+      sig.sum <- t(chain)%*%chain + Reduce('+', dummy)
+      
+      sig.mat <- sig.sum/n
+    }
+    
+    if(method == "tukey")
+    {
+      chain <- scale(chain, center = mu.hat, scale = FALSE)
+      dummy <- lapply(1:(b-1), function(j) ((.5)*(1 + cos(pi * j/b))*t(chain[1:(n-j), ]))%*%chain[(j+1):n, ] 
+                      + ((.5)*(1 + cos(pi * j/b))*t(chain[(1+j):(n), ]))%*%chain[1:(n-j), ])
+      
+      sig.sum <- t(chain[1:(n), ])%*%chain[(1):n, ] + Reduce('+', dummy)
+      sig.mat <- sig.sum/n
+      
+    }
   }
   
-  ## Modified Bartlett Window
   
-  if(method == "bartlett")
-  {
-    chain <- scale(chain, center = mu.hat, scale = FALSE)
-    dummy <- lapply(1:(b-1), function(j) (1 - j/b)*(  t(chain[1:(n-j), ])%*%chain[(j+1):n, ] 
-                                                      + t(chain[(1+j):(n), ])%*%chain[1:(n-j), ]  ) )
-    
-    sig.sum <- t(chain)%*%chain + Reduce('+', dummy)
-    
-    sig.mat <- sig.sum/n
-  }
-  
-  if(method == "tukey")
-  {
-    chain <- scale(chain, center = mu.hat, scale = FALSE)
-    dummy <- lapply(1:(b-1), function(j) ((.5)*(1 + cos(pi * j/b))*t(chain[1:(n-j), ]))%*%chain[(j+1):n, ] 
-                    + ((.5)*(1 + cos(pi * j/b))*t(chain[(1+j):(n), ]))%*%chain[1:(n-j), ])
-    
-    sig.sum <- t(chain[1:(n), ])%*%chain[(1):n, ] + Reduce('+', dummy)
-    sig.mat <- sig.sum/n
-
-  }
   
   # ## Batch Means
   # if(method == "bm")
