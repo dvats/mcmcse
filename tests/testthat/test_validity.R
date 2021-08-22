@@ -1,5 +1,7 @@
+set.seed(10)
 library(testthat)
 library(mcmcse)
+
 
 context("validResults")
 
@@ -19,7 +21,7 @@ eureka <- function(order_max, r, g, coefs, var, a, threshold) {
   }
   
   q = coefs[1,1] * r[2]
-  var[1] = (1 - coefs[1,1]*coefs[1,1]) * r[1];
+  var[1] = (1 - coefs[1,1]*coefs[1,1]) * r[1]
   
   if(order_max == 1) {
     ans$vars = var
@@ -29,25 +31,25 @@ eureka <- function(order_max, r, g, coefs, var, a, threshold) {
   }
   
   for(l in 2:order_max) {
-    a[l] = -d/v;
+    a[l] = -d/v
     
     if(l > 2) {
-      l1 = (l-2)/2;
-      l2 = l1+1;
+      l1 = (l-2)/2
+      l2 = l1+1
       
       for(j in 2:l2) {
-        hold = a;
-        k = l-j+1;
-        a[j] = a[j] + a[l] * a[k];
-        a[k] = a[k] + a[l] * hold;
+        hold = a[j]
+        k = l-j+1
+        a[j] = a[j] + a[l] * a[k]
+        a[k] = a[k] + a[l] * hold
       }
       
       if((2*l1) != (l-2))
-        a[l2+1] = a[l2+1] * (1.0 + a);
+        a[l2+1] = a[l2+1] * (1.0 + a[l])
     }
     
-    v = v + a[l] * d;
-    coefs[l,l] = (g[l+1] - q)/v;
+    v = v + a[l] * d
+    coefs[l,l] = (g[l+1] - q)/v
     
     if(abs(coefs[l,l]) <= threshold) {
       ans$vars = var
@@ -58,10 +60,10 @@ eureka <- function(order_max, r, g, coefs, var, a, threshold) {
     
     
     for(j in 1:(l-1)) {
-      coefs[l,j] = coefs[l-1,j] + coefs[l,l] * a[l-j+1];
+      coefs[l,j] = coefs[l-1,j] + coefs[l,l] * a[l-j+1]
     }
     
-    var[l] = var[l-1] * (1 - coefs[l,l]*coefs[l,l]);
+    var[l] = var[l-1] * (1 - coefs[l,l]*coefs[l,l])
     
     if(l == order_max) {
       ans$vars = var
@@ -75,8 +77,8 @@ eureka <- function(order_max, r, g, coefs, var, a, threshold) {
     
     for(i in 1:l) {
       k = l-i+2
-      d = d + a[i] * r[k];
-      q = q + coefs[l,i] * r[k];
+      d = d + a[i] * r[k]
+      q = q + coefs[l,i] * r[k]
     }
     
   }
@@ -100,7 +102,7 @@ ar_yw <- function(order.max, r, g, coefs, var, a, threshold, n) {
   
   var_pred = var_pred*n/(n-(ans$order+1))
   
-  ret = list("coefs" = coef_vec, "vars" = var_pred, "order" = ans$order);
+  ret = list("coefs" = coef_vec, "vars" = var_pred, "order" = ans$order)
   return(ret)
 }
 
@@ -155,6 +157,10 @@ test_batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = 
   
   n <- dim(chain)[1]
   p <- dim(chain)[2]
+  
+  if(n < (p+1))
+    stop("sample size is insufficient for a Markov chain of this dimension")
+  
   order.max <- min(p, n - 1L, floor(10 * log10(n))) # Maximum order up to which AR is fit
   xacf = matrix(, nrow = order.max+1, ncol = p)
   xacf = sapply(1:p, function(i) acf(chain[,i], type = "covariance", lag.max = order.max, plot =
