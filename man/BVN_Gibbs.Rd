@@ -2,7 +2,7 @@
 % Please edit documentation in R/MVG.R
 \name{BVN_Gibbs}
 \alias{BVN_Gibbs}
-\title{MCMC on a bivariate normal distribution}
+\title{MCMC samples from a bivariate normal distribution}
 \usage{
 BVN_Gibbs(n, mu, sigma)
 }
@@ -11,7 +11,7 @@ BVN_Gibbs(n, mu, sigma)
 
 \item{mu}{A 2 dimensional vector. Mean of the target normal distribution.}
 
-\item{sigma}{2 x 2 symmetric positive semi-definite matrix. The covariance matrix of the target normal distribution.}
+\item{sigma}{2 x 2 symmetric positive definite matrix. The covariance matrix of the target normal distribution.}
 }
 \value{
 An n x 2 matrix of the Gibbs samples.

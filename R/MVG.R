@@ -1,4 +1,4 @@
-#' MCMC on a bivariate normal distribution 
+#' MCMC samples from a bivariate normal distribution 
 #' 
 #' Function returns Gibbs samples from a bivariate normal target density.
 #' 
@@ -7,7 +7,7 @@
 #' 
 #' @param n Sample size of the Markov chain.
 #' @param mu A 2 dimensional vector. Mean of the target normal distribution.
-#' @param sigma 2 x 2 symmetric positive semi-definite matrix. The covariance matrix of the target normal distribution.
+#' @param sigma 2 x 2 symmetric positive definite matrix. The covariance matrix of the target normal distribution.
 #'   
 #' @return An n x 2 matrix of the Gibbs samples.
 #' 

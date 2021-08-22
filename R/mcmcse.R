@@ -349,19 +349,19 @@ estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE
         plot(n, est, main = main, type = "l", xlab = "Sample Size", ylab = "MC Estimate",...)
 }
 
-#' Univariate estimate effective sample size (ESS) as described in Gong and Flgal (2015).
+#' Univariate effective sample size (ESS) as described in Gong and Flgal (2015).
 #'
-#'Estimate effective sample size (ESS) as described in Gong and Flegal (2015).
+#'Estimate the effective sample size (ESS) of a Markov chain as described in Gong and Flegal (2015).
 #'
 #' @details 
 #' ESS is the size of an iid sample with the same variance as the current sample for estimating the expectation of g. ESS is given by
 #' \deqn{ESS = n \frac{\lambda^{2}}{\sigma^{2}}} where \eqn{\lambda^{2}} is the sample variance and
-#' \eqn{\sigma^{2}} is an estimate of the variance in the Markov chain central limit theorem. This is by default
-#' a batch means estimator, but the default can be changed with the `method` argument.
+#' \eqn{\sigma^{2}} is an estimate of the variance in the Markov chain central limit theorem. The denominator by default
+#' is a batch means estimator, but the default can be changed with the `method` argument.
 #'
 #' @param x a matrix or data frame of Markov chain output. Number of rows is the Monte
 #'   Carlo sample size.
-#' @param ... arguments passed on to the mcse.mat function. For example method = \dQuote{\code{tukey}} and size =
+#' @param ... arguments passed on to the \code{mcse.mat} function. For example method = \dQuote{\code{tukey}} and size =
 #'   \dQuote{\code{cuberoot}} can be used.
 #' @param g a function that represents features of interest. \code{g} is applied to each row of x and thus
 #'  \code{g} should take a vector input only. Ifcode{g} is \code{NULL}, \code{g} is set to be identity, which is estimation
@@ -371,7 +371,7 @@ estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE
 #' 
 #' @references
 #' Gong, L. and Flegal, J. M. (2015) A practical sequential stopping rule for high-dimensional
-#' Markov chain Monte Carlo, Journal of Computational and Graphical Statistics.
+#' Markov chain Monte Carlo, \emph{Journal of Computational and Graphical Statistics},  \bold{25}, 684—700.
 #' 
 #' @seealso 
 #' \code{\link{minESS}}, which calculates the minimum effective samples required for the problem.

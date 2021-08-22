@@ -25,17 +25,17 @@ License: \tab GPL (>= 2)\cr
 }
 \author{
 James M. Flegal <jflegal@ucr.edu>,\cr  
-John Hughes <j.hughes@ucdenver.edu>,\cr   
-Dootika Vats <dootika@iitk.ac.in>,\cr   
-Ning Dai <daixx224@umn.edu>,\cr  
-Kushagra Gupta <kushagra.gpt99@gmail.com>, and\cr  
+John Hughes, \cr   
+Dootika Vats, <dootika@iitk.ac.in>,\cr   
+Ning Dai, \cr  
+Kushagra Gupta, and\cr  
 Uttiya Maji  
 
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 }
 \references{
 
-  Dai, N and Jones, G.L. (2017)  Multivariate initial sequence estimators in Markov chain Monte Carlo, \emph{ Journal of Multivariate Analysis}.
+  Dai, N and Jones, G.L. (2017)  Multivariate initial sequence estimators in Markov chain Monte Carlo, \emph{ Journal of Multivariate Analysis}, \bold{159}, 184-199.
   
   Flegal, J. M. (2012) Applicability of subsampling
   bootstrap methods in Markov chain Monte Carlo. In
@@ -53,10 +53,7 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
   \emph{Handbook of Markov Chain Monte Carlo}, pages
   175--197. Chapman & Hall/CRC Press.
 
-  Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov
-  chain Monte Carlo estimation of quantiles.
-  \emph{University of California, Riverside, Technical
-  Report}.
+ Doss, C. R., Flegal, J. M., Jones, G. L., and Neath, R. C. (2014). Markov chain Monte Carlo estimation of quantiles. \emph{Electronic Journal of Statistics}, \bold{8}, 2448-2478.
 
   Gong, L., and Flegal, J. M. A practical sequential stopping rule for high-dimensional Markov chain Monte Carlo. \emph{Journal of Computational and Graphical Statistics}, \bold{25},  684–-700.
   
@@ -65,13 +62,13 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
   Carlo. \emph{Journal of the American Statistical
   Association}, \bold{101}, 1537--1547.
 
-  Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and Computing in Applied Probability}.
+  Liu, Y., Vats, D., and Flegal, J. M. (2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and Computing in Applied Probability}, to appear.
 
-  Vats, D., Flegal, J. M., and, Jones, G. L Multivariate Output Analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
+  Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, \emph{Biometrika}, \bold{106}, 321–-337.
 
   Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
   
-  Herberle, J., and, Sattarhoff, C. (2017) A Fast Algorithm for the Computation of HAC Covariance Matrix Estimators, \emph{Econometrics}.
+  Heberle, J., and Sattarhoff, C. (2017). A fast algorithm for the computation of HAC covariance matrix estimators. \emph{Econometrics}, \bold{5}, 9.
 }
 
 \examples{

@@ -14,11 +14,8 @@
 #' 
 #' Function returns the optimal batch size (or truncation point) for a given chain and method.
 #' 
-#' @details batchSize fits a stationary autoregressive process to approximate the marginals of the Markov chain, selecting the order of
+#' @details \code{batchSize} fits a stationary autoregressive process to approximate the marginals of the Markov chain, selecting the order of
 #' the process as the one with the maximum AIC among the models with coefficients greater than a threshold.
-#' 
-#' @details Final update of batchSize using thresholding on aR coefficients and option to use only the tail of the chain for acf
-#' calculation.
 #' 
 #' 
 #' @param x A matrix or data frame of Markov chain output. Number of rows is the Monte
@@ -31,17 +28,16 @@
 #'   thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 #'   is estimation of the mean of the target density.
 #' @param fast Boolean variable for fast estimation using a subset of the Markov chain.
-#' acf.
 #'   
-#' @return A value of the optimal batch size (truncation) is returned.
+#' @return A value of the optimal batch size (truncation point or bandwidth) is returned.
 #' 
 #' @usage batchSize(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g = NULL, fast = TRUE)
 #' 
 #' @references 
-#' Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, Methodology and
-#' Computing in Applied Probability .
+#' Liu, Y., Vats, D., and Flegal, J. M. (2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and
+#' Computing in Applied Probability}, to appear.
 #' 
-#' @seealso \code{\link{mcse.multi}}, which calls on batchSize. \code{\link{mcse}}, which calls on batchSize.
+#' @seealso \code{\link{mcse.multi}}, which calls on \code{batchSize}. \code{\link{mcse}}, which calls on \code{batchSize}.
 #' 
 #' @export
 #' 
@@ -51,7 +47,9 @@
 #' n <- 1e3
 #' mu = c(2, 50)
 #' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#'
 #' out = BVN_Gibbs(n, mu, sigma)
+#'
 #' batchSize(out)
 #' batchSize(out, method = "obm")
 #' batchSize(out, method = "bartlett")

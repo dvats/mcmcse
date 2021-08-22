@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{ess}
 \alias{ess}
-\title{Univariate estimate effective sample size (ESS) as described in Gong and Flgal (2015).}
+\title{Univariate effective sample size (ESS) as described in Gong and Flgal (2015).}
 \usage{
 ess(x, g = NULL, ...)
 }
@@ -14,24 +14,24 @@ Carlo sample size.}
 \code{g} should take a vector input only. Ifcode{g} is \code{NULL}, \code{g} is set to be identity, which is estimation
  of the mean of the target density.}
 
-\item{...}{arguments passed on to the mcse.mat function. For example method = \dQuote{\code{tukey}} and size =
+\item{...}{arguments passed on to the \code{mcse.mat} function. For example method = \dQuote{\code{tukey}} and size =
 \dQuote{\code{cuberoot}} can be used.}
 }
 \value{
 The function returns the estimated effective sample size for each component of \code{g}.
 }
 \description{
-Estimate effective sample size (ESS) as described in Gong and Flegal (2015).
+Estimate the effective sample size (ESS) of a Markov chain as described in Gong and Flegal (2015).
 }
 \details{
 ESS is the size of an iid sample with the same variance as the current sample for estimating the expectation of g. ESS is given by
 \deqn{ESS = n \frac{\lambda^{2}}{\sigma^{2}}} where \eqn{\lambda^{2}} is the sample variance and
-\eqn{\sigma^{2}} is an estimate of the variance in the Markov chain central limit theorem. This is by default
-a batch means estimator, but the default can be changed with the `method` argument.
+\eqn{\sigma^{2}} is an estimate of the variance in the Markov chain central limit theorem. The denominator by default
+is a batch means estimator, but the default can be changed with the `method` argument.
 }
 \references{
 Gong, L. and Flegal, J. M. (2015) A practical sequential stopping rule for high-dimensional
-Markov chain Monte Carlo, Journal of Computational and Graphical Statistics.
+Markov chain Monte Carlo, \emph{Journal of Computational and Graphical Statistics},  \bold{25}, 684—700.
 }
 \seealso{
 \code{\link{minESS}}, which calculates the minimum effective samples required for the problem.

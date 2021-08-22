@@ -19,21 +19,17 @@ the Tukey-Hanning windows for the spectral variance estimators.}
 thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 is estimation of the mean of the target density.}
 
-\item{fast}{Boolean variable for fast estimation using a subset of the Markov chain.
-acf.}
+\item{fast}{Boolean variable for fast estimation using a subset of the Markov chain.}
 }
 \value{
-A value of the optimal batch size (truncation) is returned.
+A value of the optimal batch size (truncation point or bandwidth) is returned.
 }
 \description{
 Function returns the optimal batch size (or truncation point) for a given chain and method.
 }
 \details{
-batchSize fits a stationary autoregressive process to approximate the marginals of the Markov chain, selecting the order of
+\code{batchSize} fits a stationary autoregressive process to approximate the marginals of the Markov chain, selecting the order of
 the process as the one with the maximum AIC among the models with coefficients greater than a threshold.
-
-Final update of batchSize using thresholding on aR coefficients and option to use only the tail of the chain for acf
-calculation.
 }
 \examples{
 
@@ -41,16 +37,18 @@ calculation.
 n <- 1e3
 mu = c(2, 50)
 sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+
 out = BVN_Gibbs(n, mu, sigma)
+
 batchSize(out)
 batchSize(out, method = "obm")
 batchSize(out, method = "bartlett")
 
 }
 \references{
-Liu, Y., Vats, D., and Flegal, J. M. (to appear 2021) Batch size selection for variance estimators in MCMC, Methodology and
-Computing in Applied Probability .
+Liu, Y., Vats, D., and Flegal, J. M. (2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and
+Computing in Applied Probability}, to appear.
 }
 \seealso{
-\code{\link{mcse.multi}}, which calls on batchSize. \code{\link{mcse}}, which calls on batchSize.
+\code{\link{mcse.multi}}, which calls on \code{batchSize}. \code{\link{mcse}}, which calls on \code{batchSize}.
 }
