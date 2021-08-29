@@ -26,7 +26,12 @@ Size}}.}
 Create a plot that shows how Monte Carlo estimates change with increasing sample size.
 }
 \examples{
-\dontrun{
-estvssamp(x, main = expression(E(beta)))
-estvssamp(y, add = TRUE, lty = 2, col = "red")}
+## Bivariate Normal with mean (mu1, mu2) and covariance sigma
+n <- 1e3
+mu <- c(2, 50)
+sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+
+out <- BVN_Gibbs(n, mu, sigma)
+
+estvssamp(out[,1], main = expression(E(x[1])))
 }

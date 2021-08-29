@@ -39,10 +39,10 @@ Compute Monte Carlo standard errors for quantiles.
 
 ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 n <- 1e3
-mu = c(2, 50)
-sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-out = BVN_Gibbs(n, mu, sigma)
-x = out[,1]
+mu <- c(2, 50)
+sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+out <- BVN_Gibbs(n, mu, sigma)
+x <- out[,1]
 
 # Estimate the mean, 0.1 quantile, and 0.9 quantile with MCSEs using batch means.
 
@@ -58,7 +58,7 @@ mcse.q(x, 0.9, method = "obm")
 
 # Estimate E(x^2) with MCSE using spectral methods.
 
-g = function(x) { x^2 }
+g <- function(x) { x^2 }
 mcse(x, g = g, method = "tukey")
 
 }
@@ -74,9 +74,7 @@ Flegal, J. M. and Jones, G. L. (2011) Implementing Markov chain Monte Carlo: Est
 confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of
 Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
 
-Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of
-quantiles. \emph{University of California, Riverside, Technical Report}.
-
+Doss, C. R., Flegal, J. M., Jones, G. L., and Neath, R. C. (2014). Markov chain Monte Carlo estimation of quantiles. \emph{Electronic Journal of Statistics}, \bold{8}, 2448-2478.
 Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov
 chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--154
 .

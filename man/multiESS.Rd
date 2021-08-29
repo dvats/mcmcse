@@ -36,15 +36,16 @@ error for \code{g}.
 
 ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 n <- 1e3
-mu = c(2, 50)
-sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-X = BVN_Gibbs(n, mu, sigma)
-multiESS(X)
+mu <- c(2, 50)
+sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+out <- BVN_Gibbs(n, mu, sigma)
+
+multiESS(out)
 
 }
 \references{
-Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
- Monte Carlo, Biometrika.
+Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
+\emph{Biometrika}, \bold{106}, 321–-337.
 }
 \seealso{
 \code{\link{minESS}}, which calculates the minimum effective samples required for the

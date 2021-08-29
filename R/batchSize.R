@@ -14,7 +14,7 @@
 #' 
 #' Function returns the optimal batch size (or truncation point) for a given chain and method.
 #' 
-#' @details \code{batchSize} fits a stationary autoregressive process to approximate the marginals of the Markov chain, selecting the order of
+#' @details \code{batchSize} fits a stationary autoregressive process to the marginals of \code{x}, selecting the order of
 #' the process as the one with the maximum AIC among the models with coefficients greater than a threshold.
 #' 
 #' 
@@ -27,7 +27,7 @@
 #' @param g A function that represents features of interest. \code{g} is applied to each row of x and
 #'   thus \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which
 #'   is estimation of the mean of the target density.
-#' @param fast Boolean variable for fast estimation using a subset of the Markov chain.
+#' @param fast Boolean variable for fast estimation using a reasonable subset of the Markov chain.
 #'   
 #' @return A value of the optimal batch size (truncation point or bandwidth) is returned.
 #' 
@@ -37,7 +37,7 @@
 #' Liu, Y., Vats, D., and Flegal, J. M. (2021) Batch size selection for variance estimators in MCMC, \emph{Methodology and
 #' Computing in Applied Probability}, to appear.
 #' 
-#' @seealso \code{\link{mcse.multi}}, which calls on \code{batchSize}. \code{\link{mcse}}, which calls on \code{batchSize}.
+#' @seealso \code{\link{mcse.multi}} and \code{\link{mcse}}, which calls on \code{batchSize}.
 #' 
 #' @export
 #' 
@@ -45,10 +45,10 @@
 #' 
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 #' n <- 1e3
-#' mu = c(2, 50)
-#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
 #'
-#' out = BVN_Gibbs(n, mu, sigma)
+#' out <- BVN_Gibbs(n, mu, sigma)
 #'
 #' batchSize(out)
 #' batchSize(out, method = "obm")

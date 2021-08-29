@@ -19,9 +19,10 @@ Check if the class of the object is mcmcse
 
 ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 n <- 1e3
-mu = c(2, 50)
-sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-out = BVN_Gibbs(n, mu, sigma)
+mu <- c(2, 50)
+sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+
+out <- BVN_Gibbs(n, mu, sigma)
 is.mcmcse(mcse.multi(out))
 
 }

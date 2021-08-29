@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{mcse.mat}
 \alias{mcse.mat}
-\title{Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.}
+\title{Apply \code{mcse} to each column of the MCMC samples.}
 \usage{
 mcse.mat(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r = 3)
 }
@@ -12,8 +12,8 @@ mcse.mat(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"),
 \item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
 \dQuote{\code{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
-  value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
-  floor(n^(1/3)).}
+  value between 1 and n/2. \dQuote{\code{sqroot}} means size is \eqn{\lfloor n^{1/2} \rfloor} and \dQuote{\code{cuberoot}} means size is
+  \eqn{\lfloor n^{1/3} \rfloor}.}
 
 \item{g}{a function such that \eqn{E(g(x))} is the quantity of interest. The default is
 \code{NULL}, which causes the identity function to be used.}
@@ -25,7 +25,7 @@ and \dQuote{\code{tukey}} represents the modified-Bartlett window and the Tukey-
 \item{r}{The lugsail parameters (\code{r}) that converts a lag window into its lugsail
 equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
 but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
-good choices. \code{r > 5} is not recommended.}
+also good choices although may lead to underestimates of the variance. \code{r > 5} is not recommended.}
 }
 \value{
 \code{mcse.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names
@@ -34,7 +34,7 @@ good choices. \code{r > 5} is not recommended.}
   of applying \code{mcse} to the \eqn{j}th column of \code{x}.
 }
 \description{
-Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.
+Apply \code{mcse} to each column of the MCMC samples.
 }
 \seealso{
 \code{\link{mcse}}, which acts on a vector.

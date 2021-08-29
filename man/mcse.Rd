@@ -13,8 +13,8 @@ mcse(x, size = NULL, g = NULL, r = 3,
 \item{size}{represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
 \dQuote{\code{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
-  value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
-  floor(n^(1/3)).}
+  value between 1 and n/2. \dQuote{\code{sqroot}} means size is \eqn{\lfloor n^{1/2} \rfloor} and \dQuote{\code{cuberoot}} means size is
+  \eqn{\lfloor n^{1/3} \rfloor}.}
 
 \item{g}{a function such that \eqn{E(g(x))} is the quantity of interest. The default is
 \code{NULL}, which causes the identity function to be used.}
@@ -22,7 +22,7 @@ mcse(x, size = NULL, g = NULL, r = 3,
 \item{r}{The lugsail parameters (\code{r}) that converts a lag window into its lugsail
 equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
 but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
-good choices. \code{r > 5} is not recommended.}
+also good choices, but will likely underestimation of variance. \code{r > 5} is not recommended.}
 
 \item{method}{any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}}, \dQuote{\code{tukey}}. \dQuote{\code{bm}}
 represents batch means estimator, \dQuote{\code{obm}} represents overlapping batch means estimator with, \dQuote{\code{bartlett}}
@@ -67,7 +67,7 @@ mcse(x, g = g, method = "tukey")
 \references{
 Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
 In Wozniakowski, H. and Plaskota, L., editors, \emph{Monte Carlo and Quasi-Monte Carlo Methods
-2010} (to appear). Springer-Verlag.
+2010}, pp. 363-372. Springer-Verlag.
 
 Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance estimators in Markov
 chain Monte Carlo. \emph{The Annals of Statistics}, \bold{38}, 1034--1070.
@@ -76,9 +76,7 @@ Flegal, J. M. and Jones, G. L. (2011) Implementing Markov chain Monte Carlo: Est
 confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of
 Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
 
-Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of
-quantiles. \emph{University of California, Riverside, Technical Report}.
-
+Doss, C. R., Flegal, J. M., Jones, G. L., and Neath, R. C. (2014). Markov chain Monte Carlo estimation of quantiles. \emph{Electronic Journal of Statistics}, \bold{8}, 2448-2478.
 Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov
 chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--154.
 }

@@ -5,8 +5,8 @@
 #' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
 #' \dQuote{\code{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
 #'   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
-#'   value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
-#'   floor(n^(1/3)).
+#'   value between 1 and n/2. \dQuote{\code{sqroot}} means size is \eqn{\lfloor n^{1/2} \rfloor} and \dQuote{\code{cuberoot}} means size is
+#'   \eqn{\lfloor n^{1/3} \rfloor}.
 #' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is
 #'   \code{NULL}, which causes the identity function to be used.
 #' @param method any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}}, \dQuote{\code{tukey}}. \dQuote{\code{bm}}
@@ -18,7 +18,7 @@
 #' @param r The lugsail parameters (\code{r}) that converts a lag window into its lugsail
 #'   equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
 #'   but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
-#'   good choices. \code{r > 5} is not recommended.
+#'   also good choices, but will likely underestimation of variance. \code{r > 5} is not recommended.
 #' 
 #' @return \code{mcse} returns a list with three elements:
 #'         \item{est}{an estimate of \eqn{E(g(x))}.}
@@ -31,7 +31,7 @@
 #' @references
 #' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
 #' In Wozniakowski, H. and Plaskota, L., editors, \emph{Monte Carlo and Quasi-Monte Carlo Methods
-#' 2010} (to appear). Springer-Verlag.
+#' 2010}, pp. 363-372. Springer-Verlag.
 #'
 #' Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance estimators in Markov
 #' chain Monte Carlo. \emph{The Annals of Statistics}, \bold{38}, 1034--1070.
@@ -40,9 +40,7 @@
 #' confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of
 #' Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
 #'
-#' Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of
-#' quantiles. \emph{University of California, Riverside, Technical Report}.
-#'
+#' Doss, C. R., Flegal, J. M., Jones, G. L., and Neath, R. C. (2014). Markov chain Monte Carlo estimation of quantiles. \emph{Electronic Journal of Statistics}, \bold{8}, 2448-2478.
 #' Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov
 #' chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--154.
 #' 
@@ -90,14 +88,14 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
     value
 }
 
-#' Apply \code{mcse} to each column of a matrix or data frame of MCMC samples.
+#' Apply \code{mcse} to each column of the MCMC samples.
 #'
 #' @param x a matrix of values from a Markov chain of size n x p.
 #' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
 #' \dQuote{\code{tukey}}. Default is \code{NULL} which implies that an optimal batch size is calculated using the 
 #'   \code{batchSize} function. Can take character values of \dQuote{\code{sqroot}} and \dQuote{\code{cuberoot}} or any numeric
-#'   value between 1 and n/2. \dQuote{\code{sqroot}} means size is floor(n^(1/2)) and \dQuote{\code{cuberoot}} means size is
-#'   floor(n^(1/3)).
+#'   value between 1 and n/2. \dQuote{\code{sqroot}} means size is \eqn{\lfloor n^{1/2} \rfloor} and \dQuote{\code{cuberoot}} means size is
+#'   \eqn{\lfloor n^{1/3} \rfloor}.
 #' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is
 #'   \code{NULL}, which causes the identity function to be used.
 #' @param method any of \dQuote{\code{bm}},\dQuote{\code{obm}},\dQuote{\code{bartlett}}, \dQuote{\code{tukey}}. \dQuote{\code{bm}}
@@ -107,7 +105,7 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
 #' @param r The lugsail parameters (\code{r}) that converts a lag window into its lugsail
 #'   equivalent. Larger values of \code{r} will typically imply less underestimation of \dQuote{\code{cov}},
 #'   but higher variability of the estimator. Default is \code{r = 3} and \code{r = 1,2} are
-#'   good choices. \code{r > 5} is not recommended.
+#'   also good choices although may lead to underestimates of the variance. \code{r > 5} is not recommended.
 #' 
 #' @return \code{mcse.mat} returns a matrix with \code{ncol(x)} rows and two columns. The row names
 #'   of the matrix are the same as the column names of \code{x}. The column names of the matrix are
@@ -176,9 +174,7 @@ quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) 
 #' confidence. In Brooks, S., Gelman, A., Jones, G. L., and Meng, X., editors, \emph{Handbook of
 #' Markov Chain Monte Carlo}, pages 175--197. Chapman & Hall/CRC Press.
 #'
-#' Flegal, J. M., Jones, G. L., and Neath, R. (2012) Markov chain Monte Carlo estimation of
-#' quantiles. \emph{University of California, Riverside, Technical Report}.
-#'
+#' Doss, C. R., Flegal, J. M., Jones, G. L., and Neath, R. C. (2014). Markov chain Monte Carlo estimation of quantiles. \emph{Electronic Journal of Statistics}, \bold{8}, 2448-2478.
 #' Jones, G. L., Haran, M., Caffo, B. S. and Neath, R. (2006) Fixed-width output analysis for Markov
 #' chain Monte Carlo. \emph{Journal of the American Statistical Association}, \bold{101}, 1537--154
 #' .
@@ -191,10 +187,10 @@ quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) 
 #'
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 #' n <- 1e3
-#' mu = c(2, 50)
-#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' out = BVN_Gibbs(n, mu, sigma)
-#' x = out[,1]
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' out <- BVN_Gibbs(n, mu, sigma)
+#' x <- out[,1]
 #'
 #' # Estimate the mean, 0.1 quantile, and 0.9 quantile with MCSEs using batch means.
 #'
@@ -210,7 +206,7 @@ quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) 
 #'
 #' # Estimate E(x^2) with MCSE using spectral methods.
 #'
-#' g = function(x) { x^2 }
+#' g <- function(x) { x^2 }
 #' mcse(x, g = g, method = "tukey")
 #'
 #' @export
@@ -328,9 +324,14 @@ mcse.q.mat = function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"
 #' @return \code{NULL}
 #' 
 #' @examples
-#' \dontrun{
-#' estvssamp(x, main = expression(E(beta)))
-#' estvssamp(y, add = TRUE, lty = 2, col = "red")}
+#' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
+#' n <- 1e3
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#'
+#' out <- BVN_Gibbs(n, mu, sigma)
+#' 
+#' estvssamp(out[,1], main = expression(E(x[1])))
 #' @export
 
 estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE,...)

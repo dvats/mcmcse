@@ -76,15 +76,17 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' @usage mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3,  
 #'                   size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 #' @references 
-#'  Vats, D., Flegal, J. M., and, Jones, G. L (2019) Multivariate Output Analysis for Markov chain
-#'  Monte Carlo, Biometrika.
+#' Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
+#' \emph{Biometrika}, \bold{106}, 321–-337.
 #' 
-#'  Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain
-#'  Monte Carlo, Bernoulli.
-#'  
-#' @seealso \code{\link{batchSize}}, which computes an optimal batch size. \code{\link{mcse.initseq}}, which computes
-#' an initial sequence estimator. \code{\link{mcse}}, which acts on a vector. \code{\link{mcse.mat}}, which applies mcse
-#' to each column of a matrix or data frame. \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard
+#' Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance 
+#' estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
+#' 
+#' @seealso \code{\link{batchSize}}, which computes an optimal batch size. 
+#' \code{\link{mcse.initseq}}, which computes an initial sequence estimator.
+#' \code{\link{mcse}}, which acts on a vector. 
+#' \code{\link{mcse.mat}}, which applies mcse to each column of a matrix or data frame. 
+#' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard
 #' errors for quantiles.
 #'  
 #' @export
@@ -92,9 +94,9 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' @examples 
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 #' n <- 1e3
-#' mu = c(2, 50)
-#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' out = BVN_Gibbs(n, mu, sigma)
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' out <- BVN_Gibbs(n, mu, sigma)
 #' 
 #' mcse.bm <- mcse.multi(x = out)
 #' mcse.tuk <- mcse.multi(x = out, method = "tukey")
@@ -291,9 +293,10 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
 #' 
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 #' n <- 1e3
-#' mu = c(2, 50)
-#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' out = BVN_Gibbs(n, mu, sigma)
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#'
+#' out <- BVN_Gibbs(n, mu, sigma)
 #' is.mcmcse(mcse.multi(out))
 #' 
 #' @export

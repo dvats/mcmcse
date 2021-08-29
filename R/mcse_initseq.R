@@ -1,4 +1,3 @@
-# sourceCpp("inseq.cpp")
 #' Multivariate Monte Carlo standard errors for expectations with the initial sequence method of Dai
 #' and Jones (2017)
 #' 
@@ -19,7 +18,7 @@
 #' @param blather if \code{TRUE}, outputs under the hood information about the function.
 #' 
 #' @return A list is returned with the following components,
-#'  \item{cov}{a covariance matrix estimate using intial sequence method}.
+#'  \item{cov}{a covariance matrix estimate using intial sequence method.}
 #'  \item{cov.adj}{a covariance matrix estimate using adjusted initial sequence method if the
 #'  input \code{adjust=TRUE}.}
 #'  \item{eigen_values}{eigen values of the estimate cov.}
@@ -30,22 +29,24 @@
 #'   Only if \code{blather = TRUE}.}
 #' 
 #' @references 
-#' Dai, N and Jones, G.L. (2017) Multivariate initial sequence estimators in Markov chain Monte
-#' Carlo, Journal of Multivariate Analysis.
+#' Dai, N and Jones, G.L. (2017)  Multivariate initial sequence estimators in Markov chain Monte Carlo, 
+#' \emph{ Journal of Multivariate Analysis}, \bold{159}, 184-199.
 #' 
 #' @seealso 
-#' \code{\link{mcse}}, which acts on a vector. \code{\link{mcse.mat}}, which applies \code{mcse} to each
-#' column of a matrix or data frame. \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which
-#' compute standard errors for quantiles. \code{mcse.multi}, which estimates the covariance matrix in the
+#' \code{\link{mcse}}, which acts on a vector. 
+#' \code{\link{mcse.mat}}, which applies \code{mcse} to each
+#' column of a matrix or data frame. 
+#' \code{\link{mcse.q}} and \code{\link{mcse.q.mat}}, which compute standard errors for quantiles. 
+#' \code{mcse.multi}, which estimates the covariance matrix in the
 #' Markov Chain CLT using batch means or spectral variance methods.
 #' 
 #' @examples 
 #' 
 #' ## Bivariate Normal with mean (mu1, mu2) and covariance sigma
 #' n <- 1e3
-#' mu = c(2, 50)
-#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' out = BVN_Gibbs(n, mu, sigma)
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' out <- BVN_Gibbs(n, mu, sigma)
 #' 
 #' out.mcse <- mcse.initseq(x = out)
 #' out.mcse.adj <- mcse.initseq(x = out, adjust = TRUE)

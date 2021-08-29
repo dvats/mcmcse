@@ -18,7 +18,7 @@ versus sample size.
 Package: \tab mcmcse\cr
 Type: \tab Package\cr
 Version: \tab 1.5-0\cr
-Date: \tab 2021-08-23\cr
+Date: \tab 2021-08-29\cr
 License: \tab GPL (>= 2)\cr
 }
 
@@ -57,6 +57,8 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
 
   Gong, L., and Flegal, J. M. A practical sequential stopping rule for high-dimensional Markov chain Monte Carlo. \emph{Journal of Computational and Graphical Statistics}, \bold{25},  684–-700.
   
+  Heberle, J., and Sattarhoff, C. (2017). A fast algorithm for the computation of HAC covariance matrix estimators. \emph{Econometrics}, \bold{5}, 9.
+  
   Jones, G. L., Haran, M., Caffo, B. S. and Neath, R.
   (2006) Fixed-width output analysis for Markov chain Monte
   Carlo. \emph{Journal of the American Statistical
@@ -68,7 +70,6 @@ Maintainer: Dootika Vats <dootika@iitk.ac.in>
 
   Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
   
-  Heberle, J., and Sattarhoff, C. (2017). A fast algorithm for the computation of HAC covariance matrix estimators. \emph{Econometrics}, \bold{5}, 9.
 }
 
 \examples{

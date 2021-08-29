@@ -15,9 +15,9 @@
 #' 
 #' @examples 
 #' n <- 1e3
-#' mu = c(2, 50)
-#' sigma = matrix(c(1, 0.5, 0.5, 1), nrow = 2)
-#' X = BVN_Gibbs(n, mu, sigma)
+#' mu <- c(2, 50)
+#' sigma <- matrix(c(1, 0.5, 0.5, 1), nrow = 2)
+#' out <- BVN_Gibbs(n, mu, sigma)
 #' 
 
 BVN_Gibbs <- function(n, mu, sigma) {
