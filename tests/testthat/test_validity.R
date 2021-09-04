@@ -178,6 +178,7 @@ test_batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = 
   b <- min(b, floor(n / (p + 1)))
   if(n > 10)
     b = min(b, floor(n/10))
+  b <- floor(b)
   return(b)
 }
 

@@ -161,8 +161,8 @@ double batchsize_cpp(arma::uword n, int p, const arma::mat& xacf_mat, int max_or
   double num_sum = 0, denom_sum = 0, Gamma = 0, Sigma = 0;
   List arp_output = List::create(_["Gamma"] = 0, _["Sigma"] = 0);
 
-  for(int i = 0; i<p; i++)  {
-
+  for(int i = 0; i<p; i++)  
+  {
     arp_output = arp_approx(xacf_mat.col(i), max_order, n, threshold);
     Gamma = arp_output["Gamma"];
     Sigma = arp_output["Sigma"];
@@ -172,13 +172,13 @@ double batchsize_cpp(arma::uword n, int p, const arma::mat& xacf_mat, int max_or
     denom_sum += ar_fit(1,i);
   }
 
-  double coeff = pow(num_sum/denom_sum,1.0/3);
-  double b_const = (3.0/2*n)*(method == "obm" || method == "bartlett" || method == "tukey" || method == "sub")
+  double coeff = pow(num_sum/denom_sum, (1.0/3.0) );
+  double b_const = ( (3.0/2.0)*n)*(method == "obm" || method == "bartlett" || method == "tukey" || method == "sub")
                   + (n)*(method == "bm");
-  double b = pow(b_const,1.0/3) * coeff;
-  if(b < 1)
-    b = 1;
-  b = floor(b);
+  double b = pow(b_const,1.0/3.0) * coeff;
+  if(b < 1.0)
+    b = 1.0;
+  // b = floor(b);
   return(b);
 }
 

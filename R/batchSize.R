@@ -56,10 +56,11 @@
 #' 
 
 
-batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g = NULL, fast = TRUE) {
-  method = match.arg(method)
+batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g = NULL, fast = TRUE) 
+{
+  method <- match.arg(method)
 
-  chain = as.matrix(x)
+  chain <- as.matrix(x)
   if(!is.matrix(chain) && !is.data.frame(chain))
     stop("'x' must be a matrix or data frame.")
 
@@ -101,6 +102,8 @@ batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g 
   b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
   b <- min(b, floor(n / (p + 1)))
   if(n > 10)
-    b = min(b, floor(n/10))
+    b <- min(b, floor(n/10))
+
+  b <- floor(b)
   return(b)
 }

@@ -109,29 +109,28 @@ mSVEfft <- function (A, b, method = "bartlett")
 
 mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
-  method = match.arg(method)
+  method <- match.arg(method)
   
   # at some point the method used may be different
   # from the method asked. Blather will output this
   method.used <- method
   if(method == "lug")   # not releaved to the public. Inside option for developers
   {
-    method = "bm"
+    method <- "bm"
     r <- 3
-    c <- 0.5
   }
-  c = 0.5  
+  c <- 0.5  
   if(!is.numeric(r)) stop("r should be numeric")
   if(!is.numeric(c)) stop("c should be numeric")
   
   if(r > 5) warning("We recommend using r <=5. r = 1,2,3 are standard")
   if(r < 1)  {
     warning("r cannot be less than 1. Setting r = 3")
-    r = 3
+    r <- 3
   }
   if(c > 1) {
     warning("c cannot be greater than 1. Setting c = 0.5")
-    c = 0.5
+    c <- 0.5
   }
   
   # making matrix compatible and applying g
@@ -154,8 +153,8 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
   
   
   ## Setting dimensions on the mcmc output. 
-  n = dim(chain)[1]
-  p = dim(chain)[2]
+  n <- dim(chain)[1]
+  p <- dim(chain)[2]
   
   if(n < (p+1))
     stop("sample size is insufficient for a Markov chain of this dimension")
@@ -185,7 +184,7 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
   a <- floor(n/b)
   if(b == 1 && r != 1)
   {
-    r = 1
+    r <- 1
   }
   ########################## 
   
@@ -194,24 +193,29 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
   mu.hat <- colMeans(chain)  # this is based on the full output. not n = a*b
   
   ## Setting matrix sizes to avoid dynamic memory 
-  sig.mat = matrix(0, nrow = p, ncol = p)
+  sig.mat <- matrix(0, nrow = p, ncol = p)
   
   message <- ""   # will store some info for blather
   
-  if(b < (2*r)) {
-    r = 1       
-    message = paste(message, "estimated batch size is low, lugsail not required")
+  if(b < (2*r)) 
+  {
+    r <- 1       
+    message <- paste(message, "estimated batch size is low, lugsail not required")
   }
-    
-  if(b == 1)  {
-    init.mat = var(chain)
-    sig.mat = init.mat
+  
+  adjust.used <- FALSE
+  if(b == 1)  
+  {
+    init.mat <- var(chain)
+    sig.mat <- init.mat
   }
-  else  {
+  else  
+  {
     ## Batch Means
-    if(method == "bm")  {
-      init.mat = mbmC(chain, b)
-      sig.mat = init.mat
+    if(method == "bm")  
+    {
+      init.mat <- mbmC(chain, b)
+      sig.mat <- init.mat
       if(r>1) {
         sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mbmC(chain, floor(b/r))
       }
@@ -219,9 +223,10 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
     
     
     ## Overlapping Batch Means
-    if(method == "obm") {
-      init.mat = mobmC(chain, b)
-      sig.mat = init.mat
+    if(method == "obm") 
+    {
+      init.mat <- mobmC(chain, b)
+      sig.mat <- init.mat
       if(r>1) {
         sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mobmC(chain, floor(b/r))
       }
@@ -233,13 +238,14 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
     {
       chain <- scale(chain, center = mu.hat, scale = FALSE)
       init.mat <-  mSVEfft(A = chain, b = b, method = method)
-      sig.mat = init.mat
-      if(r>1) {
+      sig.mat <- init.mat
+      if(r>1) 
+      {
         sig.mat <- (1/(1-c))*init.mat - (c/(1-c))*mSVEfft(A = chain, b = floor(b/r), method = method)
       }
     }
-    adjust.used = FALSE
-    method.used = paste("Lugsail ", method, " with r = ", r)
+    adjust.used <- FALSE
+    method.used <- paste("Lugsail ", method, " with r = ", r)
     if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
     {
       sig.mat <- init.mat
