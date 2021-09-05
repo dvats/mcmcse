@@ -67,7 +67,7 @@ eureka <- function(order_max, r, g, coefs, var, a, threshold) {
     
     if(l == order_max) {
       ans$vars = var
-      ans$vars = coefs
+      ans$coefs = coefs
       ans$order = order_max
       return(ans)
     }
@@ -106,11 +106,11 @@ ar_yw <- function(order.max, r, g, coefs, var, a, threshold, n) {
   return(ret)
 }
 
-arp_approx <- function(xacf, order.max, n)
+arp_approx <- function(xacf_vec, order.max, n)
 {
   threshold = qnorm((1.95)/2)/sqrt(n)
   # Fitting a univariate AR(m) model
-  ar.fit <- ar_yw(order.max, xacf, xacf, matrix(0, nrow = order.max, ncol = order.max), 
+  ar.fit <- ar_yw(order.max, xacf_vec, xacf_vec, matrix(0, nrow = order.max, ncol = order.max), 
                   numeric(order.max), numeric(order.max), threshold, n)
   
   # estimated autocovariances
@@ -168,7 +168,7 @@ test_batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = 
   
   ar_fit <- apply(xacf, 2, arp_approx, order.max = order.max, n = n)^2
   coeff <- ( sum(ar_fit[1,])/sum(ar_fit[2,]) )^(1/3)
-  method = match.arg(method)
+  # method = match.arg(method)
   
   b.const <- (3/2*n)*(method == "obm" || method == "bartlett" || method == "tukey") + (n)*(method == "bm")
   b <- b.const^(1/3) * coeff
