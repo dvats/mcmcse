@@ -114,7 +114,7 @@ arp_approx <- function(xacf_vec, order.max, n)
                   numeric(order.max), numeric(order.max), threshold, n)
   
   # estimated autocovariances
-  gammas <- xacf #as.numeric(acf(x, type = "covariance", lag.max = ar.fit$order, plot = FALSE)$acf)
+  gammas <- xacf_vec #as.numeric(acf(x, type = "covariance", lag.max = ar.fit$order, plot = FALSE)$acf)
   spec <- ar.fit$vars/(1-sum(ar.fit$coefs))^2  #asym variance
   
   if(ar.fit$order != 0)
