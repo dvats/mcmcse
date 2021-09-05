@@ -9,8 +9,8 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
 // below the threshold, we don't compute coefficients beyond that order (i.e. we don't always complete the 
 // loop from 1 to order.max) and return. 
 
-  int l, l1, l2, i, j, k;
-  double v, d, q, hold;
+  int l, i, j, k;
+  double v, d, q, hold, l1, l2;
   List ans = List::create(_["vars"] = var, _["coefs"] = coefs, _["order"] = order_max);
 
   v = r(0);
@@ -26,7 +26,7 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
   }
 
   q = coefs(0,0) * r(1);
-  var(0) = (1 - coefs(0,0)*coefs(0,0)) * r(0);
+  var(0) = (1.0 - coefs(0,0)*coefs(0,0)) * r(0);
 
   if(order_max == 1) {
     ans["vars"] = var;
@@ -39,8 +39,8 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
     a(l-1) = -d/v;
 
     if(l > 2) {
-      l1 = (l-2)/2;
-      l2 = l1+1;
+      l1 = (l-2.0)/2.0;
+      l2 = l1+1.0;
 
       for(j = 2; j<= l2; j++) {
         hold = a(j-1);
@@ -49,7 +49,7 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
         a(k-1) = a(k-1) + a(l-1) * hold;
       }
 
-      if((2*l1) != (l-2))
+      if((2.0*l1) != (l-2))
         a(l2) = a(l2) * (1.0 + a(l-1));
     }
 
@@ -70,7 +70,7 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
       coefs(l-1, j-1) = coefs(l-2, j-1) + coefs(l-1, l-1) * a(l-j);
     }
 
-    var(l-1) = var(l-2) * (1 - coefs(l-1,l-1)*coefs(l-1,l-1));
+    var(l-1) = var(l-2) * (1.0 - coefs(l-1,l-1)*coefs(l-1,l-1));
 
     if(l == order_max) {
       ans["vars"] = var;
@@ -105,7 +105,7 @@ List ar_yw(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coef
   arma::mat coef_mat = ans["coefs"];
   int order = ans["order"];
   arma::vec coef_vec(order, arma::fill::zeros);
-  double var_pred = 0;
+  double var_pred = 0.0;
 
   if(order> 0)  {
     coef_vec = coef_mat(order-1, arma::span(0, order-1)).t();
@@ -115,7 +115,7 @@ List ar_yw(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coef
     var_pred = r(0);
   }
 
-  var_pred = var_pred*n/(n-(order+1));
+  var_pred = var_pred*n/(n-(order+1.0));
 
   List ret = List::create(_["coefs"] = coef_vec, _["vars"] = var_pred, _["order"] = order);
   return(ret);
@@ -131,22 +131,22 @@ List arp_approx(const arma::vec& xacf, int max_order, arma::uword n, double thre
   double vars = ar_fit["vars"];
   int order = ar_fit["order"];
 
-  double spec = vars/pow(1 - sum(coefs),2.0);
-  double foo = 0, Gamma = 0;
+  double spec = vars/pow(1.0 - sum(coefs),2.0);
+  double foo = 0.0, Gamma = 0.0;
 
   if(order != 0)  {
-    foo = 0;
+    foo = 0.0;
 
     for(int i=1; i<= order; i++) {
       for(int k=1; k<=i; k++) {
-        foo = foo + coefs(i-1) * k * xacf(abs(k-i));
+        foo = foo + coefs(i-1) * k * xacf(abs(k-i));   // convert k to floor?
       }
     }
 
-    Gamma = 2*(foo + (spec-xacf(0))/2 * dot(arma::regspace(1, order), coefs)) / (1 - sum(coefs));
+    Gamma = 2.0*(foo + (spec-xacf(0))/2.0 * dot(arma::regspace(1, order), coefs)) / (1.0 - sum(coefs));
   }
   else
-    Gamma = 0;
+    Gamma = 0.0;
 
   List ans = List::create(_["Gamma"] = Gamma, _["Sigma"] = spec);
   return(ans);
@@ -158,8 +158,8 @@ double batchsize_cpp(arma::uword n, int p, const arma::mat& xacf_mat, int max_or
 // Calculates batchsize from Gamma and Sigma from AR approximation. Uses the "optimal" batchsize parametric 
 // method  from of Liu et.al.
   arma::mat ar_fit(2,p, arma::fill::none);
-  double num_sum = 0, denom_sum = 0, Gamma = 0, Sigma = 0;
-  List arp_output = List::create(_["Gamma"] = 0, _["Sigma"] = 0);
+  double num_sum = 0.0, denom_sum = 0.0, Gamma = 0.0, Sigma = 0.0;
+  List arp_output = List::create(_["Gamma"] = Gamma, _["Sigma"] = Sigma);
 
   for(int i = 0; i<p; i++)  
   {

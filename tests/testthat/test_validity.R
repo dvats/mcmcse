@@ -44,7 +44,7 @@ eureka <- function(order_max, r, g, coefs, var, a, threshold) {
         a[k] = a[k] + a[l] * hold
       }
       
-      if((2*l1) != (l-2))
+      if((2*l1) != (l-2.0))
         a[l2+1] = a[l2+1] * (1.0 + a[l])
     }
     
@@ -174,7 +174,6 @@ test_batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey"), g = 
   b <- b.const^(1/3) * coeff
   if(b <= 1) b <- 1
   
-  b <- floor(b)
   b <- min(b, floor(n / (p + 1)))
   if(n > 10)
     b = min(b, floor(n/10))
