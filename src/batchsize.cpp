@@ -18,7 +18,7 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
   a(0) = 1.0;
   coefs(0,0) = g(1)/v;
 
-  if(abs(coefs(0,0)) <= threshold) {
+  if(fabs(coefs(0,0)) <= threshold) {
     ans["vars"] = var;
     ans["coefs"] = coefs;
     ans["order"] = 0;
@@ -56,7 +56,7 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
     v = v + a(l-1) * d;
     coefs(l-1, l-1) = (g(l) - q)/v;
 
-    if(abs(coefs(l-1, l-1)) <= threshold) {
+    if(fabs(coefs(l-1, l-1)) <= threshold) {
       ans["vars"] = var;
       ans["coefs"] = coefs;
       ans["order"] = l-1;
