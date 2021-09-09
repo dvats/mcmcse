@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // batchsize_cpp
 double batchsize_cpp(arma::uword n, int p, const arma::mat& xacf_mat, int max_order, String method, double threshold);
 RcppExport SEXP _mcmcse_batchsize_cpp(SEXP nSEXP, SEXP pSEXP, SEXP xacf_matSEXP, SEXP max_orderSEXP, SEXP methodSEXP, SEXP thresholdSEXP) {

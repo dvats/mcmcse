@@ -4,8 +4,7 @@
 \alias{mcse}
 \title{Compute Monte Carlo standard errors for expectations.}
 \usage{
-mcse(x, size = NULL, g = NULL, r = 3, 
-            method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
+mcse(x, size = NULL, g = NULL, r = 3,  method = "bm", warn = FALSE)
 }
 \arguments{
 \item{x}{a vector of values from a Markov chain of length n.}

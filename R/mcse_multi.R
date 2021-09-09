@@ -73,8 +73,8 @@ mSVEfft <- function (A, b, method = "bartlett")
 #'  \item{size}{value of size used to calculate cov.}
 #'  \item{Adjustment_Used}{whether an adjustment was used to calculate cov.}
 #' 
-#' @usage mcse.multi(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r = 3,  
-#'                   size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+#' @usage mcse.multi(x, method = "bm", r = 3, size = NULL, g = NULL,  
+#'                   adjust = TRUE, blather = FALSE)
 #' @references 
 #' Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
 #' \emph{Biometrika}, \bold{106}, 321–-337.
@@ -107,18 +107,18 @@ mSVEfft <- function (A, b, method = "bartlett")
 #' g <- function(x) return(c(x[1], x[2]^2))
 #' mcse <- mcse.multi(x = out, g = g)
 
-mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
+mcse.multi <- function(x, method = "bm", r=3, size = NULL, g = NULL, adjust = TRUE, blather = FALSE)
 { 
-  method <- match.arg(method)
-  
-  # at some point the method used may be different
-  # from the method asked. Blather will output this
-  method.used <- method
+  method <- match.arg(method, choices = c("bm", "obm", "bartlett", "tukey", "lug"))
   if(method == "lug")   # not releaved to the public. Inside option for developers
   {
     method <- "bm"
     r <- 3
   }
+  # at some point the method used may be different
+  # from the method asked. Blather will output this
+  method.used <- method
+
   c <- 0.5  
   if(!is.numeric(r)) stop("r should be numeric")
   if(!is.numeric(c)) stop("c should be numeric")
@@ -177,10 +177,10 @@ mcse.multi <- function(x, method = c("bm", "obm", "bartlett", "tukey", "lug"), r
               value")
       size = batchSize(x = x, method = method)
     }
-    
-    
+        
     b <- floor(size)
   }
+
   a <- floor(n/b)
   if(b == 1 && r != 1)
   {

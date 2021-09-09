@@ -4,7 +4,7 @@
 \alias{mcse.mat}
 \title{Apply \code{mcse} to each column of the MCMC samples.}
 \usage{
-mcse.mat(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r = 3)
+mcse.mat(x, size = NULL, g = NULL, method = "bm", r = 3)
 }
 \arguments{
 \item{x}{a matrix of values from a Markov chain of size n x p.}

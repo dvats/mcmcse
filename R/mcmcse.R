@@ -25,8 +25,8 @@
 #'         \item{se}{the Monte Carlo standard error.}
 #'         \item{nsim}{The number of samples in the input Markov chain.}
 #' 
-#' @usage mcse(x, size = NULL, g = NULL, r = 3, 
-#'             method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
+#' @usage mcse(x, size = NULL, g = NULL, r = 3,  method = "bm", warn = FALSE)
+#'            
 #'         
 #' @references
 #' Flegal, J. M. (2012) Applicability of subsampling bootstrap methods in Markov chain Monte Carlo.
@@ -76,15 +76,20 @@
 #'
 #' @export
 
-mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlett", "tukey"), warn = FALSE)
+mcse <- function(x, size = NULL, g = NULL, r=3, method = "bm", warn = FALSE)
 {
     x <- as.numeric(x)
-    n = length(x)
-    method = match.arg(method)
-    calls <- mcse.multi(x, method = method, r=r, size = size, g = g, adjust = FALSE, blather = FALSE)
+    n <- length(x)
+    method <- match.arg(method, choices = c("bm", "obm", "bartlett", "tukey", "lug"))
+    if(method == "lug")   # not releaved to the public. Inside option for developers
+    {
+        method <- "bm"
+        r <- 3
+    }
+    calls <- mcse.multi(x, method = method, r = r, size = size, g = g, adjust = FALSE, blather = FALSE)
     se <- as.numeric(sqrt(calls$cov / n))
     mu.hat <- calls$est
-    value = list("est" = mu.hat, "se" = se, "nsim" = n)
+    value <- list("est" = mu.hat, "se" = se)
     value
 }
 
@@ -112,7 +117,7 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
 #'   \dQuote{\code{est}} and \dQuote{\code{se}}. The \eqn{j}th row of the matrix contains the result
 #'   of applying \code{mcse} to the \eqn{j}th column of \code{x}.
 #' 
-#' @usage mcse.mat(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r = 3)
+#' @usage mcse.mat(x, size = NULL, g = NULL, method = "bm", r = 3)
 #'   
 #' @seealso
 #' \code{\link{mcse}}, which acts on a vector.
@@ -123,7 +128,7 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = c("bm", "obm", "bartlet
 #' 
 #' @export
 
-mcse.mat = function(x, size = NULL, g = NULL, method = c("bm", "obm", "bartlett", "tukey"), r=3)
+mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r=3)
 {
     if (! is.matrix(x) && ! is.data.frame(x))
         stop("'x' must be a matrix or data frame.")

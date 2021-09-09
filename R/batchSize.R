@@ -91,19 +91,23 @@ batchSize <- function(x, method = c("bm", "obm", "bartlett", "tukey", "sub"), g 
     chain2 = as.matrix(chain[(n-last+1):n,])
     xacf = sapply(1:p, function(i) acf(chain2[,i], type = "covariance", lag.max = order.max, plot = FALSE,
                                        demean=TRUE, na.action = na.pass)$acf)
-  }
-
-  else  {                                           # use the entire chain for acf calculation
+  }  else  {                                           # use the entire chain for acf calculation
     xacf = sapply(1:p, function(i) acf(chain[,i], type = "covariance", lag.max = order.max, plot = FALSE,
                                        demean=TRUE, na.action = na.pass)$acf)
   }
 
-  threshold = qnorm((1.95)/2)/sqrt(n)              # threshold used in confidence interaval calculation
-  b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
-  b <- min(b, floor(n / (p + 1)))
-  if(n > 10)
-    b <- min(b, floor(n/10))
+  if(sum(xacf[1,] == 0) > 0)
+  {
+    b <- 1
+    print("No variability observed in a component. Setting batch size to 1")
+  }else{
+    threshold = qnorm((1.95)/2)/sqrt(n)              # threshold used in confidence interaval calculation
+    b = batchsize_cpp(n, p, xacf, order.max, method, threshold)
+    b <- min(b, floor(n / (p + 1)))
+    if(n > 10)
+      b <- min(b, floor(n/10))
 
-  b <- floor(b)
+    b <- floor(b)
+  }
   return(b)
 }
