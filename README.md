@@ -19,3 +19,7 @@ devtools::install_github("dvats/mcmcse")
 ```
 # Citation
 Please run `citation("mcmcse")` after loading the package for citation details.
+
+# News
+
+Version 1.5-0 is now live! There are big speed improvements in the functions and a new `mcmcse` object. Special thanks to Google Summer of Code.
