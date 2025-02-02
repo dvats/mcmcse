@@ -246,12 +246,14 @@ mcse.multi <- function(x, method = "bm", r=3, size = NULL, g = NULL, adjust = TR
     }
     adjust.used <- FALSE
     method.used <- paste("Lugsail ", method, " with r = ", r)
-    if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
-    {
-      sig.mat <- init.mat
-      method.used <- method
-      message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
-      adjust.used <- TRUE  #whether an adjustment was made
+    if(r != 1) 
+      if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
+      {
+        sig.mat <- init.mat
+        method.used <- method
+        message <- paste(message, paste("Diagonals were negative with r = ", r,". r = 1 was used.", sep = ""), sep = "")
+        adjust.used <- TRUE  #whether an adjustment was made
+      }
     }
   }
   
