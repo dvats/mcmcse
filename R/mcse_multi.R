@@ -246,7 +246,8 @@ mcse.multi <- function(x, method = "bm", r=3, size = NULL, g = NULL, adjust = TR
     }
     adjust.used <- FALSE
     method.used <- paste("Lugsail ", method, " with r = ", r)
-    if(r != 1) 
+    if(r != 1)
+    { 
       if(prod(diag(sig.mat) > 0) == 0)  # If diagonals are negative, cannot use larger values of r
       {
         sig.mat <- init.mat
