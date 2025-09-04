@@ -23,3 +23,4 @@ VignetteBuilder: knitr
 Repository: CRAN
 Encoding: UTF-8
 RoxygenNote: 7.1.1
+URL: https://github.com/dvats/mcmcse
