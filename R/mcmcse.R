@@ -370,7 +370,7 @@ estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE
 #' @param ... arguments passed on to the \code{mcse.mat} function. For example method = \dQuote{\code{tukey}} and size =
 #'   \dQuote{\code{cuberoot}} can be used.
 #' @param g a function that represents features of interest. \code{g} is applied to each row of x and thus
-#'  \code{g} should take a vector input only. Ifcode{g} is \code{NULL}, \code{g} is set to be identity, which is estimation
+#'  \code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which is estimation
 #'   of the mean of the target density.
 #'   
 #' @return The function returns the estimated effective sample size for each component of \code{g}.
