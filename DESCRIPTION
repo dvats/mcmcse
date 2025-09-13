@@ -27,10 +27,11 @@ Imports: utils, ellipse, Rcpp (>= 0.12.10), fftwtools, testthat
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr
 Description: Provides tools for computing Monte Carlo standard errors (MCSE) in
-    Markov chain Monte Carlo (MCMC) settings. MCSE computation for expectation
-	and quantile estimators is supported as well as multivariate estimations.
-	The package also provides functions for computing effective sample size and
-	for plotting Monte Carlo estimates versus sample size.
+    Markov chain Monte Carlo (MCMC) settings (survey in <doi:10.1201/b10905>,
+    Chapter 7). MCSE computation for expectation and quantile estimators is
+    supported as well as multivariate estimations. The package also provides
+    functions for computing effective sample size and for plotting Monte Carlo
+    estimates versus sample size.
 BugReports: https://github.com/dvats/mcmcse/issues
 URL: https://github.com/dvats/mcmcse
 License: GPL (>= 2)
