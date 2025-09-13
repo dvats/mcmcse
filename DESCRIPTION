@@ -1,6 +1,5 @@
 Package: mcmcse
-Version: 1.5-0
-Date: 2021-08-29
+Version: 1.5-1
 Title: Monte Carlo Standard Errors for MCMC
 Authors@R: c(person(given = c("James", "M."),
                     family = "Flegal",
