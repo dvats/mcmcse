@@ -24,10 +24,10 @@
 #' 
 #' @references 
 #' Gong, L., and Flegal, J. M. A practical sequential stopping rule for high-dimensional Markov chain Monte Carlo. 
-#' \emph{Journal of Computational and Graphical Statistics}, \bold{25},  684–-700.
+#' \emph{Journal of Computational and Graphical Statistics}, \bold{25},  684-700.
 #' 
 #' Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
-#' \emph{Biometrika}, \bold{106}, 321–-337.
+#' \emph{Biometrika}, \bold{106}, 321-337.
 #' 
 #' @seealso \code{\link{multiESS}}, which calculates multivariate effective sample size using a
 #' Markov chain and a function g.

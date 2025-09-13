@@ -77,10 +77,10 @@ mSVEfft <- function (A, b, method = "bartlett")
 #'                   adjust = TRUE, blather = FALSE)
 #' @references 
 #' Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
-#' \emph{Biometrika}, \bold{106}, 321–-337.
+#' \emph{Biometrika}, \bold{106}, 321-337.
 #' 
 #' Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance 
-#' estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
+#' estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860-1909.
 #' 
 #' @seealso \code{\link{batchSize}}, which computes an optimal batch size. 
 #' \code{\link{mcse.initseq}}, which computes an initial sequence estimator.

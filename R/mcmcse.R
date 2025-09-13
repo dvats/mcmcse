@@ -377,7 +377,7 @@ estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE
 #' 
 #' @references
 #' Gong, L. and Flegal, J. M. (2015) A practical sequential stopping rule for high-dimensional
-#' Markov chain Monte Carlo, \emph{Journal of Computational and Graphical Statistics},  \bold{25}, 684—700.
+#' Markov chain Monte Carlo, \emph{Journal of Computational and Graphical Statistics},  \bold{25}, 684-700.
 #' 
 #' @seealso 
 #' \code{\link{minESS}}, which calculates the minimum effective samples required for the problem.

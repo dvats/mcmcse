@@ -45,7 +45,7 @@ multiESS(out)
 }
 \references{
 Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
-\emph{Biometrika}, \bold{106}, 321–-337.
+\emph{Biometrika}, \bold{106}, 321-337.
 }
 \seealso{
 \code{\link{minESS}}, which calculates the minimum effective samples required for the
