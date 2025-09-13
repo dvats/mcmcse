@@ -36,7 +36,7 @@ mSVEfft <- function (A, b, method = "bartlett")
 ### Recommend blather = FALSE for users and TRUE for developers
 #####################################################################
 
-#' Multivariate Monte Carlo standard errors for expectations.
+#' Multivariate Monte Carlo standard errors for expectations
 #' 
 #' Function returns the estimate of the covariance matrix in the Markov Chain CLT using batch means
 #' or spectral variance methods (with different lag windows). The function also returns the Monte

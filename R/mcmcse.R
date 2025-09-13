@@ -1,5 +1,5 @@
 
-#' Compute Monte Carlo standard errors for expectations. 
+#' Compute Monte Carlo standard errors for expectations
 #'
 #' @param x a vector of values from a Markov chain of length n.
 #' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
@@ -93,7 +93,7 @@ mcse <- function(x, size = NULL, g = NULL, r=3, method = "bm", warn = FALSE)
     value
 }
 
-#' Apply \code{mcse} to each column of the MCMC samples.
+#' Apply \code{mcse} to each column of the MCMC samples
 #'
 #' @param x a matrix of values from a Markov chain of size n x p.
 #' @param size represents the batch size in \dQuote{\code{bm}} and the truncation point in \dQuote{\code{bartlett}} and 
@@ -144,7 +144,7 @@ mcse.mat = function(x, size = NULL, g = NULL, method = "bm", r=3)
 
 quant = function(input, q) { quantile(input, prob = q, type = 1, names = FALSE) }
 
-#' Compute Monte Carlo standard errors for quantiles.
+#' Compute Monte Carlo standard errors for quantiles
 #'
 #' @param x a vector of values from a Markov chain.
 #' @param q the quantile of interest.
@@ -276,7 +276,7 @@ mcse.q <- function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"), 
     value
 }
 
-#' Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples.
+#' Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples
 #'
 #' @param x a matrix or data frame with each row being a draw from the multivariate distribution of
 #'   interest.
@@ -316,7 +316,7 @@ mcse.q.mat = function(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"
     vals
 }
 
-#' Create a plot that shows how Monte Carlo estimates change with increasing sample size.
+#' Create a plot that shows how Monte Carlo estimates change with increasing sample size
 #'
 #' @param x a sample vector.
 #' @param g a function such that \eqn{E(g(x))} is the quantity of interest. The default is \code{g =
@@ -355,7 +355,7 @@ estvssamp = function(x, g = mean, main = "Estimates vs Sample Size", add = FALSE
         plot(n, est, main = main, type = "l", xlab = "Sample Size", ylab = "MC Estimate",...)
 }
 
-#' Univariate effective sample size (ESS) as described in Gong and Flgal (2015).
+#' Univariate effective sample size (ESS) as described in Gong and Flegal (2015)
 #'
 #'Estimate the effective sample size (ESS) of a Markov chain as described in Gong and Flegal (2015).
 #'

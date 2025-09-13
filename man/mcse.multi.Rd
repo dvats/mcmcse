@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcse_multi.R
 \name{mcse.multi}
 \alias{mcse.multi}
-\title{Multivariate Monte Carlo standard errors for expectations.}
+\title{Multivariate Monte Carlo standard errors for expectations}
 \usage{
 mcse.multi(x, method = "bm", r = 3, size = NULL, g = NULL,  
                   adjust = TRUE, blather = FALSE)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{ess}
 \alias{ess}
-\title{Univariate effective sample size (ESS) as described in Gong and Flgal (2015).}
+\title{Univariate effective sample size (ESS) as described in Gong and Flegal (2015)}
 \usage{
 ess(x, g = NULL, ...)
 }

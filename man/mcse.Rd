@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{mcse}
 \alias{mcse}
-\title{Compute Monte Carlo standard errors for expectations.}
+\title{Compute Monte Carlo standard errors for expectations}
 \usage{
 mcse(x, size = NULL, g = NULL, r = 3,  method = "bm", warn = FALSE)
 }
@@ -37,7 +37,7 @@ size is too small (less than 1,000).}
         \item{nsim}{The number of samples in the input Markov chain.}
 }
 \description{
-Compute Monte Carlo standard errors for expectations.
+Compute Monte Carlo standard errors for expectations
 }
 \examples{
 

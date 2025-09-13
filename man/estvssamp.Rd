@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{estvssamp}
 \alias{estvssamp}
-\title{Create a plot that shows how Monte Carlo estimates change with increasing sample size.}
+\title{Create a plot that shows how Monte Carlo estimates change with increasing sample size}
 \usage{
 estvssamp(x, g = mean, main = "Estimates vs Sample Size", add = FALSE, ...)
 }
@@ -23,7 +23,7 @@ Size}}.}
 \code{NULL}
 }
 \description{
-Create a plot that shows how Monte Carlo estimates change with increasing sample size.
+Create a plot that shows how Monte Carlo estimates change with increasing sample size
 }
 \examples{
 ## Bivariate Normal with mean (mu1, mu2) and covariance sigma

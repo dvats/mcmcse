@@ -1,4 +1,4 @@
-#' Effective Sample Size of a multivariate Markov chain as described in Vats et al. (2015).
+#' Effective Sample Size of a multivariate Markov chain as described in Vats et al. (2015)
 #' 
 #' Calculate the effective sample size of the Markov chain, using the multivariate dependence
 #' structure of the process.

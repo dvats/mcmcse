@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{mcse.q}
 \alias{mcse.q}
-\title{Compute Monte Carlo standard errors for quantiles.}
+\title{Compute Monte Carlo standard errors for quantiles}
 \usage{
 mcse.q(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"), warn = FALSE)
 }
@@ -33,7 +33,7 @@ size is too small (less than 1,000).}
         \item{nsim}{The number of samples in the input Markov chain.}
 }
 \description{
-Compute Monte Carlo standard errors for quantiles.
+Compute Monte Carlo standard errors for quantiles
 }
 \examples{
 

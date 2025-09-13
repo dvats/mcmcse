@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{mcse.q.mat}
 \alias{mcse.q.mat}
-\title{Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples.}
+\title{Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples}
 \usage{
 mcse.q.mat(x, q, size = NULL, g = NULL, method = c("bm", "obm", "sub"))
 }
@@ -32,7 +32,7 @@ function to be used.}
   the result of applying \code{mcse.q} to the \eqn{j}th column of \code{x}.
 }
 \description{
-Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples.
+Apply \code{mcse.q} to each column of a matrix or data frame of MCMC samples
 }
 \seealso{
 \code{\link{mcse.q}}, which acts on a vector.
