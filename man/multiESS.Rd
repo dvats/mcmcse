@@ -2,7 +2,7 @@
 % Please edit documentation in R/multiESS.R
 \name{multiESS}
 \alias{multiESS}
-\title{Effective Sample Size of a multivariate Markov chain as described in Vats et al. (2015).}
+\title{Effective Sample Size of a multivariate Markov chain as described in Vats et al. (2015)}
 \usage{
 multiESS(x, covmat = NULL, g = NULL, ...)
 }
@@ -45,7 +45,7 @@ multiESS(out)
 }
 \references{
 Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
-\emph{Biometrika}, \bold{106}, 321–-337.
+\emph{Biometrika}, \bold{106}, 321-337.
 }
 \seealso{
 \code{\link{minESS}}, which calculates the minimum effective samples required for the

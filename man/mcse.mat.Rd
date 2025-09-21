@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{mcse.mat}
 \alias{mcse.mat}
-\title{Apply \code{mcse} to each column of the MCMC samples.}
+\title{Apply \code{mcse} to each column of the MCMC samples}
 \usage{
 mcse.mat(x, size = NULL, g = NULL, method = "bm", r = 3)
 }
@@ -34,7 +34,7 @@ also good choices although may lead to underestimates of the variance. \code{r >
   of applying \code{mcse} to the \eqn{j}th column of \code{x}.
 }
 \description{
-Apply \code{mcse} to each column of the MCMC samples.
+Apply \code{mcse} to each column of the MCMC samples
 }
 \seealso{
 \code{\link{mcse}}, which acts on a vector.

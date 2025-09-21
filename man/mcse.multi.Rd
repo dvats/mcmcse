@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcse_multi.R
 \name{mcse.multi}
 \alias{mcse.multi}
-\title{Multivariate Monte Carlo standard errors for expectations.}
+\title{Multivariate Monte Carlo standard errors for expectations}
 \usage{
 mcse.multi(x, method = "bm", r = 3, size = NULL, g = NULL,  
                   adjust = TRUE, blather = FALSE)
@@ -68,10 +68,10 @@ mcse <- mcse.multi(x = out, g = g)
 }
 \references{
 Vats, D., Flegal, J. M., and, Jones, G. L Multivariate output analysis for Markov chain Monte Carlo, 
-\emph{Biometrika}, \bold{106}, 321–-337.
+\emph{Biometrika}, \bold{106}, 321-337.
 
 Vats, D., Flegal, J. M., and, Jones, G. L. (2018) Strong Consistency of multivariate spectral variance 
-estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860–-1909.
+estimators for Markov chain Monte Carlo, \emph{Bernoulli}, \bold{24}, 1860-1909.
 }
 \seealso{
 \code{\link{batchSize}}, which computes an optimal batch size. 

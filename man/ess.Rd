@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmcse.R
 \name{ess}
 \alias{ess}
-\title{Univariate effective sample size (ESS) as described in Gong and Flgal (2015).}
+\title{Univariate effective sample size (ESS) as described in Gong and Flegal (2015)}
 \usage{
 ess(x, g = NULL, ...)
 }
@@ -11,7 +11,7 @@ ess(x, g = NULL, ...)
 Carlo sample size.}
 
 \item{g}{a function that represents features of interest. \code{g} is applied to each row of x and thus
-\code{g} should take a vector input only. Ifcode{g} is \code{NULL}, \code{g} is set to be identity, which is estimation
+\code{g} should take a vector input only. If \code{g} is \code{NULL}, \code{g} is set to be identity, which is estimation
  of the mean of the target density.}
 
 \item{...}{arguments passed on to the \code{mcse.mat} function. For example method = \dQuote{\code{tukey}} and size =
@@ -31,7 +31,7 @@ is a batch means estimator, but the default can be changed with the `method` arg
 }
 \references{
 Gong, L. and Flegal, J. M. (2015) A practical sequential stopping rule for high-dimensional
-Markov chain Monte Carlo, \emph{Journal of Computational and Graphical Statistics},  \bold{25}, 684—700.
+Markov chain Monte Carlo, \emph{Journal of Computational and Graphical Statistics},  \bold{25}, 684-700.
 }
 \seealso{
 \code{\link{minESS}}, which calculates the minimum effective samples required for the problem.

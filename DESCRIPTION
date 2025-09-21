@@ -1,23 +1,38 @@
 Package: mcmcse
-Version: 1.5-0
-Date: 2021-08-29
+Version: 1.5-1
 Title: Monte Carlo Standard Errors for MCMC
-Author: James M. Flegal <jflegal@ucr.edu>,
-		John Hughes,
-		Dootika Vats <dootika@iitk.ac.in>, 
-		Ning Dai,
-		Kushagra Gupta, and
-		Uttiya Maji
+Authors@R: c(person(given = c("James", "M."),
+                    family = "Flegal",
+                    role = "aut",
+                    email = "jflegal@ucr.edu"),
+             person(given = "John",
+                    family = "Hughes",
+                    role = "aut"),
+             person(given = "Dootika",
+                    family = "Vats",
+                    role = c("aut", "cre"),
+                    email = "dootika@iitk.ac.in"),
+             person(given = "Ning",
+                    family = "Dai",
+                    role = "aut"),
+             person(given = "Kushagra",
+                    family = "Gupta",
+                    role = "aut"),
+             person(given = "Uttiya",
+                    family = "Maji",
+                    role = "aut"))
 Maintainer: Dootika Vats <dootika@iitk.ac.in>
 Imports: utils, ellipse, Rcpp (>= 0.12.10), fftwtools, testthat
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr
-Description: Provides tools for computing Monte Carlo standard
-        errors (MCSE) in Markov chain Monte Carlo (MCMC) settings. MCSE
-        computation for expectation and quantile estimators is
-        supported as well as multivariate estimations. The package also provides 
-	functions for computing effective sample size and for plotting
-	Monte Carlo estimates versus sample size.
+Description: Provides tools for computing Monte Carlo standard errors (MCSE) in
+    Markov chain Monte Carlo (MCMC) settings (survey in <doi:10.1201/b10905>,
+    Chapter 7). MCSE computation for expectation and quantile estimators is
+    supported as well as multivariate estimations. The package also provides
+    functions for computing effective sample size and for plotting Monte Carlo
+    estimates versus sample size.
+BugReports: https://github.com/dvats/mcmcse/issues
+URL: https://github.com/dvats/mcmcse
 License: GPL (>= 2)
 VignetteBuilder: knitr
 Repository: CRAN
