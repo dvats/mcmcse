@@ -214,7 +214,7 @@ batchSize_old <- function(x, method = "bm", g = NULL)
 }
 
 
-qqTest <- function(x) {
+qqTest <- function(mcse.obj) {
   UseMethod('qqTest')
 }
 
