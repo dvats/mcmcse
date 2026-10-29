@@ -10,7 +10,8 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
 // loop from 1 to order.max) and return. 
 
   int l, i, j, k;
-  double v, d, q, hold, l1, l2;
+  int l1, l2;
+  double v, d, q, hold;
   List ans = List::create(_["vars"] = var, _["coefs"] = coefs, _["order"] = order_max);
 
   v = r(0);
@@ -39,8 +40,8 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
     a(l-1) = -d/v;
 
     if(l > 2) {
-      l1 = (l-2.0)/2.0;
-      l2 = l1+1.0;
+      l1 = (l-2)/2;
+      l2 = l1+1;
 
       for(j = 2; j<= l2; j++) {
         hold = a(j-1);
@@ -49,7 +50,7 @@ List eureka(int order_max, const arma::vec& r, const arma::vec& g, arma::mat coe
         a(k-1) = a(k-1) + a(l-1) * hold;
       }
 
-      if((2.0*l1) != (l-2))
+      if((2*l1) != (l-2))
         a(l2) = a(l2) * (1.0 + a(l-1));
     }
 
